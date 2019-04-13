@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ImportResource;
 public class Main {
 
     //  http://localhost:8080/api/test  - api
-    // - strona
+    //  http://localhost:8080/website/test - strona
     public static void main(String []args){
         SpringApplication.run(Main.class,args);
     }
