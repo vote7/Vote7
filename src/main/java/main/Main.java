@@ -1,8 +1,18 @@
 package main;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.ImportResource;
+
+@Configuration
+@ImportResource("classpath:app-config.xml")
+@SpringBootApplication
 public class Main {
 
+    //  http://localhost:8080/api/test  - api
+    // - strona
     public static void main(String []args){
-        System.out.println("Hello");
+        SpringApplication.run(Main.class,args);
     }
 }
