@@ -1,40 +1,76 @@
 package main.database;
 
-import main.database.dto.TestData;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.Transaction;
-import org.springframework.beans.factory.annotation.Autowired;
-
-import javax.transaction.Transactional;
+import org.hibernate.cfg.AnnotationConfiguration;
+import org.hibernate.cfg.Configuration;
+import org.hibernate.service.ServiceRegistry;
+import org.hibernate.service.ServiceRegistryBuilder;
+import org.reflections.Reflections;
+import java.lang.reflect.ParameterizedType;
 import java.util.Collection;
 import java.util.List;
+import java.util.Properties;
+import java.util.Set;
 
-@Transactional
-public class AbstractDAO<DATA> {
+public abstract class AbstractDAO<DATA> {
 
-    @Autowired
-    private SessionFactory sessionFactory;
-    private Class<? extends DATA> clazz;
+    private static SessionFactory sessionFactory;
+    private Class<DATA> data;
 
-    public AbstractDAO(Class<? extends DATA> clazz){
-        this.clazz = clazz;
+    protected AbstractDAO(Class<DATA> data){
+        this.data = data;
     }
 
-    public DATA getItem(int id){
-        Session session = sessionFactory.getCurrentSession();
-        return session.get(clazz,id);
+    public static void initSessionFactory(String pkq) {
+        try {
+
+            Configuration configuration = new AnnotationConfiguration();
+            Reflections pkg = new Reflections(pkq);
+            Set<Class<? extends AbstractDAO>> classes = pkg.getSubTypesOf(AbstractDAO.class);
+            for (Class<? extends AbstractDAO> abs : classes) {
+                Class data = (Class<?>) ((ParameterizedType) abs.getGenericSuperclass()).getActualTypeArguments()[0];
+                configuration.addAnnotatedClass(data);
+            }
+            configuration.configure();
+            Properties properties = configuration.getProperties();
+            ServiceRegistry serviceRegistry = new ServiceRegistryBuilder().applySettings(properties).buildServiceRegistry();
+            sessionFactory = configuration.buildSessionFactory(serviceRegistry);
+
+        }catch (Exception e){ e.printStackTrace(); }
+    }
+
+    protected SessionFactory getSessionFactory(){
+        return sessionFactory;
     }
 
     @SuppressWarnings("unchecked")
-    public List<DATA> getAllItems(){
-        Session session = sessionFactory.getCurrentSession();
-        return (List<DATA>) session.createCriteria(clazz).list();
+    public DATA getItem(int id){
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+        DATA o = (DATA) session.get(data,id);
+        session.flush();
+        tx.commit();
+        return o;
     }
 
-    public int save(DATA data){
-        Session session = sessionFactory.getCurrentSession();
-        return (int) session.save(data);
+    @SuppressWarnings("unchecked")
+    public Collection<DATA> getAllItems(){
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+        List<DATA> o = (List<DATA>) session.createCriteria(data).list();
+        session.flush();
+        tx.commit();
+        return o;
+    }
+
+    public void createItem(DATA data){
+        Session session = sessionFactory.openSession();
+        Transaction tx = session.beginTransaction();
+        session.persist(data);
+        session.flush();
+        tx.commit();
     }
 }
 

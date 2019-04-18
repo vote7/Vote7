@@ -16,13 +16,11 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api")
 public class TestResource {
 
-    @Autowired
-    private TestDAO testDAO;
 
     @RequestMapping(value = "/test",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     public Test test(){
-        testDAO.save(new TestData("String",30));
-        System.out.println(testDAO.getAllItems().size());
+        TestDAO.getInstance().createItem(new TestData("String",30));
+        System.out.println(TestDAO.getInstance().getAllItems().size());
         return new Test("Hello",15);
     }
 }

@@ -83,8 +83,7 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
-            <version>5.2.12.Final</version>
-            <scope>compile</scope>
+            <version>4.1.4.Final</version>
         </dependency>
         <dependency>
             <groupId>javax.transaction</groupId>
@@ -103,7 +102,11 @@
             <artifactId>postgresql</artifactId>
             <version>42.2.2</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.reflections</groupId>
+            <artifactId>reflections</artifactId>
+            <version>0.9.10</version>
+        </dependency>
     </dependencies>
 
 </project>
