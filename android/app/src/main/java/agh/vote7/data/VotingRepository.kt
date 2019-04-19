@@ -1,4 +1,4 @@
-package agh.vote7.dummy
+package agh.vote7.data
 
 data class Voting(val id: String, val title: String)
 

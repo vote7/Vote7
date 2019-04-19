@@ -1,6 +1,7 @@
-package agh.vote7
+package agh.vote7.main.home
 
-import agh.vote7.dummy.VotingRepository
+import agh.vote7.R
+import agh.vote7.data.VotingRepository
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
