@@ -9,14 +9,22 @@
         android:id="@+id/votingFragment"
         android:name="agh.vote7.main.home.VotingFragment"
         android:label="fragment_voting_list"
-        tools:layout="@layout/fragment_voting_list" >
+        tools:layout="@layout/fragment_voting_list">
         <action
             android:id="@+id/action_votingFragment_to_votingActivity"
             app:destination="@id/votingActivity" />
     </fragment>
+
+    <fragment
+        android:id="@+id/profileFragment"
+        android:name="agh.vote7.main.profile.ProfileFragment"
+        android:label="fragment_profile"
+        tools:layout="@layout/fragment_profile" />
+
     <activity
         android:id="@+id/votingActivity"
         android:name="agh.vote7.voting.VotingActivity"
         android:label="activity_voting"
         tools:layout="@layout/activity_voting" />
+
 </navigation>
