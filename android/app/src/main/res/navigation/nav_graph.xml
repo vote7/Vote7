@@ -16,6 +16,12 @@
     </fragment>
 
     <fragment
+        android:id="@+id/historyFragment"
+        android:name="agh.vote7.main.history.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history" />
+
+    <fragment
         android:id="@+id/profileFragment"
         android:name="agh.vote7.main.profile.ProfileFragment"
         android:label="fragment_profile"
