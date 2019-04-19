@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
+import androidx.navigation.Navigation
 import androidx.recyclerview.widget.RecyclerView
 
 class VotingFragment : Fragment() {
@@ -18,7 +19,9 @@ class VotingFragment : Fragment() {
 
         view.adapter = VotingRecyclerViewAdapter(
             VotingRepository.items,
-            onClick = { /* TODO */ }
+            onClick = {
+                Navigation.findNavController(this.view!!).navigate(R.id.votingActivity)
+            }
         )
 
         return view
