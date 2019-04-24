@@ -1,8 +1,12 @@
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Description
+This directory contains the frontend part of Vote7. 
+
+## Contribution
+
+Please see the open issues for reference:
+[https://github.com/agh-ki-io/Vote7/issues]
 
 ## Available Scripts
-
-In the project directory, you can run:
 
 ### `npm start`
 
