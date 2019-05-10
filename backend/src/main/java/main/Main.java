@@ -8,6 +8,8 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
 
 @Configuration
 @ImportResource("classpath:app-config.xml")
@@ -16,7 +18,7 @@ import org.springframework.context.annotation.ImportResource;
 public class Main {
 
     //  http://localhost:8080/api/test  - api
-    //  http://localhost:8080/website/test - strona
+    //  http://localhost:8080/website/test - strone
     public static void main(String []args){
         SpringApplication.run(Main.class,args);
     }

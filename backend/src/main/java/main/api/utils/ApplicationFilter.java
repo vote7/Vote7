@@ -23,7 +23,7 @@ public class ApplicationFilter implements Filter {
         if(!request.getRequestURI().equals("/users/register") && !request.getRequestURI().equals("/users/login")){
             String token = request.getParameter("token");
             int id;
-            if(token.isEmpty() || (id = validateToken(token)) == -1)
+            if(token == null || token.isEmpty() || (id = validateToken(token)) == -1)
                 throw new ApplicationException(ExceptionCode.USER_NOT_LOGGED);
             request.setAttribute("userIdToken",id);
         }
