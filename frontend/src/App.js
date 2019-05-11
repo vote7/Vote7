@@ -13,7 +13,7 @@ class App extends Component {
     return (
       <body>
         <div>
-          <AppRouter logged={this.state.logged} login={() => {this.setState({logged: true})}}/>
+          <AppRouter logged={this.state.logged} login={() => {this.updateState({logged: true})}}/>
         </div>
       </body>
     );

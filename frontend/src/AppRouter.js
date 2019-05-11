@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
 import "./AppRouter.css"
 import {home, about, users} from './Mocks'
+import {Login} from './Login'
 
 class AppRouter extends Component {
 
@@ -15,7 +16,7 @@ class AppRouter extends Component {
         return (
             <div className="navigation-container">
                 <Router>
-                    <div clMocks from assName="main-conainer">
+                    <div className="main-conainer">
                         
                         <button className="nav-btn">
                             <Link to="/"> Home </Link>
@@ -31,10 +32,11 @@ class AppRouter extends Component {
                         <Route path="/" exact render={(props) => (
                             this.logged === true 
                             ? home
-                            : <Redirect to='/login'/>
+                            : <Redirect to='/login/'/>
                         )} /> 
                         <Route path="/about/" component={about} />
                         <Route path="/users/" component={users} />
+                        <Route path="/login/" render={(props) => <Login login={this.props.login}/>} />
                     </div>
                 </Router>
             </div>
