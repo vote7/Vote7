@@ -1,11 +1,14 @@
 package main.api.utils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpStatus;
 
 import java.security.SecureRandom;
 import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 @Configuration
@@ -23,11 +26,19 @@ public class ApplicationFilter implements Filter {
         if(!request.getRequestURI().equals("/users/register") && !request.getRequestURI().equals("/users/login")){
             String token = request.getParameter("token");
             int id;
-            if(token == null || token.isEmpty() || (id = validateToken(token)) == -1)
-                throw new ApplicationException(ExceptionCode.USER_NOT_LOGGED);
+            if(token == null || token.isEmpty() || (id = validateToken(token)) == -1) {
+                supportException((HttpServletResponse) servletResponse);
+                return;
+            }
             request.setAttribute("userIdToken",id);
         }
         filterChain.doFilter(request,servletResponse);
+    }
+
+    private void supportException(HttpServletResponse response) throws IOException {
+        ApplicationException ex = new ApplicationException(ExceptionCode.USER_NOT_LOGGED);
+        response.setStatus(ex.getCode().getStatus());
+        response.getWriter().write(new ObjectMapper().writeValueAsString(ex));
     }
 
     private int validateToken(String token) {

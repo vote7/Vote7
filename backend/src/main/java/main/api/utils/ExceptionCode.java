@@ -15,7 +15,7 @@ public enum ExceptionCode {
 
     ExceptionCode(String message){
         this.message = message;
-        this.status = 404;
+        this.status = 500;
         //TODO
     }
 

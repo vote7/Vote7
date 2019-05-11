@@ -18,7 +18,7 @@ public class UserRepository extends AbstractRepository<UserData> {
 
     @Override
     @Transactional
-    public void createItem(UserData userData) {
+    public void createItem(UserData userData) throws ApplicationException {
         if(getItem(userData.getEmail()) != null)
             throw new ApplicationException(ExceptionCode.USER_ALREADY_REGISTERED,userData.getEmail());
         super.createItem(userData);

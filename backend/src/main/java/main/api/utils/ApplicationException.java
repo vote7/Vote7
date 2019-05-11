@@ -1,6 +1,12 @@
 package main.api.utils;
 
-public class ApplicationException extends RuntimeException {
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import org.apache.catalina.connector.Response;
+
+@JsonIgnoreProperties({"localizedMessage","cause","stackTrace","suppressed"})
+public class ApplicationException  extends Exception{
 
     private ExceptionCode code;
     private String errorMessage;

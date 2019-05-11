@@ -1,5 +1,6 @@
 package main.database;
 
+import main.api.utils.ApplicationException;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,7 +29,7 @@ public abstract  class AbstractRepository<DATA> {
 
     @Transactional
     @SuppressWarnings("unchecked")
-    public DATA getItem(int id){
+    public DATA getItem(int id) throws ApplicationException {
         Session session = sessionFactory.openSession();
         DATA o = (DATA) session.get(data,id);
         return o;
@@ -36,14 +37,14 @@ public abstract  class AbstractRepository<DATA> {
 
     @Transactional
     @SuppressWarnings("unchecked")
-    public List<DATA> getAllItems(){
+    public List<DATA> getAllItems() throws ApplicationException{
         Session session = sessionFactory.openSession();
         List<DATA> o = (List<DATA>) session.createCriteria(data).list();
         return o;
     }
 
     @Transactional
-    public void createItem(DATA data){
+    public void createItem(DATA data) throws ApplicationException{
         Session session = sessionFactory.getCurrentSession();
         session.persist(data);
     }

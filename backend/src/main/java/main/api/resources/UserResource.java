@@ -1,5 +1,6 @@
 package main.api.resources;
 
+import main.api.data.SimpleResponse;
 import main.api.data.UserRequest;
 import main.api.data.UserResponse;
 import main.api.utils.ApplicationException;
@@ -27,7 +28,7 @@ public class UserResource {
 
     @RequestMapping(value = "/register",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    TokenResponse register(@RequestBody UserRequest request) {
+    TokenResponse register(@RequestBody UserRequest request) throws ApplicationException {
         UserData data = new UserData(request);
         userRepository.createItem(data);
         return new TokenResponse(ApplicationFilter.generateToken(data.getId()));
@@ -35,7 +36,7 @@ public class UserResource {
 
     @RequestMapping(value = "/login",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    TokenResponse login(@RequestBody UserRequest request){
+    TokenResponse login(@RequestBody UserRequest request) throws ApplicationException {
         UserData data = userRepository.loginUser(request.getEmail(),request.getPassword());
         if(data == null)
             throw new ApplicationException(ExceptionCode.BAD_CREDENTIALS);
@@ -44,21 +45,21 @@ public class UserResource {
 
     @RequestMapping(value = "/me",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    UserResponse me(HttpServletRequest request){
+    UserResponse me(HttpServletRequest request) throws ApplicationException {
         int id = (int) request.getAttribute("userIdToken");
         return new UserResponse(userRepository.getItem(id));
     }
 
     @RequestMapping(value = "/logout",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    String logout(HttpServletRequest request){
+    SimpleResponse logout(HttpServletRequest request){
         ApplicationFilter.removeToken((Integer) request.getAttribute("userIdToken"));
-        return "User successfully logged out";
+        return new SimpleResponse("User successfully logged out");
     }
 
     @RequestMapping(value = "",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    List<UserResponse> all(){
+    List<UserResponse> all() throws ApplicationException {
        List<UserResponse> users = new LinkedList<>();
        for(UserData data : userRepository.getAllItems())
            users.add(new UserResponse(data));
