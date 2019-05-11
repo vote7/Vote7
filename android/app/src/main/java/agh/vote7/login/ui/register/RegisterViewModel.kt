@@ -42,7 +42,7 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
     }
 
     private fun isEmailValid(email: String): Boolean {
-        return email.contains('@')
+        return true
     }
 
 }

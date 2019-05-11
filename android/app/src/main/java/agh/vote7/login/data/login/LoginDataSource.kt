@@ -1,5 +1,6 @@
 package agh.vote7.login.data.login
 
+import agh.vote7.MainApplication
 import agh.vote7.login.data.Result
 import agh.vote7.login.data.model.LoggedInUser
 import android.annotation.SuppressLint
@@ -16,9 +17,9 @@ import java.io.IOException
 class LoginDataSource {
     private val client = OkHttpClient()
     val gson = Gson()
-    private val loginUrl = "http://192.168.43.77:8080/users/login"
-    private val getUserDataUrl = "http://192.168.43.77:8080/users/me"
-    private val logoutUrl = "http://192.168.43.77:8080/users/logout"
+    private val loginUrl = "http://192.168.1.17:8080/users/login"
+    private val getUserDataUrl = "http://192.168.1.17:8080/users/me"
+    private val logoutUrl = "http://192.168.1.17:8080/users/logout"
     private val JSON = MediaType.parse("application/json; charset=utf-8")
     private var token : String? = null
     private var user : LoggedInUser? = null
@@ -31,6 +32,7 @@ class LoginDataSource {
             if (fail)
                 throw Throwable()
 
+            MainApplication.token = this.token!!
             return Result.Success(user!!)
         } catch (e: Throwable) {
             Log.e("dbg", "logging error")
@@ -63,9 +65,8 @@ class LoginDataSource {
             try {
                 val response = client.newCall(request).execute()
                 val jsonToken = JSONObject(response.body()?.string()!!)
-                Log.e("dbg", jsonToken.getString("token"))
-                Log.e("dbg", "xd")
-                jsonToken.getString("token")
+                Log.e("login", jsonToken.getString("token"))
+                token = jsonToken.getString("token")
             }catch (e: Exception){
                 fail = true
                 e.printStackTrace()
@@ -86,7 +87,7 @@ class LoginDataSource {
                 val response = client.newCall(request).execute()
                 val responseBody = response.body()?.string()!!
                 user = gson.fromJson(responseBody, LoggedInUser::class.java)
-                Log.e("dbg", user.toString())
+                Log.e("userData", user.toString())
             }catch (e: Exception){
                 e.printStackTrace()
             }
@@ -98,19 +99,24 @@ class LoginDataSource {
         override fun doInBackground(vararg params: Any?){
 
             val request = Request.Builder()
-                .url("$logoutUrl?token=$token")
+                .url("$logoutUrl?token=${MainApplication.token}")
                 .get()
                 .build()
 
             try {
                 val response = client.newCall(request).execute()
-                Log.e("dbg", response.body()?.string()!!)
+                Log.e("logout", response.body()?.string()!!)
             }catch (e: Exception){
                 e.printStackTrace()
             }
         }
     }
 
+    companion object {
+        fun logout(){
+            this.logout()
+        }
+    }
 
 }
 

@@ -16,7 +16,7 @@ import java.io.IOException
 class RegisterDataSource {
     private val client = OkHttpClient()
     val gson = Gson()
-    private val registerUrl = "http://192.168.43.77:8080/users/register"
+    private val registerUrl = "http://192.168.1.17:8080/users/register"
     private val JSON = MediaType.parse("application/json; charset=utf-8")
     private var token : String? = null
 
@@ -46,9 +46,10 @@ class RegisterDataSource {
                 .build()
 
             try {
+                Log.e("register", json.toString())
                 val response = client.newCall(request).execute()
                 val jsonToken = JSONObject(response.body()?.string()!!)
-                Log.e("dbg", jsonToken.getString("token"))
+                Log.e("register", jsonToken.getString("token"))
                 token = jsonToken.getString("token")
             }catch (e: Exception){
                 e.printStackTrace()
