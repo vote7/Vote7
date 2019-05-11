@@ -16,9 +16,5 @@ import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExcep
 @ControllerAdvice
 public class ApplicationControllerAdvice extends ResponseEntityExceptionHandler {
 
-    @ExceptionHandler(ApplicationException.class)
-    protected ResponseEntity<String> handleEntityNotFound(
-            ApplicationException ex) {
-        return new ResponseEntity<String>("KURWA", HttpStatus.INTERNAL_SERVER_ERROR);
-    }
+
 }
