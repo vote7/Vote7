@@ -63,7 +63,7 @@ public class GroupResource {
         UserData user = userRepository.getItem(uid);
         GroupData group = groupRepository.getItem(gid);
         group.addMember(user);
-        //TODO /\ na pewno działa?
+        groupRepository.modifyItem(group);
         String response = String.format("User %d successfully added to group %d", uid, gid);
         return new SimpleResponse(response);
     }
@@ -74,7 +74,7 @@ public class GroupResource {
         UserData user = userRepository.getItem(uid);
         GroupData group = groupRepository.getItem(gid);
         group.removeMember(user);
-        //TODO /\ na pewno działa?
+        groupRepository.modifyItem(group);
         String response = String.format("User %d successfully removed from group %d", uid, gid);
         return new SimpleResponse(response);
     }
