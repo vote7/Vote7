@@ -1,42 +1,45 @@
-import React from "react";
-import { BrowserRouter as Router, Route, Link } from "react-router-dom";
+import React, { Component } from "react";
+import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
+import "./AppRouter.css"
+import {home, about, users} from './Mocks'
 
-function Index() {
-  return <h2>Home</h2>;
-}
+class AppRouter extends Component {
 
-function About() {
-  return <h2>About</h2>;
-}
+    constructor(props) {
+        super(props);
+        this.logged = props.logged;
+        this.state = {}
+    }
 
-function Users() {
-  return <h2>Users</h2>;
-}
-
-function AppRouter() {
-  return (
-    <Router>
-      <div>
-        <nav>
-          <ul>
-            <li>
-              <Link to="/">Home</Link>
-            </li>
-            <li>
-              <Link to="/about/">About</Link>
-            </li>
-            <li>
-              <Link to="/users/">Users</Link>
-            </li>
-          </ul>
-        </nav>
-
-        <Route path="/" exact component={Index} />
-        <Route path="/about/" component={About} />
-        <Route path="/users/" component={Users} />
-      </div>
-    </Router>
-  );
+    render() {
+        return (
+            <div className="navigation-container">
+                <Router>
+                    <div clMocks from assName="main-conainer">
+                        
+                        <button className="nav-btn">
+                            <Link to="/"> Home </Link>
+                        </button>
+                        <button className="nav-btn">
+                            <Link to="/about/"> about </Link>
+                        </button>
+                        <button className="nav-btn">
+                            <Link to="/users/"> users </Link>
+                        </button>
+                    </div>
+                    <div className="content-container">
+                        <Route path="/" exact render={(props) => (
+                            this.logged === true 
+                            ? home
+                            : <Redirect to='/login'/>
+                        )} /> 
+                        <Route path="/about/" component={about} />
+                        <Route path="/users/" component={users} />
+                    </div>
+                </Router>
+            </div>
+        );
+    }
 }
 
 export default AppRouter;
