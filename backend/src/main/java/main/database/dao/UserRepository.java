@@ -30,4 +30,11 @@ public class UserRepository extends AbstractRepository<UserData> {
         return (UserData) session.createQuery("from UserData u where u.email = :email")
                 .setParameter("email",email).uniqueResult();
     }
+
+    @Transactional
+    public UserData loginUser(String email,String password){
+        Session session = getSessionFactory().getCurrentSession();
+        return (UserData) session.createQuery("from UserData u where u.email = :email and u.password = :password")
+                .setParameter("email",email).setParameter("password",password).uniqueResult();
+    }
 }

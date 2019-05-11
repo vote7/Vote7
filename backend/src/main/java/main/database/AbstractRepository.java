@@ -10,8 +10,9 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.concurrent.Callable;
 
-public abstract class AbstractRepository<DATA> {
+public abstract  class AbstractRepository<DATA> {
 
     @Autowired
     private SessionFactory sessionFactory;
@@ -46,5 +47,7 @@ public abstract class AbstractRepository<DATA> {
         Session session = sessionFactory.getCurrentSession();
         session.persist(data);
     }
+    
+
 }
 

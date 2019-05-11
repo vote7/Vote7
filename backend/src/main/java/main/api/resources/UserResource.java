@@ -8,7 +8,9 @@ import main.api.utils.ExceptionCode;
 import main.database.dao.UserRepository;
 import main.database.dto.UserData;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,7 +36,7 @@ public class UserResource {
     @RequestMapping(value = "/login",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     TokenResponse login(@RequestBody UserRequest request){
-        UserData data = userRepository.getItem(request.getEmail());
+        UserData data = userRepository.loginUser(request.getEmail(),request.getPassword());
         if(data == null)
             throw new ApplicationException(ExceptionCode.BAD_CREDENTIALS);
         return new TokenResponse(ApplicationFilter.generateToken(data.getId()));
@@ -61,6 +63,11 @@ public class UserResource {
        for(UserData data : userRepository.getAllItems())
            users.add(new UserResponse(data));
        return users;
+    }
+
+    @ExceptionHandler(ApplicationException.class)
+    public ResponseEntity<ApplicationException> exception(Exception e){
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body((ApplicationException)e);
     }
 
     private class TokenResponse {
