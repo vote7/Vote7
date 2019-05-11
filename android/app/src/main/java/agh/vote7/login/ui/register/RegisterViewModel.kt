@@ -29,7 +29,7 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
 
     fun registrationDataChanged(name: String, surname: String, email: String, password: String) {
         if (!isEmailValid(email)) {
-            _registerForm.value = RegisterFormState(passwordError = R.string.invalid_password)}
+            _registerForm.value = RegisterFormState(emailError = R.string.invalid_email)}
         else if (!isPasswordValid(password)) {
             _registerForm.value = RegisterFormState(passwordError = R.string.invalid_password)}
         else {
@@ -38,14 +38,11 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
     }
 
     private fun isPasswordValid(password: String): Boolean {
-        return password.length > 5;
+        return password.isNotEmpty()
     }
 
     private fun isEmailValid(email: String): Boolean {
-        return if (email.contains('@')) {
-            Patterns.EMAIL_ADDRESS.matcher(email).matches()
-        } else {
-            email.isNotBlank()
-        }
+        return email.contains('@')
     }
+
 }
