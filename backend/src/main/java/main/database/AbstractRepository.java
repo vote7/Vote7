@@ -43,7 +43,12 @@ public abstract  class AbstractRepository<DATA> {
     public void createItem(DATA data) throws ApplicationException{
         sessionFactory.getCurrentSession().persist(data);
     }
-    
+
+    @Transactional
+    public void modifyItem(DATA data){
+        sessionFactory.getCurrentSession().update(data);
+    }
+
     @Transactional
     public void removeItem(DATA data) throws ApplicationException{
         sessionFactory.getCurrentSession().delete(data);
