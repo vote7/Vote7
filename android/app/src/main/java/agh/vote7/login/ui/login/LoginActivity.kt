@@ -1,6 +1,7 @@
 package agh.vote7.login.ui.login
 
 import agh.vote7.R
+import agh.vote7.login.ui.register.RegisterActivity
 import agh.vote7.main.MainActivity
 import android.app.Activity
 import android.content.Intent
@@ -33,6 +34,7 @@ class LoginActivity : AppCompatActivity(), LifecycleOwner {
         val username = findViewById<EditText>(R.id.username)
         val password = findViewById<EditText>(R.id.password)
         val login = findViewById<Button>(R.id.login)
+        val register = findViewById<Button>(R.id.goToRegister)
         val loading = findViewById<ProgressBar>(R.id.loading)
 
         loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
@@ -61,11 +63,10 @@ class LoginActivity : AppCompatActivity(), LifecycleOwner {
             }
             if (loginResult.success != null) {
                 updateUiWithUser(loginResult.success)
+                setResult(Activity.RESULT_OK)
+                finish()
             }
-            setResult(Activity.RESULT_OK)
 
-            //Complete and destroy login activity once successful
-            finish()
         })
 
         username.afterTextChanged {
@@ -96,12 +97,18 @@ class LoginActivity : AppCompatActivity(), LifecycleOwner {
 
             login.setOnClickListener {
                 loading.visibility = View.VISIBLE
-                loginViewModel.login(username.text.toString(), password.text.toString())
-                val intent = Intent(context, MainActivity::class.java)
-                startActivity(intent)
-                finish()
+                if (loginViewModel.login(username.text.toString(), password.text.toString())){
+                    val intent = Intent(context, MainActivity::class.java)
+                    startActivity(intent)
+                    finish()
+                }
+            }
+
+            register.setOnClickListener{
+                startActivity(Intent(context, RegisterActivity::class.java))
             }
         }
+
         lifecycle.markState(Lifecycle.State.CREATED)
         lifecycle.markState(Lifecycle.State.STARTED)
 

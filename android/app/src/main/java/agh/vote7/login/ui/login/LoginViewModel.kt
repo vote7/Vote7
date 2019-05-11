@@ -17,16 +17,17 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
     private val _loginResult = MutableLiveData<LoginResult>()
     val loginResult: LiveData<LoginResult> = _loginResult
 
-    fun login(username: String, password: String) {
+    fun login(username: String, password: String) : Boolean{
         // can be launched in a separate asynchronous job
         val result = loginRepository.login(username, password)
 
         if (result is Result.Success) {
             _loginResult.value =
                 LoginResult(success = LoggedInUserView(displayName = result.data.name + " " + result.data.surname))
-
+            return true
         } else {
             _loginResult.value = LoginResult(error = R.string.login_failed)
+            return false
         }
     }
 
@@ -51,6 +52,6 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
 
     // A placeholder password validation check
     private fun isPasswordValid(password: String): Boolean {
-        return password.length > 5;
+        return password.isNotEmpty()
     }
 }

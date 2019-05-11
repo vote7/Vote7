@@ -22,13 +22,18 @@ class LoginDataSource {
     private val JSON = MediaType.parse("application/json; charset=utf-8")
     private var token : String? = null
     private var user : LoggedInUser? = null
+    private var fail = false
 
     fun login(username: String, password: String): Result<LoggedInUser> {
         try {
-            PostLogin().execute().get()
+            PostLogin().execute(username, password).get()
             GetUserData().execute().get()
+            if (fail)
+                throw Throwable()
+
             return Result.Success(user!!)
         } catch (e: Throwable) {
+            Log.e("dbg", "logging error")
             return Result.Error(IOException("Error logging in", e))
         }
     }
@@ -42,12 +47,12 @@ class LoginDataSource {
     }
 
     @SuppressLint("StaticFieldLeak")
-    inner class PostLogin : AsyncTask<Any, Any, Any>() {
-        override fun doInBackground(vararg params: Any?) {
+    inner class PostLogin : AsyncTask<Any, Any, Any>()  {
+        override fun doInBackground(vararg params: Any?){
 
             val json = JSONObject()
-            json.put("email", "mail@gmail.com")
-            json.put("password", "qwertyi")
+            json.put("email", params[0])
+            json.put("password", params[1])
 
             val body = RequestBody.create(JSON, json.toString())
             val request = Request.Builder()
@@ -59,8 +64,10 @@ class LoginDataSource {
                 val response = client.newCall(request).execute()
                 val jsonToken = JSONObject(response.body()?.string()!!)
                 Log.e("dbg", jsonToken.getString("token"))
-                token = jsonToken.getString("token")
+                Log.e("dbg", "xd")
+                jsonToken.getString("token")
             }catch (e: Exception){
+                fail = true
                 e.printStackTrace()
             }
         }
@@ -77,10 +84,10 @@ class LoginDataSource {
 
             try {
                 val response = client.newCall(request).execute()
-                var responseBody = response.body()?.string()!!
+                val responseBody = response.body()?.string()!!
                 user = gson.fromJson(responseBody, LoggedInUser::class.java)
+                Log.e("dbg", user.toString())
             }catch (e: Exception){
-
                 e.printStackTrace()
             }
         }

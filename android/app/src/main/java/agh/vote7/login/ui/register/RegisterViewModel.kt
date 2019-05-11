@@ -21,7 +21,7 @@ class RegisterViewModel(private val registerRepository: RegisterRepository) : Vi
         val result = registerRepository.register(name, surname, email, password)
 
         if (result is Result.Success){
-            _registerResult.value = RegisterResult(success = RegisteredUserView("Registered"))
+            _registerResult.value = RegisterResult(success = RegisteredUserView(""))
         } else {
             _registerResult.value = RegisterResult(error = R.string.registration_failed)
         }

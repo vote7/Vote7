@@ -7,17 +7,12 @@ import android.app.Activity
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
 import android.view.inputmethod.EditorInfo
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
 import androidx.annotation.StringRes
 import androidx.lifecycle.*
-import kotlinx.android.synthetic.main.activity_register.*
 
 class RegisterActivity : AppCompatActivity(), LifecycleOwner {
 
@@ -26,18 +21,16 @@ class RegisterActivity : AppCompatActivity(), LifecycleOwner {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_register)
 
         lifecycle.markState(Lifecycle.State.INITIALIZED)
 
-        setContentView(R.layout.activity_login)
+        setContentView(R.layout.activity_register)
 
         val name = findViewById<EditText>(R.id.name)
-        val surname = findViewById<EditText>(R.id.surnname)
+        val surname = findViewById<EditText>(R.id.surname)
         val email = findViewById<EditText>(R.id.registerEmail)
         val password = findViewById<EditText>(R.id.registerPassword)
         val register = findViewById<Button>(R.id.register)
-        val loading = findViewById<ProgressBar>(R.id.loading)
 
 
         registerViewModel = ViewModelProviders.of(this, RegisterViewModelVactory())
@@ -62,7 +55,6 @@ class RegisterActivity : AppCompatActivity(), LifecycleOwner {
         registerViewModel.registerResult.observe(this@RegisterActivity, Observer {
             val registerResult = it ?: return@Observer
 
-            loading.visibility = View.GONE
             if (registerResult.error != null)
                 showRegisterFailed(registerResult.error)
             if (registerResult.success != null)
@@ -75,7 +67,7 @@ class RegisterActivity : AppCompatActivity(), LifecycleOwner {
         name.afterTextChanged {
             registerViewModel.registrationDataChanged(
                 name.text.toString(),
-                surnname.text.toString(),
+                surname.text.toString(),
                 email.text.toString(),
                 password.text.toString()
             )
@@ -83,7 +75,7 @@ class RegisterActivity : AppCompatActivity(), LifecycleOwner {
         surname.afterTextChanged {
             registerViewModel.registrationDataChanged(
                 name.text.toString(),
-                surnname.text.toString(),
+                surname.text.toString(),
                 email.text.toString(),
                 password.text.toString()
             )
@@ -91,7 +83,7 @@ class RegisterActivity : AppCompatActivity(), LifecycleOwner {
         email.afterTextChanged {
             registerViewModel.registrationDataChanged(
                 name.text.toString(),
-                surnname.text.toString(),
+                surname.text.toString(),
                 email.text.toString(),
                 password.text.toString()
             )
@@ -101,7 +93,7 @@ class RegisterActivity : AppCompatActivity(), LifecycleOwner {
             afterTextChanged {
                 registerViewModel.registrationDataChanged(
                     name.text.toString(),
-                    surnname.text.toString(),
+                    surname.text.toString(),
                     email.text.toString(),
                     password.text.toString()
                 )
@@ -112,7 +104,7 @@ class RegisterActivity : AppCompatActivity(), LifecycleOwner {
                 EditorInfo.IME_ACTION_DONE ->
                 registerViewModel.register(
                     name.text.toString(),
-                    surnname.text.toString(),
+                    surname.text.toString(),
                     email.text.toString(),
                     password.text.toString()
                 )
@@ -121,10 +113,9 @@ class RegisterActivity : AppCompatActivity(), LifecycleOwner {
             }
 
             register.setOnClickListener{
-                loading.visibility = View.VISIBLE
                 registerViewModel.register(
                     name.text.toString(),
-                    surnname.text.toString(),
+                    surname.text.toString(),
                     email.text.toString(),
                     password.text.toString())
                 val intent = Intent(context, LoginActivity::class.java)
@@ -137,7 +128,7 @@ class RegisterActivity : AppCompatActivity(), LifecycleOwner {
     }
 
     private fun updateUiWithUser(model: RegisteredUserView) {
-        val welcome = "Registered successfully - "
+        val welcome = "Registered successfully"
         val displayName = model.displayName
         Toast.makeText(
             applicationContext,

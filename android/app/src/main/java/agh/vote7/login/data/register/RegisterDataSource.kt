@@ -22,7 +22,7 @@ class RegisterDataSource {
 
     fun register(name: String, surname: String, email: String, password: String): Result<Any> {
         try {
-            PostRegister().execute().get()
+            PostRegister().execute(name, surname, email, password).get()
             return Result.Success(true)
         } catch (e: Throwable) {
             return Result.Error(IOException("Error during registering", e))
@@ -34,10 +34,10 @@ class RegisterDataSource {
         override fun doInBackground(vararg params: Any?) {
 
             val json = JSONObject()
-            json.put("name", "Adam")
-            json.put("email", "Kowalski")
-            json.put("email", "email@gmail.com")
-            json.put("password", "1234qwerty")
+            json.put("name", params[0])
+            json.put("surname", params[1])
+            json.put("email", params[2])
+            json.put("password", params[3])
 
             val body = RequestBody.create(JSON, json.toString())
             val request = Request.Builder()
