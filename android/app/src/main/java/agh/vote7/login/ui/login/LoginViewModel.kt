@@ -5,7 +5,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import android.util.Patterns
-import agh.vote7.login.data.LoginRepository
+import agh.vote7.login.data.login.LoginRepository
 import agh.vote7.login.data.Result
 
 
@@ -22,7 +22,8 @@ class LoginViewModel(private val loginRepository: LoginRepository) : ViewModel()
         val result = loginRepository.login(username, password)
 
         if (result is Result.Success) {
-            _loginResult.value = LoginResult(success = LoggedInUserView(displayName = result.data.name + " " + result.data.surname))
+            _loginResult.value =
+                LoginResult(success = LoggedInUserView(displayName = result.data.name + " " + result.data.surname))
 
         } else {
             _loginResult.value = LoginResult(error = R.string.login_failed)

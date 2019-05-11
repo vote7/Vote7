@@ -2,8 +2,8 @@ package agh.vote7.login.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import agh.vote7.login.data.LoginDataSource
-import agh.vote7.login.data.LoginRepository
+import agh.vote7.login.data.login.LoginDataSource
+import agh.vote7.login.data.login.LoginRepository
 
 /**
  * ViewModel provider factory to instantiate LoginViewModel.

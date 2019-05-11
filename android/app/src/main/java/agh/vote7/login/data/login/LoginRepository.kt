@@ -1,5 +1,6 @@
-package agh.vote7.login.data
+package agh.vote7.login.data.login
 
+import agh.vote7.login.data.Result
 import agh.vote7.login.data.model.LoggedInUser
 
 /**

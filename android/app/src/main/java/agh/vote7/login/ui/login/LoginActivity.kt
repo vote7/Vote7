@@ -28,8 +28,6 @@ class LoginActivity : AppCompatActivity(), LifecycleOwner {
 
         lifecycle.markState(Lifecycle.State.INITIALIZED)
 
-
-
         setContentView(R.layout.activity_login)
 
         val username = findViewById<EditText>(R.id.username)
