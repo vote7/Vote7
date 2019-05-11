@@ -4,6 +4,8 @@ import main.api.data.UserRequest;
 
 import javax.persistence.*;
 import java.sql.Date;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "USERS")
@@ -39,6 +41,11 @@ public class UserData {
     @Column
     private boolean active;
 
+    @ManyToMany(mappedBy = "members")
+    private Set<GroupData> groups = new HashSet<>();
+
+    @ManyToMany(mappedBy = "usersWhoAnswered")
+    private Set<AnswerData> userAnswers = new HashSet<>();
 
     public UserData(){}
 
@@ -119,5 +126,21 @@ public class UserData {
 
     public void setActive(boolean active) {
         this.active = active;
+    }
+
+    public Set<GroupData> getGroups() {
+        return groups;
+    }
+
+    public void setGroups(Set<GroupData> groups) {
+        this.groups = groups;
+    }
+
+    public Set<AnswerData> getUserAnswers() {
+        return userAnswers;
+    }
+
+    public void setUserAnswers(Set<AnswerData> userAnswers) {
+        this.userAnswers = userAnswers;
     }
 }
