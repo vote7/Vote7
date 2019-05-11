@@ -41,10 +41,10 @@ public class UserData {
     @Column
     private boolean active;
 
-    @ManyToMany(mappedBy = "members")
+    @ManyToMany(mappedBy = "members",fetch = FetchType.EAGER)
     private Set<GroupData> groups = new HashSet<>();
 
-    @ManyToMany(mappedBy = "usersWhoAnswered")
+    @ManyToMany(mappedBy = "usersWhoAnswered",fetch = FetchType.EAGER)
     private Set<AnswerData> userAnswers = new HashSet<>();
 
     public UserData(){}

@@ -30,25 +30,28 @@ public abstract  class AbstractRepository<DATA> {
     @Transactional
     @SuppressWarnings("unchecked")
     public DATA getItem(int id) throws ApplicationException {
-        Session session = sessionFactory.openSession();
-        DATA o = (DATA) session.get(data,id);
-        return o;
+        return (DATA) sessionFactory.getCurrentSession().get(data,id);
     }
 
     @Transactional
     @SuppressWarnings("unchecked")
     public List<DATA> getAllItems() throws ApplicationException{
-        Session session = sessionFactory.openSession();
-        List<DATA> o = (List<DATA>) session.createCriteria(data).list();
-        return o;
+        return  (List<DATA>) sessionFactory.getCurrentSession().createCriteria(data).list();
     }
 
     @Transactional
     public void createItem(DATA data) throws ApplicationException{
-        Session session = sessionFactory.getCurrentSession();
-        session.persist(data);
+        sessionFactory.getCurrentSession().persist(data);
     }
     
+    @Transactional
+    public void removeItem(DATA data) throws ApplicationException{
+        sessionFactory.getCurrentSession().delete(data);
+    }
 
+    @Transactional
+    public void removeItem(int id) throws ApplicationException{
+        sessionFactory.getCurrentSession().delete(getItem(id));
+    }
 }
 

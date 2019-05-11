@@ -48,7 +48,7 @@ public class PollData {
     @JoinColumn(name="GROUP_ID")
     private GroupData group;
 
-    @OneToMany(mappedBy = "poll")
+    @OneToMany(mappedBy = "poll",fetch = FetchType.EAGER)
     private Set<QuestionData> questions = new HashSet<>();
 
     public PollData() {

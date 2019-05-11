@@ -33,7 +33,7 @@ public class QuestionData {
     @JoinColumn(name="POLL_ID")
     private PollData poll;
 
-    @OneToMany(mappedBy = "question")
+    @OneToMany(mappedBy = "question",fetch = FetchType.EAGER)
     private Set<AnswerData> answers = new HashSet<>();
 
     public QuestionData() {}

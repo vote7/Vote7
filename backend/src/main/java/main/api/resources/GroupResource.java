@@ -5,7 +5,9 @@ import main.api.data.groups.GroupRequest;
 import main.api.data.groups.GroupResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ApplicationFilter;
+import main.database.dao.GroupRepository;
 import main.database.dao.UserRepository;
+import main.database.dto.GroupData;
 import main.database.dto.UserData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -26,10 +28,9 @@ public class GroupResource {
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    SimpleResponse create(@RequestBody GroupRequest request) throws ApplicationException {
+    void create(@RequestBody GroupRequest request) throws ApplicationException {
         GroupData data = new GroupData(request);
         groupRepository.createItem(data);
-        return new SimpleResponse(ApplicationFilter.generateToken(data.getId()));
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,14 +38,14 @@ public class GroupResource {
     List<GroupResponse> all() throws ApplicationException {
         List<GroupResponse> groups = new LinkedList<>();
         for(GroupData data : groupRepository.getAllItems())
-            group.add(new GroupResponse(data));
+            groups.add(new GroupResponse(data));
         return groups;
     }
 
     @RequestMapping(value = "", params = "id", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     SimpleResponse delete(@RequestParam("id") int id) throws ApplicationException {
-        groupRepository.deleteItem(id);
+        groupRepository.removeItem(id);
         String response = String.format("Group %d successfully deleted", id);
         return new SimpleResponse(response);
     }
@@ -61,7 +62,8 @@ public class GroupResource {
     SimpleResponse addUser(@PathVariable("gid") int gid, @PathVariable("uid") int uid) throws ApplicationException {
         UserData user = userRepository.getItem(uid);
         GroupData group = groupRepository.getItem(gid);
-        group.addItem(user);
+        group.addMember(user);
+        //TODO /\ na pewno działa?
         String response = String.format("User %d successfully added to group %d", uid, gid);
         return new SimpleResponse(response);
     }
@@ -71,7 +73,8 @@ public class GroupResource {
     SimpleResponse removeUser(@PathVariable("gid") int gid, @PathVariable("uid") int uid) throws ApplicationException {
         UserData user = userRepository.getItem(uid);
         GroupData group = groupRepository.getItem(gid);
-        group.deleteItem(user);
+        group.removeMember(user);
+        //TODO /\ na pewno działa?
         String response = String.format("User %d successfully removed from group %d", uid, gid);
         return new SimpleResponse(response);
     }

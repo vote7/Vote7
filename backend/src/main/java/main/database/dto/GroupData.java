@@ -1,6 +1,8 @@
 package main.database.dto;
 
 
+import main.api.data.groups.GroupRequest;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.HashSet;
@@ -31,18 +33,21 @@ public class GroupData {
     @JoinColumn(name="ADMIN_ID")
     private UserData admin;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="GROUP_MEMBERS",
             joinColumns = { @JoinColumn(name = "group_id") },
             inverseJoinColumns = { @JoinColumn(name = "user_id")})
     private Set<UserData> members = new HashSet<>();
 
-    @OneToMany(mappedBy = "group")
+    @OneToMany(mappedBy = "group",fetch = FetchType.EAGER)
     private Set<PollData> polls = new HashSet<>();
 
-    public GroupData() {
+    public GroupData() {}
 
+    public GroupData(GroupRequest request){
+        this.name = request.getName();
+        this.description = request.getDescription();
     }
 
     public int getId() {
