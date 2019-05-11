@@ -53,7 +53,6 @@ public class GroupResource {
     @RequestMapping(value = "{id}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     GroupResponse get(@PathVariable("id") int id) throws ApplicationException {
-        groupRepository.getItem(id);
         return new GroupResponse(groupRepository.getItem(id));
     }
 
@@ -62,6 +61,10 @@ public class GroupResource {
     SimpleResponse addUser(@PathVariable("gid") int gid, @PathVariable("uid") int uid) throws ApplicationException {
         UserData user = userRepository.getItem(uid);
         GroupData group = groupRepository.getItem(gid);
+        if(group.getMembers().contains(user)){
+            String response = String.format("User %d already in group %d", uid, gid);
+            return new SimpleResponse(response);
+        }
         group.addMember(user);
         groupRepository.modifyItem(group);
         String response = String.format("User %d successfully added to group %d", uid, gid);
@@ -73,6 +76,10 @@ public class GroupResource {
     SimpleResponse removeUser(@PathVariable("gid") int gid, @PathVariable("uid") int uid) throws ApplicationException {
         UserData user = userRepository.getItem(uid);
         GroupData group = groupRepository.getItem(gid);
+        if(!group.getMembers().contains(user)){
+            String response = String.format("User %d is not in group %d", uid, gid);
+            return new SimpleResponse(response);
+        }
         group.removeMember(user);
         groupRepository.modifyItem(group);
         String response = String.format("User %d successfully removed from group %d", uid, gid);
