@@ -11,11 +11,9 @@ class App extends Component {
 
   render() {
     return (
-      <body>
-        <div>
-          <AppRouter logged={this.state.logged} login={() => {this.updateState({logged: true})}}/>
-        </div>
-      </body>
+      <div>
+        <AppRouter logged={this.state.logged} login={() => {this.setState({logged: true})}}/>
+      </div>
     );
   }
 }

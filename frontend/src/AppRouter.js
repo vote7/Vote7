@@ -3,19 +3,19 @@ import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom
 import "./AppRouter.css"
 import {home, about, users} from './Mocks'
 import {Login} from './Login'
+import history from './history';
 
 class AppRouter extends Component {
 
     constructor(props) {
         super(props);
-        this.logged = props.logged;
         this.state = {}
     }
 
     render() {
         return (
             <div className="navigation-container">
-                <Router>
+                <Router history={history}>
                     <div className="main-conainer">
                         
                         <button className="nav-btn">
@@ -30,9 +30,9 @@ class AppRouter extends Component {
                     </div>
                     <div className="content-container">
                         <Route path="/" exact render={(props) => (
-                            this.logged === true 
+                            this.props.logged === true 
                             ? home
-                            : <Redirect to='/login/'/>
+                            : <Login history={history} login={this.props.login}/>
                         )} /> 
                         <Route path="/about/" component={about} />
                         <Route path="/users/" component={users} />
