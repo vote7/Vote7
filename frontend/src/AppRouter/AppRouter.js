@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
 import "./AppRouter.css"
 import {home, about, users} from './Mocks'
-import {Login} from './Login'
+import {Login} from '../Login/Login'
 import history from './history';
 
 class AppRouter extends Component {
