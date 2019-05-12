@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom
 import "./AppRouter.css"
 import {home, about, users} from './Mocks'
 import {Login} from '../Login/Login'
+import {Register} from '../Register/Register'
 import history from './history';
 
 class AppRouter extends Component {
@@ -27,6 +28,19 @@ class AppRouter extends Component {
                         <button className="nav-btn">
                             <Link to="/users/"> users </Link>
                         </button>
+                        {this.props.logged === false ? 
+                            <button className="nav-btn">
+                                <Link to="/login/"> Login </Link>
+                            </button>
+                            : <h/>
+                        }
+                        {this.props.logged === false ? 
+                            <button className="nav-btn">
+                                <Link to="/register/"> Register </Link>
+                            </button>
+                            : <h/>
+                        }
+                        
                     </div>
                     <div className="content-container">
                         <Route path="/" exact render={(props) => (
@@ -37,6 +51,7 @@ class AppRouter extends Component {
                         <Route path="/about/" component={about} />
                         <Route path="/users/" component={users} />
                         <Route path="/login/" render={(props) => <Login login={this.props.login}/>} />
+                        <Route path="/register/" render={(props) => <Register />} />
                     </div>
                 </Router>
             </div>
