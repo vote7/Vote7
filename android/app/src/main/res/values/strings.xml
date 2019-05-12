@@ -5,4 +5,6 @@
     <string name="title_profile">Profile</string>
     <string name="title_activity_voting">Voting</string>
     <string name="button_log_out">Log out</string>
+    <string name="label_email">Email</string>
+    <string name="label_groups">Groups</string>
 </resources>
