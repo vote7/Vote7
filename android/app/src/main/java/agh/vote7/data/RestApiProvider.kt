@@ -11,10 +11,10 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
-private const val BASE_URL = "http://vote7.serveo.net/"
+private const val BASE_URL = "https://vote7.example.com/" // TODO(pjanczyk): use real URL
 
 object RestApiProvider {
-    var token: String? = "1>aUdtfsDmiD8WvGetI5yv"
+    var token: String? = null
     val restApi: RestApi by lazy { restApi() }
 
     private fun restApi(): RestApi =
