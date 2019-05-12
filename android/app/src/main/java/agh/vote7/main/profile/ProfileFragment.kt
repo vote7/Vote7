@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.isInvisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
@@ -26,16 +27,26 @@ class ProfileFragment : Fragment() {
         super.onActivityCreated(savedInstanceState)
         viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
 
-        viewModel.email.observe(this, Observer {
+        viewModel.name.observe(this, Observer {
             textViewName.text = it
         })
 
-        viewModel.name.observe(this, Observer {
+        viewModel.email.observe(this, Observer {
             textViewEmail.text = it
+        })
+
+        viewModel.groupNames.observe(this, Observer { groups ->
+            textViewGroups.text = groups.joinToString(separator = ", ")
+                .takeIf { it.isNotEmpty() }
+                ?: "(no groups)"
         })
 
         viewModel.snackbar.observe(this, Observer {
             Snackbar.make(view!!, it, Snackbar.LENGTH_SHORT).show()
+        })
+
+        viewModel.loading.observe(this, Observer { loading ->
+            view!!.isInvisible = loading
         })
 
         buttonLogOut.setOnClickListener {
