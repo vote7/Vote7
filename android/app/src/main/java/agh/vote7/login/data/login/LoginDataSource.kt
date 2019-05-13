@@ -1,6 +1,7 @@
 package agh.vote7.login.data.login
 
-import agh.vote7.MainApplication
+import agh.vote7.VoteApplication
+import agh.vote7.data.BASE_URL
 import agh.vote7.login.data.Result
 import agh.vote7.login.data.model.LoggedInUser
 import android.annotation.SuppressLint
@@ -17,9 +18,9 @@ import java.io.IOException
 class LoginDataSource {
     private val client = OkHttpClient()
     val gson = Gson()
-    private val loginUrl = "http://192.168.1.17:8080/users/login"
-    private val getUserDataUrl = "http://192.168.1.17:8080/users/me"
-    private val logoutUrl = "http://192.168.1.17:8080/users/logout"
+    private val loginUrl = BASE_URL + "users/login"
+    private val getUserDataUrl = BASE_URL + "users/me"
+    private val logoutUrl = BASE_URL + "users/logout"
     private val JSON = MediaType.parse("application/json; charset=utf-8")
     private var token : String? = null
     private var user : LoggedInUser? = null
@@ -32,7 +33,7 @@ class LoginDataSource {
             if (fail)
                 throw Throwable()
 
-            MainApplication.token = this.token!!
+            VoteApplication.token = this.token!!
             return Result.Success(user!!)
         } catch (e: Throwable) {
             Log.e("dbg", "logging error")
@@ -99,7 +100,7 @@ class LoginDataSource {
         override fun doInBackground(vararg params: Any?){
 
             val request = Request.Builder()
-                .url("$logoutUrl?token=${MainApplication.token}")
+                .url("$logoutUrl?token=${VoteApplication.token}")
                 .get()
                 .build()
 

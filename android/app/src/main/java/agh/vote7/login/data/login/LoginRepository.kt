@@ -1,6 +1,6 @@
 package agh.vote7.login.data.login
 
-import agh.vote7.MainApplication
+import agh.vote7.VoteApplication
 import agh.vote7.login.data.Result
 import agh.vote7.login.data.model.LoggedInUser
 
@@ -40,6 +40,6 @@ class LoginRepository(val dataSource: LoginDataSource) {
 
     private fun setLoggedInUser(loggedInUser: LoggedInUser) {
         this.user = loggedInUser
-        MainApplication.loggedInUser = loggedInUser
+        VoteApplication.loggedInUser = loggedInUser
     }
 }

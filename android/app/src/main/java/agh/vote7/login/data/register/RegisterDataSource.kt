@@ -1,5 +1,6 @@
 package agh.vote7.login.data.register
 
+import agh.vote7.data.BASE_URL
 import agh.vote7.login.data.Result
 import agh.vote7.login.data.model.LoggedInUser
 import android.annotation.SuppressLint
@@ -16,7 +17,7 @@ import java.io.IOException
 class RegisterDataSource {
     private val client = OkHttpClient()
     val gson = Gson()
-    private val registerUrl = "http://192.168.1.17:8080/users/register"
+    private val registerUrl = BASE_URL + "users/register"
     private val JSON = MediaType.parse("application/json; charset=utf-8")
     private var token : String? = null
 

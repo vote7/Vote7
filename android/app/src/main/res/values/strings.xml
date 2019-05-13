@@ -18,4 +18,7 @@
     <string name="surname">Surname</string>
     <string name="name">Name</string>
     <string name="registerButton">Register</string>
+    <string name="button_log_out">Log out</string>
+    <string name="label_email">Email</string>
+    <string name="label_groups">Groups</string>
 </resources>
