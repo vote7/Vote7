@@ -2,6 +2,8 @@ package agh.vote7.main.profile
 
 import agh.vote7.data.RestApi
 import agh.vote7.data.RestApiProvider
+import agh.vote7.login.data.login.LoginDataSource
+import agh.vote7.utils.Event
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -16,6 +18,7 @@ class ProfileViewModel : ViewModel() {
     val email = MutableLiveData<String>()
     val groupNames = MutableLiveData<List<String>>()
     val snackbar = MutableLiveData<String>()
+    val navigateToLoginView = MutableLiveData<Event<Unit>>()
 
     init {
         viewModelScope.launch {
@@ -24,7 +27,8 @@ class ProfileViewModel : ViewModel() {
     }
 
     fun onLogOutClicked() {
-        // TODO(pjanczyk): implement logout
+        LoginDataSource.logout()
+        navigateToLoginView.value = Event(Unit)
     }
 
     private suspend fun loadCurrentUser() {

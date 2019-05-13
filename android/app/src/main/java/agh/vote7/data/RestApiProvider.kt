@@ -1,6 +1,7 @@
 package agh.vote7.data
 
 import agh.vote7.BuildConfig
+import agh.vote7.VoteApplication
 import com.ihsanbal.logging.Level
 import com.ihsanbal.logging.LoggingInterceptor
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -11,10 +12,9 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
-private const val BASE_URL = "https://vote7.example.com/" // TODO(pjanczyk): use real URL
+const val BASE_URL = "https://vote7.example.com/" // TODO(pjanczyk): use real URL
 
 object RestApiProvider {
-    var token: String? = null
     val restApi: RestApi by lazy { restApi() }
 
     private fun restApi(): RestApi =
@@ -40,7 +40,7 @@ object RestApiProvider {
             val request = chain.request()
 
             val urlBuilder = request.url().newBuilder()
-            token?.let {
+            VoteApplication.token?.let {
                 urlBuilder.addQueryParameter("token", it)
             }
             val modifiedUrl = urlBuilder.build()

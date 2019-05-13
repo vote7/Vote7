@@ -1,6 +1,9 @@
 package agh.vote7.main.profile
 
 import agh.vote7.R
+import agh.vote7.login.ui.login.LoginActivity
+import agh.vote7.utils.observeEvent
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -47,6 +50,10 @@ class ProfileFragment : Fragment() {
 
         viewModel.loading.observe(this, Observer { loading ->
             view!!.isInvisible = loading
+        })
+
+        viewModel.navigateToLoginView.observeEvent(this, Observer {
+            startActivity(Intent(context, LoginActivity::class.java))
         })
 
         buttonLogOut.setOnClickListener {
