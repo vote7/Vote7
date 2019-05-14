@@ -23,15 +23,12 @@ export class Login extends Component {
             alert("Login or password is empty")
         } else {
             this.props.login()
+            this.props.history.push("/home/")
         }
         
     }
 
     render() {
-        const login = () => {
-            this.props.login()
-            this.props.history.push("/home/")
-        }
         return (
             <div className="login-container">
                 <div className="login-text"><h1>Login</h1></div>

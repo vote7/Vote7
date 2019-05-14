@@ -52,7 +52,7 @@ class AppRouter extends Component {
                         )} /> 
                         <Route path="/about/" component={about} />
                         <Route path="/users/" component={users} />
-                        <Route path="/login/" render={(props) => <Login login={this.props.login}/>} />
+                        <Route path="/login/" history={history} login={this.props.login} render={(props) => <Login login={this.props.login}/>} />
                         <Route path="/register/" render={(props) => <Register />} />
                     </div>
                 </Router>
