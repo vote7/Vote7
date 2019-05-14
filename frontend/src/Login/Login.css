@@ -1,3 +1,32 @@
 .login-container {
-    
+    width: 40%;
+    justify-self: center;
+    background-color: rgb(209, 214, 193); 
+    margin: auto;
+    border: 1px;
+    border-color: aquamarine;
+    border-collapse: collapse;
+    border-radius: 8px;
+    align-content: center;
+}
+
+.login-container .login-text {
+    width: 20%;
+    margin: auto;
+}
+
+.login-container .text-field {
+    width: 60%;
+    margin: auto;
+}
+
+.login-container .login-btn {
+    width: 20%;
+    margin: auto;
+    padding-bottom: 5px;
+}
+
+.login-container .login-btn button {
+    width: 100%;
+    margin: auto;
 }

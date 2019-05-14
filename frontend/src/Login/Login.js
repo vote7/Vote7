@@ -5,6 +5,28 @@ import M from 'materialize-css/dist/js/materialize.min.js'
 
 export class Login extends Component {
 
+    constructor(props) {
+        super(props)
+        this.state = {login: "", password: ""}
+    }
+
+    updateLogin(newLogin) {
+        this.setState({login: newLogin})
+    }
+
+    updatePassword(newPassword) {
+        this.setState({password: newPassword})
+    }
+
+    tryLogin() {
+        if(this.state.login == "" || this.state.password == "") {
+            alert("Login or password is empty")
+        } else {
+            this.props.login()
+        }
+        
+    }
+
     render() {
         const login = () => {
             this.props.login()
@@ -12,8 +34,16 @@ export class Login extends Component {
         }
         return (
             <div className="login-container">
-                Login:
-                <button onClick={login}> Login </button>
+                <div className="login-text"><h1>Login</h1></div>
+                <div className="text-field">
+                    Login:
+                    <input onChange={(event) => this.updateLogin(event.target.value)} type="text" name="Login"></input>
+                </div>
+                <div className="text-field">
+                    Password:
+                    <input onChange={(event) => this.updatePassword(event.target.value)} type="text" name="Password"></input>
+                </div>
+                <div className="login-btn"><button onClick={() => this.tryLogin()}> Login </button></div>
             </div>
         );
     }
