@@ -13,9 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
-        tools:ignore="GoogleAppIndexingWarning">
+        tools:ignore="GoogleAppIndexingWarning"
+        tools:targetApi="m">
 
-        <activity android:name=".login.ui.register.RegisterActivity" />
+        <activity
+            android:name=".login.ui.register.RegisterActivity"
+            android:label="@string/title_activity_register" />
 
         <activity
             android:name=".login.ui.login.LoginActivity"

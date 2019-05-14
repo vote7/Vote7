@@ -3,135 +3,87 @@ package agh.vote7.login.ui.login
 import agh.vote7.R
 import agh.vote7.login.ui.register.RegisterActivity
 import agh.vote7.main.MainActivity
-import android.app.Activity
+import agh.vote7.utils.DependencyProvider
+import agh.vote7.utils.observeEvent
+import agh.vote7.utils.viewModelProviderFactory
 import android.content.Intent
 import android.os.Bundle
-import androidx.annotation.StringRes
-import androidx.appcompat.app.AppCompatActivity
 import android.text.Editable
 import android.text.TextWatcher
-import android.view.View
 import android.view.inputmethod.EditorInfo
-import android.widget.Button
 import android.widget.EditText
-import android.widget.ProgressBar
 import android.widget.Toast
-import androidx.lifecycle.*
+import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModelProviders
+import kotlinx.android.synthetic.main.activity_login.*
 
-class LoginActivity : AppCompatActivity(), LifecycleOwner {
+class LoginActivity : AppCompatActivity() {
 
     private lateinit var loginViewModel: LoginViewModel
-    private var lifecycle: LifecycleRegistry = LifecycleRegistry(this)
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        lifecycle.markState(Lifecycle.State.INITIALIZED)
-
         setContentView(R.layout.activity_login)
 
-        val username = findViewById<EditText>(R.id.username)
-        val password = findViewById<EditText>(R.id.password)
-        val login = findViewById<Button>(R.id.login)
-        val register = findViewById<Button>(R.id.goToRegister)
-        val loading = findViewById<ProgressBar>(R.id.loading)
-
-        loginViewModel = ViewModelProviders.of(this, LoginViewModelFactory())
+        loginViewModel = ViewModelProviders.of(this, viewModelProviderFactory(DependencyProvider::loginViewModel))
             .get(LoginViewModel::class.java)
 
-        loginViewModel.loginFormState.observe(this@LoginActivity, Observer {
+        loginViewModel.loginFormState.observe(this, Observer {
             val loginState = it ?: return@Observer
 
             // disable login button unless both username / password is valid
             login.isEnabled = loginState.isDataValid
 
-            if (loginState.usernameError != null) {
-                username.error = getString(loginState.usernameError)
-            }
-            if (loginState.passwordError != null) {
-                password.error = getString(loginState.passwordError)
-            }
+            username.error = loginState.usernameError?.let(::getString)
+            password.error = loginState.passwordError?.let(::getString)
         })
 
-        loginViewModel.loginResult.observe(this@LoginActivity, Observer {
-            val loginResult = it ?: return@Observer
-
-            loading.visibility = View.GONE
-            if (loginResult.error != null) {
-                showLoginFailed(loginResult.error)
-            }
-            if (loginResult.success != null) {
-                updateUiWithUser(loginResult.success)
-                setResult(Activity.RESULT_OK)
-                finish()
-            }
-
+        loginViewModel.loadingVisible.observe(this, Observer {
+            loading.isVisible = it
         })
 
-        username.afterTextChanged {
-            loginViewModel.loginDataChanged(
-                username.text.toString(),
-                password.text.toString()
-            )
+        loginViewModel.showToast.observeEvent(this, Observer {
+            Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+        })
+
+        loginViewModel.navigateToRegisterView.observe(this, Observer {
+            startActivity(Intent(this, RegisterActivity::class.java))
+        })
+
+        loginViewModel.navigateToMainView.observe(this, Observer {
+            startActivity(Intent(this, MainActivity::class.java))
+            finish()
+        })
+
+        username.afterTextChanged { loginDataChanged() }
+        password.afterTextChanged { loginDataChanged() }
+
+        password.setOnEditorActionListener { _, actionId, _ ->
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                login()
+            }
+            false
         }
 
-        password.apply {
-            afterTextChanged {
-                loginViewModel.loginDataChanged(
-                    username.text.toString(),
-                    password.text.toString()
-                )
-            }
+        login.setOnClickListener { login() }
 
-            setOnEditorActionListener { _, actionId, _ ->
-                when (actionId) {
-                    EditorInfo.IME_ACTION_DONE ->
-                        loginViewModel.login(
-                            username.text.toString(),
-                            password.text.toString()
-                        )
-                }
-                false
-            }
-
-            login.setOnClickListener {
-                loading.visibility = View.VISIBLE
-                if (loginViewModel.login(username.text.toString(), password.text.toString())){
-                    val intent = Intent(context, MainActivity::class.java)
-                    startActivity(intent)
-                    finish()
-                }
-            }
-
-            register.setOnClickListener{
-                startActivity(Intent(context, RegisterActivity::class.java))
-            }
-        }
-
-        lifecycle.markState(Lifecycle.State.CREATED)
-        lifecycle.markState(Lifecycle.State.STARTED)
-
-
+        goToRegister.setOnClickListener { loginViewModel.onRegisterClicked() }
     }
 
-    private fun updateUiWithUser(model: LoggedInUserView) {
-        val welcome = getString(R.string.welcome)
-        val displayName = model.displayName
-        // TODO : initiate successful logged in experience
-        Toast.makeText(
-            applicationContext,
-            "$welcome $displayName",
-            Toast.LENGTH_LONG
-        ).show()
+    private fun loginDataChanged() {
+        loginViewModel.loginDataChanged(
+            username.text.toString(),
+            password.text.toString()
+        )
     }
 
-    private fun showLoginFailed(@StringRes errorString: Int) {
-        Toast.makeText(applicationContext, errorString, Toast.LENGTH_SHORT).show()
-    }
-
-    override fun getLifecycle(): Lifecycle {
-        return lifecycle
+    private fun login() {
+        loginViewModel.login(
+            username.text.toString(),
+            password.text.toString()
+        )
     }
 }
 

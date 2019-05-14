@@ -2,7 +2,9 @@ package agh.vote7.main.profile
 
 import agh.vote7.R
 import agh.vote7.login.ui.login.LoginActivity
+import agh.vote7.utils.DependencyProvider
 import agh.vote7.utils.observeEvent
+import agh.vote7.utils.viewModelProviderFactory
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -28,7 +30,8 @@ class ProfileFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this).get(ProfileViewModel::class.java)
+        viewModel = ViewModelProviders.of(this, viewModelProviderFactory(DependencyProvider::profileViewModel))
+            .get(ProfileViewModel::class.java)
 
         viewModel.name.observe(this, Observer {
             textViewName.text = it
@@ -44,7 +47,7 @@ class ProfileFragment : Fragment() {
                 ?: "(no groups)"
         })
 
-        viewModel.snackbar.observe(this, Observer {
+        viewModel.showSnackbar.observeEvent(this, Observer {
             Snackbar.make(view!!, it, Snackbar.LENGTH_SHORT).show()
         })
 
@@ -53,7 +56,8 @@ class ProfileFragment : Fragment() {
         })
 
         viewModel.navigateToLoginView.observeEvent(this, Observer {
-            startActivity(Intent(context, LoginActivity::class.java))
+            startActivity(Intent(activity, LoginActivity::class.java))
+            activity?.finish()
         })
 
         buttonLogOut.setOnClickListener {
