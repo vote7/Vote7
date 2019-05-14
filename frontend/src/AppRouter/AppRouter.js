@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
-import "./AppRouter.css"
 import {home, about, users} from './Mocks'
 import {Login} from '../Login/Login'
 import {Register} from '../Register/Register'
 import history from './history';
 import 'materialize-css/dist/css/materialize.min.css'
+import "./AppRouter.css"
 import M from 'materialize-css/dist/js/materialize.min.js'
 
 class AppRouter extends Component {
@@ -17,34 +17,34 @@ class AppRouter extends Component {
 
     render() {
         return (
-            <div className="navigation-container">
+            <div class="main-container">
                 <Router history={history}>
-                    <div className="main-conainer">
+                    <div class="navigation-container">
                         
-                        <button className="nav-btn">
+                        <button class="nav-btn">
                             <Link to="/"> Home </Link>
                         </button>
-                        <button className="nav-btn">
+                        <button class="nav-btn">
                             <Link to="/about/"> about </Link>
                         </button>
-                        <button className="nav-btn">
+                        <button class="nav-btn">
                             <Link to="/users/"> users </Link>
                         </button>
                         {this.props.logged === false ? 
-                            <button className="nav-btn">
+                            <button class="nav-btn">
                                 <Link to="/login/"> Login </Link>
                             </button>
                             : <h/>
                         }
                         {this.props.logged === false ? 
-                            <button className="nav-btn">
+                            <button class="nav-btn">
                                 <Link to="/register/"> Register </Link>
                             </button>
                             : <h/>
                         }
                         
                     </div>
-                    <div className="content-container">
+                    <div class="content-container">
                         <Route path="/" exact render={(props) => (
                             this.props.logged === true 
                             ? home
