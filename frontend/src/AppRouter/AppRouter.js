@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter as Router, Route, Link, Redirect } from "react-router-dom";
+import { Router, Route, Link, Redirect } from "react-router-dom";
 import {home, about, users} from './Mocks'
 import {Login} from '../Login/Login'
 import {Register} from '../Register/Register'
@@ -21,23 +21,23 @@ class AppRouter extends Component {
                 <Router history={history}>
                     <div class="navigation-container">
                         
-                        <button class="nav-btn">
+                        <button class="nav-btn" onClick={() => history.push("/")}>
                             <Link to="/"> Home </Link>
                         </button>
-                        <button class="nav-btn">
+                        <button class="nav-btn" onClick={() => history.push("/about/")}>
                             <Link to="/about/"> about </Link>
                         </button>
-                        <button class="nav-btn">
+                        <button class="nav-btn" onClick={() => history.push("/users/")}>
                             <Link to="/users/"> users </Link>
                         </button>
                         {this.props.logged === false ? 
-                            <button class="nav-btn">
+                            <button class="nav-btn" onClick={() => history.push("/login/")}>
                                 <Link to="/login/"> Login </Link>
                             </button>
                             : <h/>
                         }
                         {this.props.logged === false ? 
-                            <button class="nav-btn">
+                            <button class="nav-btn" onClick={() => history.push("/register/")}>
                                 <Link to="/register/"> Register </Link>
                             </button>
                             : <h/>
