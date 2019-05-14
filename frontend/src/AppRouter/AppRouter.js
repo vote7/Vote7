@@ -5,6 +5,8 @@ import {home, about, users} from './Mocks'
 import {Login} from '../Login/Login'
 import {Register} from '../Register/Register'
 import history from './history';
+import 'materialize-css/dist/css/materialize.min.css'
+import M from 'materialize-css/dist/js/materialize.min.js'
 
 class AppRouter extends Component {
 

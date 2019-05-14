@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
 import AppRouter  from './AppRouter/AppRouter';
+import 'materialize-css/dist/css/materialize.min.css'
+import M from 'materialize-css/dist/js/materialize.min.js'
 
 class App extends Component {
   constructor(props) {
