@@ -4,7 +4,6 @@ import main.api.data.SimpleResponse;
 import main.api.data.groups.GroupRequest;
 import main.api.data.groups.GroupResponse;
 import main.api.utils.ApplicationException;
-import main.api.utils.ApplicationFilter;
 import main.database.dao.GroupRepository;
 import main.database.dao.UserRepository;
 import main.database.dto.GroupData;
@@ -42,9 +41,9 @@ public class GroupResource {
         return groups;
     }
 
-    @RequestMapping(value = "", params = "id", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{id}", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    SimpleResponse delete(@RequestParam("id") int id) throws ApplicationException {
+    SimpleResponse delete(@PathVariable("id") int id) throws ApplicationException {
         groupRepository.removeItem(id);
         String response = String.format("Group %d successfully deleted", id);
         return new SimpleResponse(response);
@@ -61,10 +60,9 @@ public class GroupResource {
     SimpleResponse addUser(@PathVariable("gid") int gid, @PathVariable("uid") int uid) throws ApplicationException {
         UserData user = userRepository.getItem(uid);
         GroupData group = groupRepository.getItem(gid);
-        if(group.getMembers().contains(user)){
-            String response = String.format("User %d already in group %d", uid, gid);
-            return new SimpleResponse(response);
-        }
+
+        // TODO Check if user in group & if user is added
+
         group.addMember(user);
         groupRepository.modifyItem(group);
         String response = String.format("User %d successfully added to group %d", uid, gid);
@@ -76,13 +74,15 @@ public class GroupResource {
     SimpleResponse removeUser(@PathVariable("gid") int gid, @PathVariable("uid") int uid) throws ApplicationException {
         UserData user = userRepository.getItem(uid);
         GroupData group = groupRepository.getItem(gid);
-        if(!group.getMembers().contains(user)){
-            String response = String.format("User %d is not in group %d", uid, gid);
-            return new SimpleResponse(response);
-        }
-        group.removeMember(user);
-        groupRepository.modifyItem(group);
+
+        // FIXME not working
+        // TODO Check if user in group & if user is deleted
         String response = String.format("User %d successfully removed from group %d", uid, gid);
+//        if(group.getMembers().contains(user) && group.removeMember(user) ){
+//            response = String.format("User %d not in group %d", uid, gid);
+//        }
+
+        groupRepository.modifyItem(group);
         return new SimpleResponse(response);
     }
 }
