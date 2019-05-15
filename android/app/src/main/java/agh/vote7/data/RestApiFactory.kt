@@ -1,7 +1,6 @@
 package agh.vote7.data
 
 import agh.vote7.BuildConfig
-import agh.vote7.VoteApplication
 import com.ihsanbal.logging.Level
 import com.ihsanbal.logging.LoggingInterceptor
 import com.jakewharton.retrofit2.adapter.kotlin.coroutines.CoroutineCallAdapterFactory
@@ -14,10 +13,10 @@ import retrofit2.create
 
 const val BASE_URL = "https://vote7.example.com/" // TODO(pjanczyk): use real URL
 
-object RestApiProvider {
-    val restApi: RestApi by lazy { restApi() }
-
-    private fun restApi(): RestApi =
+class RestApiFactory(
+    private val tokenRepository: TokenRepository
+) {
+    fun restApi(): RestApi =
         retrofit()
             .create()
 
@@ -40,7 +39,7 @@ object RestApiProvider {
             val request = chain.request()
 
             val urlBuilder = request.url().newBuilder()
-            VoteApplication.token?.let {
+            tokenRepository.token?.let {
                 urlBuilder.addQueryParameter("token", it)
             }
             val modifiedUrl = urlBuilder.build()

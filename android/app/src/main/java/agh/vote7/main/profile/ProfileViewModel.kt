@@ -1,8 +1,7 @@
 package agh.vote7.main.profile
 
 import agh.vote7.data.RestApi
-import agh.vote7.data.RestApiProvider
-import agh.vote7.login.data.login.LoginDataSource
+import agh.vote7.login.data.login.LoginService
 import agh.vote7.utils.Event
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -10,14 +9,16 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class ProfileViewModel : ViewModel() {
-    private val restApi: RestApi = RestApiProvider.restApi
+class ProfileViewModel(
+    private val loginService: LoginService,
+    private val restApi: RestApi
+) : ViewModel() {
 
     val loading = MutableLiveData<Boolean>(true)
     val name = MutableLiveData<String>()
     val email = MutableLiveData<String>()
     val groupNames = MutableLiveData<List<String>>()
-    val snackbar = MutableLiveData<String>()
+    val showSnackbar = MutableLiveData<Event<String>>()
     val navigateToLoginView = MutableLiveData<Event<Unit>>()
 
     init {
@@ -26,8 +27,8 @@ class ProfileViewModel : ViewModel() {
         }
     }
 
-    fun onLogOutClicked() {
-        LoginDataSource.logout()
+    fun onLogOutClicked() = viewModelScope.launch {
+        loginService.logout()
         navigateToLoginView.value = Event(Unit)
     }
 
@@ -44,7 +45,7 @@ class ProfileViewModel : ViewModel() {
             loading.value = false
         } catch (e: Exception) {
             Timber.e(e, "Failed to load user profile")
-            snackbar.value = "Failed to load user profile"
+            showSnackbar.value = Event("Failed to load user profile")
         }
     }
 }
