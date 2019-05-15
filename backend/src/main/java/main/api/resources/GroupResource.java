@@ -4,6 +4,7 @@ import main.api.data.SimpleResponse;
 import main.api.data.groups.GroupRequest;
 import main.api.data.groups.GroupResponse;
 import main.api.utils.ApplicationException;
+import main.api.utils.ExceptionCode;
 import main.database.dao.GroupRepository;
 import main.database.dao.UserRepository;
 import main.database.dto.GroupData;
@@ -61,7 +62,8 @@ public class GroupResource {
         UserData user = userRepository.getItem(uid);
         GroupData group = groupRepository.getItem(gid);
 
-        // TODO Check if user in group & if user is added
+        if(false) //TODO warunek czy uzytkonwnik juz jest dodany do grupy
+            throw new ApplicationException(ExceptionCode.USER_EXISTING);
 
         group.addMember(user);
         groupRepository.modifyItem(group);
@@ -78,9 +80,9 @@ public class GroupResource {
         // FIXME not working
         // TODO Check if user in group & if user is deleted
         String response = String.format("User %d successfully removed from group %d", uid, gid);
-//        if(group.getMembers().contains(user) && group.removeMember(user) ){
-//            response = String.format("User %d not in group %d", uid, gid);
-//        }
+        if(group.getMembers().contains(user) && group.removeMember(user) ){
+            throw new ApplicationException(ExceptionCode.USER_NOT_FOUND,uid);
+        }
 
         groupRepository.modifyItem(group);
         return new SimpleResponse(response);

@@ -7,7 +7,9 @@ public enum ExceptionCode {
      */
     USER_ALREADY_REGISTERED("User with email {0} has been already registered"),
     BAD_CREDENTIALS("Bad login or bad password"),
-    USER_NOT_LOGGED("User is not logged in")
+    USER_NOT_LOGGED("User is not logged in"),
+    USER_EXISTING("User is already in this group"),
+    USER_NOT_FOUND("Cannot find user by id: {0}")
     ;
 
     private String message;
