@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTimes } from "@fortawesome/free-solid-svg-icons";
 import {
-  arrayMove,
   SortableContainer,
   SortableElement,
   SortableHandle,
 } from "react-sortable-hoc";
 import { faGripLines } from "@fortawesome/free-solid-svg-icons/faGripLines";
 import ApiMocks from "../../api/ApiMocks";
+import arrayMove from "array-move";
 
 const DragHandle = SortableHandle(() => (
   <span className="btn btn-link" style={{ cursor: "ns-resize" }}>
@@ -26,6 +26,9 @@ const Question = ({ question, questionIndex }) => (
             {questionIndex + 1}. {question.content}
           </div>
           <button className="ml-auto btn btn-sm btn-link">
+            <FontAwesomeIcon icon={faEdit} />
+          </button>
+          <button className="btn btn-sm btn-link">
             <FontAwesomeIcon icon={faTimes} />
           </button>
         </div>
@@ -34,8 +37,8 @@ const Question = ({ question, questionIndex }) => (
         </div>
         {!question.open && (
           <ul className="mt-3 mb-0">
-            {question.answers.map(answer => (
-              <li>{answer}</li>
+            {question.answers.map((answer, answerIndex) => (
+              <li key={answerIndex}>{answer}</li>
             ))}
           </ul>
         )}
@@ -92,6 +95,9 @@ const PollDetails = ({ pollId }) => {
     <>
       <div className="d-flex align-items-center mt-5 mb-3">
         <h1 className="m-0">{poll.name}</h1>
+        <button className="ml-2 btn btn-link">
+          <FontAwesomeIcon icon={faEdit} />
+        </button>
       </div>
       <Questions pollId={pollId} />
     </>
