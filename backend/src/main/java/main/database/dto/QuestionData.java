@@ -29,6 +29,9 @@ public class QuestionData {
     @Column
     private Date updatedAt;
 
+    @Column
+    private int order;
+
     @ManyToOne
     @JoinColumn(name="POLL_ID")
     private PollData poll;
@@ -108,5 +111,13 @@ public class QuestionData {
 
     public boolean removeAnswer(AnswerData answer) {
         return this.answers.remove(answer);
+    }
+
+    public int getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
     }
 }
