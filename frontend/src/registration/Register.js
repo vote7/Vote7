@@ -1,10 +1,10 @@
 import React, { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import Api from "../../Api";
+import Api from "../api/Api";
 import { Link } from "react-router-dom";
-import { RootContext } from "../../RootContext";
-import CenteredFormContainer from "../../components/CenteredFormContainer";
+import { RootContext } from "../app/RootContext";
+import CenteredFormContainer from "../shared/CenteredFormContainer";
 
 const RegisterForm = ({ register }) => {
   const [fullName, setFullName] = useState("");
@@ -59,7 +59,7 @@ const RegisterForm = ({ register }) => {
   );
 };
 
-const RegisterPage = () => {
+const Register = () => {
   const { authenticateWithToken } = useContext(RootContext);
 
   const handleRegisterError = error => {
@@ -79,4 +79,4 @@ const RegisterPage = () => {
   );
 };
 
-export default RegisterPage;
+export default Register;

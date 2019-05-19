@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import React, { useContext } from "react";
-import { RootContext } from "../../RootContext";
+import { RootContext } from "../RootContext";
 import "./NavBar.css";
 import logo from "../../logo.png";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";

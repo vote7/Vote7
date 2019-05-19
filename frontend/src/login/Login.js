@@ -1,10 +1,10 @@
 import React, { useState, useContext } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
-import Api from "../../Api";
+import Api from "../api/Api";
 import { Link } from "react-router-dom";
-import { RootContext } from "../../RootContext";
-import Index from "../../components/CenteredFormContainer";
+import { RootContext } from "../app/RootContext";
+import Index from "../shared/CenteredFormContainer";
 
 const LoginForm = ({ login }) => {
   const [email, setEmail] = useState("");
@@ -47,7 +47,7 @@ const LoginForm = ({ login }) => {
   );
 };
 
-const LoginPage = () => {
+const Login = () => {
   const { authenticateWithToken } = useContext(RootContext);
 
   const handleLoginError = error => {
@@ -67,4 +67,4 @@ const LoginPage = () => {
   );
 };
 
-export default LoginPage;
+export default Login;
