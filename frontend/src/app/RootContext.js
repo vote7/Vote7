@@ -14,23 +14,36 @@ const useToken = () => {
   return [token, setToken];
 };
 
-const getUser = token => {
+const useUser = token => {
   const [user, setUser] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     if (token) {
-      Api.getCurrentUser(token).then(setUser, () => setUser(null));
+      Api.getCurrentUser(token).then(
+        u => {
+          setUser(u);
+          setIsLoading(false);
+        },
+        error => {
+          if (error.code === "USER_NOT_LOGGED") {
+            setUser(null);
+            setIsLoading(false);
+          }
+        },
+      );
     } else {
       setUser(null);
+      setIsLoading(false);
     }
   }, [token]);
 
-  return user;
+  return { isLoading, user };
 };
 
 export const RootContextProvider = ({ children }) => {
   const [token, setToken] = useToken();
-  const user = getUser(token);
+  const { isLoading, user } = useUser(token);
 
   const isAuthenticated = user != null;
 
@@ -42,6 +55,7 @@ export const RootContextProvider = ({ children }) => {
 
   const context = {
     token,
+    isLoading,
     user,
     isAuthenticated,
     authenticateWithToken,
