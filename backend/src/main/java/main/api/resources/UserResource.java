@@ -3,10 +3,16 @@ package main.api.resources;
 import main.api.data.SimpleResponse;
 import main.api.data.UserRequest;
 import main.api.data.UserResponse;
+import main.api.data.polls.PollRequest;
+import main.api.data.polls.PollResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ApplicationFilter;
 import main.api.utils.ExceptionCode;
+import main.database.dao.GroupRepository;
+import main.database.dao.PollRepository;
 import main.database.dao.UserRepository;
+import main.database.dto.GroupData;
+import main.database.dto.PollData;
 import main.database.dto.UserData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -18,6 +24,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/users")
@@ -25,6 +32,10 @@ public class UserResource {
 
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private GroupRepository groupRepository;
+    @Autowired
+    private PollRepository pollRepository;
 
     @RequestMapping(value = "/register",method = RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
@@ -64,6 +75,12 @@ public class UserResource {
        for(UserData data : userRepository.getAllItems())
            users.add(new UserResponse(data));
        return users;
+    }
+
+    @RequestMapping(value = "/{uid}/polls",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    List<PollResponse> userPolls(@PathVariable("uid") int userId){
+        return pollRepository.getUserPolls(userId).stream().map(PollResponse::new).collect(Collectors.toList());
     }
 
     @ExceptionHandler(ApplicationException.class)

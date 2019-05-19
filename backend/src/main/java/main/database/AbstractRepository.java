@@ -1,6 +1,7 @@
 package main.database;
 
 import main.api.utils.ApplicationException;
+import main.api.utils.ExceptionCode;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,10 @@ public abstract  class AbstractRepository<DATA> {
     @Transactional
     @SuppressWarnings("unchecked")
     public DATA getItem(int id) throws ApplicationException {
-        return (DATA) sessionFactory.getCurrentSession().get(data,id);
+        DATA d = (DATA) sessionFactory.getCurrentSession().get(data,id);
+        if(d == null)
+            throw new ApplicationException(ExceptionCode.ITEM_NOT_FOUND,id);
+        return d;
     }
 
     @Transactional

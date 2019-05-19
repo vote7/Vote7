@@ -9,7 +9,8 @@ public enum ExceptionCode {
     BAD_CREDENTIALS("Bad login or bad password"),
     USER_NOT_LOGGED("User is not logged in"),
     USER_EXISTING("User is already in this group"),
-    USER_NOT_FOUND("Cannot find user by id: {0}")
+    USER_NOT_FOUND("Cannot find user by id: {0}"),
+    ITEM_NOT_FOUND("Item not found by id: {0}")
     ;
 
     private String message;

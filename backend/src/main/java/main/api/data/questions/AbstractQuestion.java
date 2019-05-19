@@ -4,16 +4,16 @@ import main.database.dto.QuestionData;
 
 import java.util.List;
 
-public class WSAbstractQuestion {
+public class AbstractQuestion {
 
     private int id;
     private String content;
     private Integer order;
     private boolean open;
 
-    public WSAbstractQuestion(){}
+    public AbstractQuestion(){}
 
-    public WSAbstractQuestion(QuestionData data){
+    public AbstractQuestion(QuestionData data){
         this.id = data.getId();
         this.content = data.getContent();
         this.order = data.getOrder();

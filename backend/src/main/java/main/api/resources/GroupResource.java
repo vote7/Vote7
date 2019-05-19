@@ -3,11 +3,14 @@ package main.api.resources;
 import main.api.data.SimpleResponse;
 import main.api.data.groups.GroupRequest;
 import main.api.data.groups.GroupResponse;
+import main.api.data.polls.PollRequest;
 import main.api.utils.ApplicationException;
 import main.api.utils.ExceptionCode;
 import main.database.dao.GroupRepository;
+import main.database.dao.PollRepository;
 import main.database.dao.UserRepository;
 import main.database.dto.GroupData;
+import main.database.dto.PollData;
 import main.database.dto.UserData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
@@ -22,9 +25,11 @@ import java.util.List;
 public class GroupResource {
 
     @Autowired
-    GroupRepository groupRepository;
+    private GroupRepository groupRepository;
     @Autowired
     private UserRepository userRepository;
+    @Autowired
+    private PollRepository pollRepository;
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
@@ -86,5 +91,17 @@ public class GroupResource {
 
         groupRepository.modifyItem(group);
         return new SimpleResponse(response);
+    }
+
+    @RequestMapping(value = "/{gid}/poll",method = RequestMethod.POST
+            ,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    SimpleResponse createPoll(@PathVariable("gid") int groupId,@RequestBody PollRequest request) throws ApplicationException {
+        UserData chairman = userRepository.getItem(request.getChairmanId());
+        UserData secretary = userRepository.getItem(request.getSecretaryId());
+        GroupData group = groupRepository.getItem(groupId);
+        PollData poll = new PollData(request,secretary,chairman,group);
+        pollRepository.createItem(poll);
+        return new SimpleResponse("Poll successfully created");
     }
 }

@@ -1,13 +1,11 @@
 package main.api.data.questions;
 
-import main.api.data.UserResponse;
 import main.database.dto.QuestionData;
 
-import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class QuestionResponse extends WSAbstractQuestion{
+public class QuestionResponse extends AbstractQuestion {
 
     private String image;
     private List<AnswerResponse> answers;

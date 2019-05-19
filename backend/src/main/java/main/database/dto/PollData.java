@@ -1,10 +1,13 @@
 package main.database.dto;
 
+import main.api.data.polls.PollRequest;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Time;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 
 @Entity
 @Table(name = "POLLS")
@@ -51,8 +54,15 @@ public class PollData {
     @OneToMany(mappedBy = "poll",fetch = FetchType.EAGER)
     private Set<QuestionData> questions = new HashSet<>();
 
-    public PollData() {
+    public PollData() {}
 
+    public PollData(PollRequest request, UserData secretary, UserData chairman, GroupData group){
+        this.name = request.getName();
+        this.description = request.getDescription();
+        this.chairman = chairman;
+        this.secretary = secretary;
+        this.group = group;
+        this.createdAt = new Date(System.currentTimeMillis());
     }
 
     public int getId() {
@@ -158,6 +168,4 @@ public class PollData {
     public boolean removeQuestion(QuestionData question) {
         return this.questions.remove(question);
     }
-
-
 }

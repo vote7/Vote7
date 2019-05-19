@@ -121,4 +121,8 @@ public class GroupData {
     public void setPolls(Set<PollData> polls) {
         this.polls = polls;
     }
+
+    public void addPoll(PollData data){
+        polls.add(data);
+    }
 }
