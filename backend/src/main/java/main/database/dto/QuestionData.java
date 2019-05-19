@@ -18,6 +18,9 @@ public class QuestionData {
     private String content;
 
     @Column
+    private int orders;
+
+    @Column
     private String image;
 
     @Column
@@ -28,9 +31,6 @@ public class QuestionData {
 
     @Column
     private Date updatedAt;
-
-    @Column
-    private int order;
 
     @ManyToOne
     @JoinColumn(name="POLL_ID")
@@ -114,10 +114,10 @@ public class QuestionData {
     }
 
     public int getOrder() {
-        return order;
+        return orders;
     }
 
-    public void setOrder(int order) {
-        this.order = order;
+    public void setOrder(int orders) {
+        this.orders = orders;
     }
 }

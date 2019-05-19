@@ -18,6 +18,7 @@ public class QuestionResponse extends WSAbstractQuestion{
         this.answers = data.getAnswers().stream().map(AnswerResponse::new).collect(Collectors.toList());
     }
 
+
     public String getImage() {
         return image;
     }

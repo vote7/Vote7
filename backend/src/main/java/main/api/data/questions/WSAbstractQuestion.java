@@ -8,7 +8,7 @@ public class WSAbstractQuestion {
 
     private int id;
     private String content;
-    private int order;
+    private Integer order;
     private boolean open;
 
     public WSAbstractQuestion(){}
@@ -20,11 +20,11 @@ public class WSAbstractQuestion {
         this.open = data.isOpen();
     }
 
-    public int getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
