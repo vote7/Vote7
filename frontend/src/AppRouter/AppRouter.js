@@ -1,64 +1,32 @@
-import React, { Component } from "react";
-import { Router, Route, Link, Redirect } from "react-router-dom";
-import {home, about, users} from './Mocks'
-import {Login} from '../Login/Login'
-import {Register} from '../Register/Register'
-import history from './history';
-import 'materialize-css/dist/css/materialize.min.css'
-import "./AppRouter.css"
-import M from 'materialize-css/dist/js/materialize.min.js'
+import React from "react";
+import { Redirect, Route, Router, Switch } from "react-router-dom";
+import HomePage from "../pages/HomePage/HomePage";
+import LoginPage from "../pages/LoginPage/LoginPage";
+import RegisterPage from "../pages/RegisterPage/RegisterPage";
+import history from "./history";
+import {
+  AuthenticatedRoute,
+  UnauthenticatedRoute,
+} from "../components/ConditionalRoutes";
+import NavBar from "../components/NavBar/NavBar";
 
-class AppRouter extends Component {
+const NotFound = () => <Redirect to="/" />;
 
-    constructor(props) {
-        super(props);
-        this.state = {}
-    }
-
-    render() {
-        return (
-            <div class="main-container">
-                <Router history={history}>
-                    <div class="navigation-container">
-                        
-                        <button class="nav-btn" onClick={() => history.push("/")}>
-                            <Link to="/"> Home </Link>
-                        </button>
-                        <button class="nav-btn" onClick={() => history.push("/about/")}>
-                            <Link to="/about/"> about </Link>
-                        </button>
-                        <button class="nav-btn" onClick={() => history.push("/users/")}>
-                            <Link to="/users/"> users </Link>
-                        </button>
-                        {this.props.logged === false ? 
-                            <button class="nav-btn" onClick={() => history.push("/login/")}>
-                                <Link to="/login/"> Login </Link>
-                            </button>
-                            : <h/>
-                        }
-                        {this.props.logged === false ? 
-                            <button class="nav-btn" onClick={() => history.push("/register/")}>
-                                <Link to="/register/"> Register </Link>
-                            </button>
-                            : <h/>
-                        }
-                        
-                    </div>
-                    <div class="content-container">
-                        <Route path="/" exact render={(props) => (
-                            this.props.logged === true 
-                            ? home
-                            : <Login history={history} login={this.props.login}/>
-                        )} /> 
-                        <Route path="/about/" component={about} />
-                        <Route path="/users/" component={users} />
-                        <Route path="/login/" history={history} login={this.props.login} render={(props) => <Login login={this.props.login}/>} />
-                        <Route path="/register/" render={(props) => <Register />} />
-                    </div>
-                </Router>
-            </div>
-        );
-    }
-}
+const AppRouter = () => (
+  <Router history={history}>
+    <NavBar />
+    <main role="main" className="container">
+      <Switch>
+        <UnauthenticatedRoute path="/login" render={() => <LoginPage />} />
+        <UnauthenticatedRoute
+          path="/register"
+          render={() => <RegisterPage />}
+        />
+        <AuthenticatedRoute exact path="/" render={() => <HomePage />} />
+        <Route render={() => <NotFound />} />
+      </Switch>
+    </main>
+  </Router>
+);
 
 export default AppRouter;
