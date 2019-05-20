@@ -4,6 +4,8 @@ import main.api.data.SimpleResponse;
 import main.api.data.groups.GroupRequest;
 import main.api.data.groups.GroupResponse;
 import main.api.data.polls.PollRequest;
+import main.api.data.polls.PollResponse;
+import main.api.data.questions.QuestionResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ExceptionCode;
 import main.database.dao.GroupRepository;
@@ -19,6 +21,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/groups")
@@ -102,5 +105,12 @@ public class GroupResource {
         PollData poll = new PollData(request,secretary,chairman,group);
         pollRepository.createItem(poll);
         return new SimpleResponse("Poll successfully created");
+    }
+
+    @RequestMapping(value = "/{gid}/polls",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    List<PollResponse> getPolls(@PathVariable("gid") int groupId) throws ApplicationException {
+        GroupData data = groupRepository.getItem(groupId);
+        return data.getPolls().stream().map(PollResponse::new).collect(Collectors.toList());
     }
 }

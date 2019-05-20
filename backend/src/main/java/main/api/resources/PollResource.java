@@ -1,5 +1,7 @@
 package main.api.resources;
 
+import main.api.data.groups.GroupResponse;
+import main.api.data.polls.PollResponse;
 import main.api.data.questions.QuestionResponse;
 import main.api.utils.ApplicationException;
 import main.database.dao.PollRepository;
@@ -32,5 +34,11 @@ public class PollResource {
     List<QuestionResponse> question(@PathVariable("pid") int pollId) throws ApplicationException {
         PollData data = pollRepository.getItem(pollId);
         return data.getQuestions().stream().map(QuestionResponse::new).collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/{pid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    PollResponse get(@PathVariable("pid") int pid) throws ApplicationException {
+        return new PollResponse(pollRepository.getItem(pid));
     }
 }
