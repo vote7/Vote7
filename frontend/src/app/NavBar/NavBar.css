@@ -1,0 +1,18 @@
+.vote-logo {
+  display: block;
+  height: 3.5rem;
+  margin-right: 1rem;
+  margin-top: -0.5rem;
+  margin-bottom: -0.5rem;
+}
+
+.vote-logo img {
+  height: 3.4rem;
+  padding-left: 1rem;
+  padding-right: 1rem;
+  margin-top: -0.2rem;
+}
+
+.vote-logo:hover {
+  background: rgba(0, 0, 0, 0.03);
+}
