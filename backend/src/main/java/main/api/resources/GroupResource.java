@@ -88,7 +88,6 @@ public class GroupResource {
         if(group.getMembers().contains(user) && group.removeMember(user) ){
             throw new ApplicationException(ExceptionCode.USER_NOT_FOUND,uid);
         }
-
         groupRepository.modifyItem(group);
         return new SimpleResponse(response);
     }

@@ -23,7 +23,7 @@ public class UserData {
     @Column
     private String surname;
 
-    @Column(unique = true)
+    @Column(unique = true,nullable = false)
     private String email;
 
     @Column
@@ -142,5 +142,21 @@ public class UserData {
 
     public void setUserAnswers(Set<AnswerData> userAnswers) {
         this.userAnswers = userAnswers;
+    }
+
+    @Override
+    public int hashCode() {
+        return this.id + this.email.length() * 213;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(this == obj)
+            return true;
+        if(obj instanceof UserData){
+            UserData that = (UserData) obj;
+            return this.id == that.id && this.email.equals(that.email);
+        }
+        return false;
     }
 }
