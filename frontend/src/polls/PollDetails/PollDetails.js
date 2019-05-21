@@ -9,6 +9,7 @@ import {
 import { faGripLines } from "@fortawesome/free-solid-svg-icons/faGripLines";
 import ApiMocks from "../../api/ApiMocks";
 import arrayMove from "array-move";
+import Form from "react-bootstrap/Form";
 
 const DragHandle = SortableHandle(() => (
   <span className="btn btn-link" style={{ cursor: "ns-resize" }}>
@@ -71,6 +72,7 @@ const Questions = ({ pollId }) => {
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
     setQuestions(arrayMove(questions, oldIndex, newIndex));
+    console.log(questions);
   };
 
   return (
@@ -84,6 +86,7 @@ const Questions = ({ pollId }) => {
 
 const PollDetails = ({ pollId }) => {
   const [poll, setPoll] = useState(null);
+  const [editName, setEditName] = useState(true);
 
   useEffect(() => {
     ApiMocks.getPoll(pollId).then(setPoll);
@@ -91,11 +94,32 @@ const PollDetails = ({ pollId }) => {
 
   if (!poll) return null;
 
+  const hideEditName = () => {
+    if(editName) {
+      ApiMocks.editPollName(poll.id, poll.name)
+    }
+    setEditName(!editName)
+  }
+
   return (
     <>
       <div className="d-flex align-items-center mt-5 mb-3">
-        <h1 className="m-0">{poll.name}</h1>
-        <button className="ml-2 btn btn-link">
+        {
+          editName ?
+            <h1 className="m-0">{poll.name}</h1>
+            :
+            <Form>
+              <Form.Group controlId="pollNameEdit">
+                <Form.Control 
+                  type="text"  
+                  value={poll.name}
+                  onChange={event => setPoll({name: event.target.value})}
+                />
+              </Form.Group>
+            </Form>
+        }
+        
+        <button className="ml-2 btn btn-link" onClick={() => hideEditName()}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
       </div>
