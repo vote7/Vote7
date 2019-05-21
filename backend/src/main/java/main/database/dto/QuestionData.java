@@ -1,5 +1,7 @@
 package main.database.dto;
 
+import main.api.data.questions.QuestionRequest;
+
 import javax.persistence.*;
 import java.sql.Date;
 import java.util.HashSet;
@@ -18,9 +20,6 @@ public class QuestionData {
     private String content;
 
     @Column
-    private int orders;
-
-    @Column
     private String image;
 
     @Column
@@ -32,6 +31,9 @@ public class QuestionData {
     @Column
     private Date updatedAt;
 
+    @Column
+    private int orders;
+
     @ManyToOne
     @JoinColumn(name="POLL_ID")
     private PollData poll;
@@ -40,6 +42,20 @@ public class QuestionData {
     private Set<AnswerData> answers = new HashSet<>();
 
     public QuestionData() {}
+
+    public QuestionData(QuestionRequest request) {
+        this.content = request.getContent();
+        this.image = request.getImage();
+        this.open = request.getOpen();
+        this.orders = request.getOrder();
+    }
+
+    public void handle(QuestionRequest request) {
+        if (request.getContent() != null) this.content = request.getContent();
+        if (request.getImage() != null) this.image = request.getImage();
+        if (request.getOpen() != null) this.open = request.getOpen();
+        if (request.getOrder() != null) this.orders = request.getOrder();
+    }
 
     public int getId() {
         return id;
@@ -89,6 +105,14 @@ public class QuestionData {
         this.updatedAt = updatedAt;
     }
 
+    public int getOrders() {
+        return orders;
+    }
+
+    public void setOrders(int orders) {
+        this.orders = orders;
+    }
+
     public PollData getPoll() {
         return poll;
     }
@@ -113,11 +137,9 @@ public class QuestionData {
         return this.answers.remove(answer);
     }
 
-    public int getOrder() {
-        return orders;
-    }
-
-    public void setOrder(int orders) {
-        this.orders = orders;
+    public void switchOrders(QuestionData other) {
+        Integer tempOrders = this.getOrders();
+        this.setOrders(other.getOrders());
+        other.setOrders(tempOrders);
     }
 }
