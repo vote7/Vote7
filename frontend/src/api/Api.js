@@ -67,10 +67,18 @@ const Api = {
       params: { token },
     }),
 
-  getPolls: token =>
+  getPolls: async (token, uid) =>
     request({
       method: "GET",
-      url: "/polls/",
+      url: "/polls/user/" + uid,
+      params: { token }
+    }),
+  
+  createPoll: async (token, body) => 
+    request({
+      method: "POST",
+      url: "/groups/" + body.groupId + "/poll",
+      body: body,
       params: {token}
     })
 };
