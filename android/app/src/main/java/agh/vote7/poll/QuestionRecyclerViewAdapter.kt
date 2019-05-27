@@ -24,6 +24,7 @@ class QuestionRecyclerViewAdapter : RecyclerView.Adapter<QuestionRecyclerViewAda
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = questions[position]
         holder.view.question = item.content
+        holder.view.answers = item.answers.map { it.content }
         holder.view.setOnClickListener { /* TODO */ }
     }
 
