@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { Link } from "react-router-dom";
 import ApiMocks from "../../api/ApiMocks";
 import NewPoll from "../NewPoll/NewPoll"
+import Api from "../../api/Api";
+import { RootContext } from "../../app/RootContext";
 
 const ListElement = ({ poll }) => (
   <div className="border-bottom py-2">
@@ -9,15 +11,20 @@ const ListElement = ({ poll }) => (
   </div>
 );
 
-const List = ({ polls }) =>
-  polls.map(poll => <ListElement key={poll.id} poll={poll} />);
+const List = ({ polls }) =>{
+  console.log(polls)
+  return polls.map(poll => <ListElement key={poll.id} poll={poll} />);
+}
+  
 
 const PollList = () => {
   const [polls, setPolls] = useState([]);
   const [showList, setShowList] = useState(true);
-
+  const { user, token } = useContext(RootContext)
+  console.log(token, user.id)
+  
   useEffect(() => {
-    ApiMocks.getPolls().then(setPolls);
+    Api.getPolls(token, user.id).then(setPolls);
   }, []);
 
   return (
