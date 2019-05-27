@@ -1,6 +1,6 @@
 package main.database.dto;
 
-import main.api.data.UserRequest;
+import main.api.data.users.UserRequest;
 
 import javax.persistence.*;
 import java.sql.Date;

@@ -1,10 +1,9 @@
 package main.api.resources;
 
 import main.api.data.SimpleResponse;
-import main.api.data.UserRequest;
-import main.api.data.UserResponse;
+import main.api.data.users.UserRequest;
+import main.api.data.users.UserResponse;
 import main.api.data.groups.GroupResponse;
-import main.api.data.polls.PollRequest;
 import main.api.data.polls.PollResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ApplicationFilter;
@@ -12,8 +11,6 @@ import main.api.utils.ExceptionCode;
 import main.database.dao.GroupRepository;
 import main.database.dao.PollRepository;
 import main.database.dao.UserRepository;
-import main.database.dto.GroupData;
-import main.database.dto.PollData;
 import main.database.dto.UserData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;

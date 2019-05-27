@@ -1,4 +1,4 @@
-package main.api.data;
+package main.api.data.users;
 
 public class UserRequest {
     /*
