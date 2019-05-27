@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import kotlinx.android.synthetic.main.fragment_voting.view.*
+import kotlinx.android.synthetic.main.list_item_poll.view.*
 
 class PollRecyclerViewAdapter(
     private val onClick: (Poll) -> Unit
@@ -22,7 +22,7 @@ class PollRecyclerViewAdapter(
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.fragment_voting, parent, false)
+            .inflate(R.layout.list_item_poll, parent, false)
         return ViewHolder(view)
     }
 

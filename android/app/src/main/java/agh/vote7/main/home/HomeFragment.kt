@@ -14,7 +14,7 @@ import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.get
 import androidx.navigation.Navigation
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_voting_list.*
+import kotlinx.android.synthetic.main.fragment_home.*
 
 class HomeFragment : Fragment() {
     private lateinit var viewModel: HomeViewModel
@@ -24,7 +24,7 @@ class HomeFragment : Fragment() {
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_voting_list, container, false)
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {

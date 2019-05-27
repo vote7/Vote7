@@ -9,7 +9,7 @@
         android:id="@+id/votingFragment"
         android:name="agh.vote7.main.home.HomeFragment"
         android:label="fragment_voting_list"
-        tools:layout="@layout/fragment_voting_list">
+        tools:layout="@layout/fragment_home">
         <action
             android:id="@+id/action_votingFragment_to_votingActivity"
             app:destination="@id/votingActivity" />
