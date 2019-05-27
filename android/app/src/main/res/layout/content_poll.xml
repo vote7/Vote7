@@ -5,8 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context=".voting.VotingActivity"
-    tools:showIn="@layout/activity_voting">
+    tools:context=".poll.PollActivity"
+    tools:showIn="@layout/activity_poll">
 
     <TextView
         android:id="@+id/textView"

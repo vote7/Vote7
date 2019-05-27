@@ -31,7 +31,7 @@
         </activity>
 
         <activity
-            android:name=".voting.VotingActivity"
+            android:name=".poll.PollActivity"
             android:label="@string/title_activity_voting"
             android:parentActivityName=".main.MainActivity"
             android:theme="@style/AppTheme.NoActionBar">

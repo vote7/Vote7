@@ -29,8 +29,8 @@
 
     <activity
         android:id="@+id/votingActivity"
-        android:name="agh.vote7.voting.VotingActivity"
+        android:name="agh.vote7.poll.PollActivity"
         android:label="activity_voting"
-        tools:layout="@layout/activity_voting" />
+        tools:layout="@layout/activity_poll" />
 
 </navigation>
