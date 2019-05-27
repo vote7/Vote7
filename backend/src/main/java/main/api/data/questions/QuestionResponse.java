@@ -7,22 +7,13 @@ import java.util.stream.Collectors;
 
 public class QuestionResponse extends AbstractQuestion {
 
-    private String image;
+    private Integer id;
     private List<AnswerResponse> answers;
 
     public QuestionResponse(QuestionData data){
         super(data);
-        this.image = data.getImage();
+        this.id = data.getId();
         this.answers = data.getAnswers().stream().map(AnswerResponse::new).collect(Collectors.toList());
-    }
-
-
-    public String getImage() {
-        return image;
-    }
-
-    public void setImage(String image) {
-        this.image = image;
     }
 
     public List<AnswerResponse> getAnswers() {
@@ -31,5 +22,14 @@ public class QuestionResponse extends AbstractQuestion {
 
     public void setAnswers(List<AnswerResponse> answers) {
         this.answers = answers;
+
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
     }
 }
