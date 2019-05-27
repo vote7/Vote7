@@ -40,7 +40,7 @@ const NewPoll = ({hide}) => {
   };
 
   return (
-    <CenteredFormContainer title="Register">
+    <CenteredFormContainer title="New Poll">
       <NewPollForm addPoll={addPoll} />
     </CenteredFormContainer>
   );

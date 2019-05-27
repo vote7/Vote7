@@ -17,47 +17,90 @@ const DragHandle = SortableHandle(() => (
   </span>
 ));
 
-const Question = ({ question, questionIndex }) => (
-  <div className="border-bottom py-4 bg-white">
-    <div className="d-flex">
-      <DragHandle />
-      <div className="flex-grow-1">
-        <div className="d-flex flex-grow-1 align-items-center">
-          <div className="font-weight-bold">
-            {questionIndex + 1}. {question.content}
+const Question = ({ question, questionIndex, setQuestion, removeQuestion}) => {
+  const [content, setContent] = useState(question.content)
+  const [questionOpen, setQuestionOpen] = useState(question.open)
+  const [editable, setEditable] = useState(false)
+  
+  const editClick = () => {
+    if(editable) {
+      setQuestion({content: content, order: question.order, questionOpen: questionOpen})
+    }
+    setEditable(!editable)
+  }
+  
+  const removeClick = () => {
+    ApiMocks.removeQuestion({order: questionIndex + 1})
+  }
+
+  return (
+    <div className="border-bottom py-4 bg-white">
+      <div className="d-flex">
+        <DragHandle />
+        <div className="flex-grow-1">
+          <div className="d-flex flex-grow-1 align-items-center">
+            <div className="font-weight-bold">
+              {questionIndex + 1}. 
+              {editable ?
+                <Form>
+                  <Form.Group controlId="pollNameEdit">
+                    <Form.Control 
+                      type="text"  
+                      value={content}
+                      onChange={event => setContent(event.target.value)}
+                    />
+                  </Form.Group>
+                </Form>
+                : content}
+            </div>
+            <button onClick={editClick} className="ml-auto btn btn-sm btn-link">
+              <FontAwesomeIcon icon={faEdit} />
+            </button>
+            <button onClick={removeClick} className="btn btn-sm btn-link">
+              <FontAwesomeIcon icon={faTimes} />
+            </button>
           </div>
-          <button className="ml-auto btn btn-sm btn-link">
-            <FontAwesomeIcon icon={faEdit} />
-          </button>
-          <button className="btn btn-sm btn-link">
-            <FontAwesomeIcon icon={faTimes} />
-          </button>
+          <div className="small">
+            {
+              editable ?
+              <Form>
+                <Form.Group controlId="pollNameEdit">
+                  Open question: <Form.Check
+                    type="checkbox"  
+                    checked={questionOpen}
+                    onChange={event => setQuestionOpen(!questionOpen)}
+                  />
+                </Form.Group>
+              </Form>
+              : questionOpen ? "(open question)" : "(closed question)"
+            }
+            {}
+          </div>
+          {!question.open && (
+            <ul className="mt-3 mb-0">
+              {question.answers.map((answer, answerIndex) => (
+                <li key={answerIndex}>{answer}</li>
+              ))}
+            </ul>
+          )}
         </div>
-        <div className="small">
-          {question.open ? "(open question)" : "(closed question)"}
-        </div>
-        {!question.open && (
-          <ul className="mt-3 mb-0">
-            {question.answers.map((answer, answerIndex) => (
-              <li key={answerIndex}>{answer}</li>
-            ))}
-          </ul>
-        )}
       </div>
     </div>
-  </div>
-);
+  )
+}
 
 const SortableQuestion = SortableElement(Question);
 
-const SortableQuestionList = SortableContainer(({ questions }) => (
+const SortableQuestionList = SortableContainer(({ questions, setQuestion, removeQuestion }) => (
   <div>
-    {questions.map((question, questionIndex) => (
+    {questions.sort((q1, q2) => q1.order > q2.order).map((question, questionIndex) => (
       <SortableQuestion
         key={`item-${questionIndex}`}
         index={questionIndex}
         questionIndex={questionIndex}
         question={question}
+        setQuestion={setQuestion}
+        removeQuestion={removeQuestion}
       />
     ))}
   </div>
@@ -71,8 +114,7 @@ const Questions = ({ pollId }) => {
   }, [pollId]);
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
-    setQuestions(arrayMove(questions, oldIndex, newIndex));
-    console.log(questions);
+    
   };
 
   return (
@@ -80,6 +122,8 @@ const Questions = ({ pollId }) => {
       questions={questions}
       onSortEnd={onSortEnd}
       useDragHandle
+      setQuestion={(question) => ApiMocks.setQuestion(Object.assign(question, {pollId: pollId}))}
+      removeQuestion={(question) => ApiMocks.removeQuestion(Object.assign(question, {pollId: pollId}))}
     />
   );
 };
