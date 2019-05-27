@@ -23,14 +23,26 @@ class PollActivity : AppCompatActivity() {
         supportActionBar?.title = ""
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
+        val questionAdapter = QuestionRecyclerViewAdapter()
+        questionRecyclerView.adapter = questionAdapter
+
         viewModel = getViewModel { DependencyProvider.pollViewModel(args.pollId) }
 
         viewModel.title.observe(this, Observer {
             toolbar.title = it
         })
 
+        viewModel.questions.observe(this, Observer {
+            questionAdapter.questions = it
+        })
+
         viewModel.showSnackbar.observeEvent(this, Observer {
             Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
         })
+    }
+
+    override fun onSupportNavigateUp(): Boolean {
+        super.onBackPressed()
+        return true
     }
 }
