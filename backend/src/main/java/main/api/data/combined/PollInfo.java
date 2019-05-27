@@ -8,8 +8,23 @@ public class PollInfo {
     private PollResponse poll;
     private List<AnsweredQuestion> answeredQuestion;
 
-    public PollInfo(PollResponse poll, List<AnsweredQuestion> answeredQuestion) {
+    public PollInfo(PollResponse poll) {
         this.poll = poll;
+    }
+
+    public List<AnsweredQuestion> getAnsweredQuestion() {
+        return answeredQuestion;
+    }
+
+    public void setAnsweredQuestion(List<AnsweredQuestion> answeredQuestion) {
         this.answeredQuestion = answeredQuestion;
+    }
+
+    public PollResponse getPoll() {
+        return poll;
+    }
+
+    public void setPoll(PollResponse poll) {
+        this.poll = poll;
     }
 }
