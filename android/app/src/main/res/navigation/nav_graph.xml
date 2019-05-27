@@ -3,16 +3,16 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/votingFragment">
+    app:startDestination="@id/homeFragment">
 
     <fragment
-        android:id="@+id/votingFragment"
+        android:id="@+id/homeFragment"
         android:name="agh.vote7.main.home.HomeFragment"
         android:label="fragment_voting_list"
         tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_votingFragment_to_votingActivity"
-            app:destination="@id/votingActivity" />
+            android:id="@+id/action_homeFragment_to_pollActivity"
+            app:destination="@id/pollActivity" />
     </fragment>
 
     <fragment
@@ -28,9 +28,13 @@
         tools:layout="@layout/fragment_profile" />
 
     <activity
-        android:id="@+id/votingActivity"
+        android:id="@+id/pollActivity"
         android:name="agh.vote7.poll.PollActivity"
-        android:label="activity_voting"
-        tools:layout="@layout/activity_poll" />
+        android:label="activity_poll"
+        tools:layout="@layout/activity_poll">
+        <argument
+            android:name="pollId"
+            app:argType="long" />
+    </activity>
 
 </navigation>
