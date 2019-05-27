@@ -7,6 +7,7 @@ public class AbstractPoll {
     private String name;
     private String description;
 
+
     public AbstractPoll(){}
 
     public AbstractPoll(PollData data){

@@ -3,6 +3,7 @@ package main.api.resources;
 import main.api.data.SimpleResponse;
 import main.api.data.UserRequest;
 import main.api.data.UserResponse;
+import main.api.data.groups.GroupResponse;
 import main.api.data.polls.PollRequest;
 import main.api.data.polls.PollResponse;
 import main.api.utils.ApplicationException;
@@ -81,6 +82,12 @@ public class UserResource {
     public @ResponseBody
     List<PollResponse> userPolls(@PathVariable("uid") int userId){
         return pollRepository.getUserPolls(userId).stream().map(PollResponse::new).collect(Collectors.toList());
+    }
+
+    @RequestMapping(value = "/{uid}/groups",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    List<GroupResponse> userGroups(@PathVariable("uid") int uid){
+        return groupRepository.getUserGroups(uid).stream().map(GroupResponse::new).collect(Collectors.toList());
     }
 
     @ExceptionHandler(ApplicationException.class)
