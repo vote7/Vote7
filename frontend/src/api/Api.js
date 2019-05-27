@@ -66,6 +66,13 @@ const Api = {
       url: "/users/me",
       params: { token },
     }),
+
+  getPolls: token =>
+    request({
+      method: "GET",
+      url: "/polls/",
+      params: {token}
+    })
 };
 
 export default Api;

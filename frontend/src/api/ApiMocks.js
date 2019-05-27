@@ -1,4 +1,5 @@
 let pollId = 3
+let order = 4
 let polls =  [
   {
     id: 1,
@@ -13,15 +14,18 @@ let questions = [
   {
     content: "In which year did WW2 started?",
     open: true,
-  },
-  {
-    content: "Who was the first president of the United States?",
-    open: true,
+    order: 1
   },
   {
     content: "Which leader murdered more people",
     open: false,
     answers: ["Adolf Hitler", "Joseph Stalin", "Mao Zedong"],
+    order: 2
+  },
+  {
+    content: "Who was the first president of the United States?",
+    open: true,
+    order: 3
   },
 ]
 const ApiMocks = {
@@ -41,12 +45,22 @@ const ApiMocks = {
   },
 
   addQuestion: async question => {
+      question["order"] = order
+      order += 1
       questions.push(question)
   },
 
   editPollName: async (pollId, newName) => {
     polls = polls.map(({id, name}) => id === pollId ? {id: id, name: newName} : {id: id, name: name})
-  }
+  },
+
+  setQuestion: async ({pollId: id, content, questionOpen: open, order}) => {
+      questions.push({content: content, questionOpen: open, order: order})
+  },
+
+  removeQuestion: async ({pollId: id, content, questionOpen: open, order}) => {
+    questions = questions.filter(question => question.order !== order)
+}
 };
 
 export default ApiMocks;
