@@ -2,30 +2,20 @@ package main.api.data.questions;
 
 import main.database.dto.QuestionData;
 
-import java.util.List;
-
 public class AbstractQuestion {
 
-    private int id;
     private String content;
     private Integer order;
-    private boolean open;
+    private Boolean open;
+    private String image;
 
     public AbstractQuestion(){}
 
     public AbstractQuestion(QuestionData data){
-        this.id = data.getId();
         this.content = data.getContent();
-        this.order = data.getOrder();
+        this.order = data.getOrders();
         this.open = data.isOpen();
-    }
-
-    public Integer getId() {
-        return id;
-    }
-
-    public void setId(Integer id) {
-        this.id = id;
+        this.image = data.getImage();
     }
 
     public String getContent() {
@@ -36,7 +26,7 @@ public class AbstractQuestion {
         this.content = content;
     }
 
-    public int getOrder() {
+    public Integer getOrder() {
         return order;
     }
 
@@ -44,11 +34,19 @@ public class AbstractQuestion {
         this.order = order;
     }
 
-    public boolean isOpen() {
+    public Boolean getOpen() {
         return open;
     }
 
     public void setOpen(boolean open) {
         this.open = open;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
     }
 }

@@ -2,8 +2,10 @@ package main.api.resources;
 
 import main.api.data.groups.GroupResponse;
 import main.api.data.polls.PollResponse;
+import main.api.data.questions.QuestionRequest;
 import main.api.data.questions.QuestionResponse;
 import main.api.utils.ApplicationException;
+import main.api.utils.ExceptionCode;
 import main.database.dao.PollRepository;
 import main.database.dao.QuestionRepository;
 import main.database.dto.AnswerData;
@@ -13,10 +15,7 @@ import org.apache.tomcat.jni.Poll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -29,6 +28,9 @@ public class PollResource {
     @Autowired
     private PollRepository pollRepository;
 
+    @Autowired
+    private QuestionRepository questionRepository;
+
     @RequestMapping(value = "/{pid}/question",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     List<QuestionResponse> question(@PathVariable("pid") int pollId) throws ApplicationException {
@@ -40,5 +42,17 @@ public class PollResource {
     public @ResponseBody
     PollResponse get(@PathVariable("pid") int pid) throws ApplicationException {
         return new PollResponse(pollRepository.getItem(pid));
+    }
+
+    @RequestMapping(value = "/{pid}/question", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    QuestionResponse addQuestion(@PathVariable("pid") int pollId, @RequestBody QuestionRequest request) throws ApplicationException {
+        PollData poll = pollRepository.getItem(pollId);
+        if(poll == null)
+            throw new ApplicationException(ExceptionCode.ITEM_NOT_FOUND, pollId);
+        QuestionData question = new QuestionData(request);
+        question.setPoll(poll);
+        questionRepository.createItem(question);
+        return new QuestionResponse(question);
     }
 }
