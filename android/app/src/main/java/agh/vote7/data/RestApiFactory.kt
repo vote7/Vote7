@@ -11,7 +11,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import retrofit2.create
 
-const val BASE_URL = "https://vote7.example.com/" // TODO(pjanczyk): use real URL
+const val BASE_URL = "https://vote7.serveo.net/" // TODO(pjanczyk): use real URL
 
 class RestApiFactory(
     private val tokenRepository: TokenRepository

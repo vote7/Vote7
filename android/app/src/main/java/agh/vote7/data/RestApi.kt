@@ -21,5 +21,8 @@ interface RestApi {
     fun getCurrentUser(): Deferred<User>
 
     @GET("users/{userId}/groups")
-    fun getUserGroups(@Path("userId") userId: String): Deferred<List<Group>>
+    fun getUserGroups(@Path("userId") userId: UserId): Deferred<List<Group>>
+
+    @GET("users/{userId}/polls")
+    fun getUserPolls(@Path("userId") userId: UserId): Deferred<List<Poll>>
 }
