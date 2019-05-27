@@ -14,11 +14,29 @@ class QuestionView(context: Context) : FrameLayout(context) {
             contentTextView.text = value
         }
 
+    var isOpen: Boolean = false
+        set(value) {
+            field = value
+            recreateAnswers()
+        }
+
     var answers: List<String> = emptyList()
         set(value) {
             field = value
-            answersContainer.removeAllViews()
-            value.forEach { answer ->
+            recreateAnswers()
+        }
+
+    init {
+        LayoutInflater.from(context).inflate(R.layout.question, this)
+    }
+
+    private fun recreateAnswers() {
+        answersContainer.removeAllViews()
+
+        if (isOpen) {
+            answersContainer.addView(OpenAnswerView(context))
+        } else {
+            answers.forEach { answer ->
                 ClosedAnswerView(context)
                     .apply {
                         content = answer
@@ -27,9 +45,6 @@ class QuestionView(context: Context) : FrameLayout(context) {
                     .let { answersContainer.addView(it) }
             }
         }
-
-    init {
-        LayoutInflater.from(context).inflate(R.layout.question, this)
     }
 
     private fun onAnswerClicked(answerView: ClosedAnswerView) {

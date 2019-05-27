@@ -17,4 +17,5 @@ class PollService(
 
     suspend fun getPollQuestions(pollId: PollId): List<Question> =
         restApi.getPollQuestions(pollId).await()
+            .sortedBy { it.order }
 }

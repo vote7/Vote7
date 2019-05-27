@@ -14,7 +14,7 @@
         android:layout_marginBottom="8dp"
         android:clickable="false"
         android:paddingStart="8dp"
-        android:textSize="18sp"
+        android:textSize="16sp"
         tools:text="Adolph Hitler" />
 
 </LinearLayout>
