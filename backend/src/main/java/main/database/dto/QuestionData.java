@@ -47,14 +47,12 @@ public class QuestionData {
         this.content = request.getContent();
         this.image = request.getImage();
         this.open = request.getOpen();
-        this.orders = request.getOrder();
     }
 
     public void handle(QuestionRequest request) {
         if (request.getContent() != null) this.content = request.getContent();
         if (request.getImage() != null) this.image = request.getImage();
         if (request.getOpen() != null) this.open = request.getOpen();
-        if (request.getOrder() != null) this.orders = request.getOrder();
     }
 
     public int getId() {
@@ -137,9 +135,4 @@ public class QuestionData {
         return this.answers.remove(answer);
     }
 
-    public void switchOrders(QuestionData other) {
-        Integer tempOrders = this.getOrders();
-        this.setOrders(other.getOrders());
-        other.setOrders(tempOrders);
-    }
 }

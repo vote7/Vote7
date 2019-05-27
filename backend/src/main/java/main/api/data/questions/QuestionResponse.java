@@ -9,11 +9,13 @@ public class QuestionResponse extends AbstractQuestion {
 
     private Integer id;
     private List<AnswerResponse> answers;
+    private Integer order;
 
     public QuestionResponse(QuestionData data){
         super(data);
         this.id = data.getId();
         this.answers = data.getAnswers().stream().map(AnswerResponse::new).collect(Collectors.toList());
+        this.order = data.getOrders();
     }
 
     public List<AnswerResponse> getAnswers() {
@@ -32,4 +34,13 @@ public class QuestionResponse extends AbstractQuestion {
     public void setId(Integer id) {
         this.id = id;
     }
+
+    public Integer getOrder() {
+        return order;
+    }
+
+    public void setOrder(int order) {
+        this.order = order;
+    }
+
 }
