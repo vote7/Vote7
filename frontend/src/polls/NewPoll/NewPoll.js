@@ -9,10 +9,19 @@ import ApiMocks from "../../api/ApiMocks";
 
 const NewPollForm = ({addPoll}) => {
   const [pollName, setPollName] = useState("");
+  const [description, setDescription] = useState("");
+  const [secretaryId, setSecretaryId] = useState(1);
+  const [chairmanId, setChairmanId] = useState(1);
+  const [groupId, setGroupId] = useState(1);
 
   const onSubmit = event => {
     event.preventDefault();
-    addPoll({name: pollName})
+    addPoll({name: pollName,
+              description: description,
+              secretaryId: secretaryId,
+              chairmanId: chairmanId,
+              mutable: true,
+              groupId: groupId})
   };
 
   return (
@@ -26,6 +35,37 @@ const NewPollForm = ({addPoll}) => {
           value={pollName}
           onChange={event => setPollName(event.target.value)}
         />
+        <Form.Control
+          type="text"
+          placeholder="description"
+          size="lg"
+          value={description}
+          onChange={event => setDescription(event.target.value)}
+        />
+        <Form.Control
+          type="text"
+          required
+          placeholder="Secretary id"
+          size="lg"
+          value={secretaryId}
+          onChange={event => setSecretaryId(event.target.value)}
+        />
+        <Form.Control
+          type="text"
+          required
+          placeholder="Chairman id"
+          size="lg"
+          value={chairmanId}
+          onChange={event => setChairmanId(event.target.value)}
+        />
+        <Form.Control
+          type="text"
+          required
+          placeholder="Group id"
+          size="lg"
+          value={groupId}
+          onChange={event => setGroupId(event.target.value)}
+        />
       </Form.Group>
       <Button className="w-100" size="lg" variant="primary" type="submit">
         Add
@@ -35,8 +75,9 @@ const NewPollForm = ({addPoll}) => {
 };
 
 const NewPoll = ({hide}) => {
+  const { token } = useContext(RootContext) 
   const addPoll = poll => {
-    ApiMocks.addPolls(poll).then(hide)
+    Api.createPoll(token, poll).then(hide)
   };
 
   return (
