@@ -12,7 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import androidx.lifecycle.get
-import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_home.*
 
@@ -44,7 +44,8 @@ class HomeFragment : Fragment() {
         })
 
         viewModel.navigateToPollView.observeEvent(this, Observer {
-            Navigation.findNavController(view!!).navigate(R.id.votingActivity)
+            findNavController()
+                .navigate(HomeFragmentDirections.actionHomeFragmentToPollActivity(it))
         })
     }
 }
