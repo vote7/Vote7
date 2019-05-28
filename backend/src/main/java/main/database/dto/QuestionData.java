@@ -1,5 +1,6 @@
 package main.database.dto;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import main.api.data.questions.QuestionRequest;
 
 import javax.persistence.*;
@@ -25,7 +26,7 @@ public class QuestionData {
     private String image;
 
     @Column
-    private boolean open;
+    private Boolean open;
 
     @Column
     private Date createdAt;
@@ -34,7 +35,7 @@ public class QuestionData {
     private Date updatedAt;
 
     @Column
-    private int orders;
+    private Integer orders;
 
     @ManyToOne
     @JoinColumn(name="POLL_ID")
@@ -49,14 +50,12 @@ public class QuestionData {
         this.content = request.getContent();
         this.image = request.getImage();
         this.open = request.getOpen();
-        this.orders = request.getOrder();
     }
 
     public void handle(QuestionRequest request) {
         if (request.getContent() != null) this.content = request.getContent();
         if (request.getImage() != null) this.image = request.getImage();
         if (request.getOpen() != null) this.open = request.getOpen();
-        if (request.getOrder() != null) this.orders = request.getOrder();
     }
 
     public int getId() {
@@ -83,11 +82,11 @@ public class QuestionData {
         this.image = image;
     }
 
-    public boolean isOpen() {
+    public Boolean getOpen() {
         return open;
     }
 
-    public void setOpen(boolean open) {
+    public void setOpen(Boolean open) {
         this.open = open;
     }
 
@@ -139,9 +138,4 @@ public class QuestionData {
         return this.answers.remove(answer);
     }
 
-    public void switchOrders(QuestionData other) {
-        Integer tempOrders = this.getOrders();
-        this.setOrders(other.getOrders());
-        other.setOrders(tempOrders);
-    }
 }
