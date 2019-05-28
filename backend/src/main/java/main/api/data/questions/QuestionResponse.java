@@ -1,5 +1,6 @@
 package main.api.data.questions;
 
+import main.api.data.answers.AnswerResponse;
 import main.database.dto.QuestionData;
 
 import java.util.List;

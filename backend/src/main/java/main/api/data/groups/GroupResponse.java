@@ -1,6 +1,6 @@
 package main.api.data.groups;
 
-import main.api.data.UserResponse;
+import main.api.data.users.UserResponse;
 import main.database.dto.GroupData;
 import main.database.dto.UserData;
 

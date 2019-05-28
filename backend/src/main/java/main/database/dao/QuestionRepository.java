@@ -9,7 +9,10 @@ import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
+
+import javax.persistence.TypedQuery;
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Repository
 public class QuestionRepository extends AbstractRepository<QuestionData> {
@@ -58,5 +61,10 @@ public class QuestionRepository extends AbstractRepository<QuestionData> {
 
     }
 
+    public List<QuestionData> getPollQuestions(int pid){
+        TypedQuery<QuestionData> query = getSessionFactory().getCurrentSession().createNativeQuery(
+                "(select * from questions where poll_id = :pid)", QuestionData.class).setParameter("pid", pid);
+        return query.getResultList();
+    }
 }
 

@@ -8,11 +8,15 @@ public class PollResponse extends AbstractPoll {
 
     private int id;
     private Date date;
+    private int chairmanID;
+    private int secretaryID;
 
     public PollResponse(PollData data){
         super(data);
         this.id = data.getId();
         this.date = data.getDate();
+        this.chairmanID = data.getChairman().getId();
+        this.secretaryID = data.getSecretary().getId();
     }
 
     public int getId() {
@@ -29,5 +33,17 @@ public class PollResponse extends AbstractPoll {
 
     public void setDate(Date date) {
         this.date = date;
+    }
+
+    public int getChairmanID() {
+        return chairmanID;
+    }
+
+    public int getSecretaryID() {
+        return secretaryID;
+    }
+
+    public void setSecretaryID(int secretaryID) {
+        this.secretaryID = secretaryID;
     }
 }

@@ -1,24 +1,30 @@
 package main.api.resources;
 
-import main.api.data.groups.GroupResponse;
+import main.api.data.answers.AnswerResponse;
+import main.api.data.combined.AnsweredQuestion;
+import main.api.data.combined.PollInfo;
 import main.api.data.polls.PollResponse;
 import main.api.data.questions.QuestionRequest;
 import main.api.data.questions.QuestionResponse;
+import main.api.data.questions.SimpleQuestionResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ExceptionCode;
+import main.database.dao.AnswerRepository;
+import main.database.dao.GroupRepository;
 import main.database.dao.PollRepository;
 import main.database.dao.QuestionRepository;
 import main.database.dto.AnswerData;
 import main.database.dto.PollData;
 import main.database.dto.QuestionData;
-import org.apache.tomcat.jni.Poll;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Controller
@@ -30,6 +36,13 @@ public class PollResource {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private GroupRepository groupRepository;
+
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @RequestMapping(value = "/{pid}/question",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
@@ -54,5 +67,39 @@ public class PollResource {
         question.setPoll(poll);
         questionRepository.createItem(question);
         return new QuestionResponse(question);
+    }
+
+    @RequestMapping(value = "/user/{uid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    List<PollInfo> getPolls(@PathVariable("uid") int uid) throws ApplicationException {
+        List<PollData> polls = pollRepository.getUserPolls(uid);
+
+        List<PollInfo> userPolls = new LinkedList<>();
+
+        List<SimpleQuestionResponse> pollQuestions = null;
+        for(PollData poll: polls) {
+            pollQuestions = poll.getQuestions()
+                    .stream()
+                    .map(SimpleQuestionResponse::new)
+                    .collect(Collectors.toList());
+
+            List<AnsweredQuestion> answeredQuestions = new LinkedList<>();
+
+            for(SimpleQuestionResponse question: pollQuestions){
+                Set<AnswerResponse> userAnswers = answerRepository
+                        .getUserAnswers(uid, question.getId())
+                        .stream()
+                        .map(AnswerResponse::new)
+                        .collect(Collectors.toSet());
+
+                answeredQuestions.add(new AnsweredQuestion(question, userAnswers));
+            }
+
+            PollInfo pollInfo = new PollInfo(new PollResponse(poll));
+            pollInfo.setAnsweredQuestion(answeredQuestions);
+            userPolls.add(pollInfo);
+        }
+
+        return userPolls;
     }
 }

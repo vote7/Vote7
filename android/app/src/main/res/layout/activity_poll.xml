@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".voting.VotingActivity">
+    tools:context=".poll.PollActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -20,6 +20,12 @@
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <include layout="@layout/content_voting" />
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/questionRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior"
+        tools:listitem="@layout/question" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

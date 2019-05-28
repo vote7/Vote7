@@ -4,8 +4,10 @@ import com.sun.org.apache.xpath.internal.operations.Bool;
 import main.api.data.questions.QuestionRequest;
 
 import javax.persistence.*;
+import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity

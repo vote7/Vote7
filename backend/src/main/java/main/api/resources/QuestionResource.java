@@ -13,7 +13,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/question")
+@RequestMapping("/questions")
 public class QuestionResource {
 
     @Autowired
