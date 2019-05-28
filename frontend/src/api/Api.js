@@ -80,6 +80,20 @@ const Api = {
       url: "/groups/" + body.groupId + "/poll",
       body: body,
       params: {token}
+    }),
+  
+  getQuestions: async(token, pollId) =>
+    request({
+      method: "GET",
+      url: "/polls/" + pollId + "/question",
+      params: {token}
+    }),
+
+  getPoll: async(token, pollId) =>
+    request({
+      method: "GET",
+      url: "/polls/" + pollId,
+      params: {token}
     })
 };
 

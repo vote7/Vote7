@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faEdit, faTimes } from "@fortawesome/free-solid-svg-icons";
 import {
@@ -10,6 +10,8 @@ import { faGripLines } from "@fortawesome/free-solid-svg-icons/faGripLines";
 import ApiMocks from "../../api/ApiMocks";
 import arrayMove from "array-move";
 import Form from "react-bootstrap/Form";
+import { RootContext } from "../../app/RootContext";
+import Api from "../../api/Api"
 
 const DragHandle = SortableHandle(() => (
   <span className="btn btn-link" style={{ cursor: "ns-resize" }}>
@@ -108,9 +110,9 @@ const SortableQuestionList = SortableContainer(({ questions, setQuestion, remove
 
 const Questions = ({ pollId }) => {
   const [questions, setQuestions] = useState([]);
-
+  const {token} = useContext(RootContext)
   useEffect(() => {
-    ApiMocks.getQuestions(pollId).then(setQuestions);
+    Api.getQuestions(token, pollId).then(setQuestions);
   }, [pollId]);
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
@@ -131,9 +133,10 @@ const Questions = ({ pollId }) => {
 const PollDetails = ({ pollId }) => {
   const [poll, setPoll] = useState(null);
   const [editName, setEditName] = useState(true);
-
+  const {token} = useContext(RootContext)
+  const [newQuestion, setNewQuestion] = useState(false)
   useEffect(() => {
-    ApiMocks.getPoll(pollId).then(setPoll);
+    Api.getPoll(token, pollId).then(setPoll);
   }, [pollId]);
 
   if (!poll) return null;
@@ -166,8 +169,23 @@ const PollDetails = ({ pollId }) => {
         <button className="ml-2 btn btn-link" onClick={() => hideEditName()}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
+        <button className="ml-auto btn btn-primary" onClick={() => setNewQuestion(true)}>New Question</button>
       </div>
+      {newQuestion ?
+      <div className="d-flex align-items-center mt-5 mb-3">
+        <Form>
+          <Form.Group controlId="pollNameEdit">
+            <Form.Control 
+              type="text"  
+              value={poll.name}
+              onChange={event => setPoll({name: event.target.value})}
+            />
+          </Form.Group>
+        </Form>
+      </div>
+      :
       <Questions pollId={pollId} />
+      }
     </>
   );
 };

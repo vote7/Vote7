@@ -12,8 +12,7 @@ const ListElement = ({ poll }) => (
 );
 
 const List = ({ polls }) =>{
-  console.log(polls)
-  return polls.map(poll => <ListElement key={poll.id} poll={poll} />);
+  return polls.map(poll => <ListElement key={poll} poll={poll.poll} />);
 }
   
 
@@ -21,7 +20,6 @@ const PollList = () => {
   const [polls, setPolls] = useState([]);
   const [showList, setShowList] = useState(true);
   const { user, token } = useContext(RootContext)
-  console.log(token, user.id)
   
   useEffect(() => {
     Api.getPolls(token, user.id).then(setPolls);
