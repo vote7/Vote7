@@ -1,5 +1,6 @@
 package main.database.dto;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import main.api.data.questions.QuestionRequest;
 
 import javax.persistence.*;
@@ -23,7 +24,7 @@ public class QuestionData {
     private String image;
 
     @Column
-    private boolean open;
+    private Boolean open;
 
     @Column
     private Date createdAt;
@@ -32,7 +33,7 @@ public class QuestionData {
     private Date updatedAt;
 
     @Column
-    private int orders;
+    private Integer orders;
 
     @ManyToOne
     @JoinColumn(name="POLL_ID")
@@ -79,11 +80,11 @@ public class QuestionData {
         this.image = image;
     }
 
-    public boolean isOpen() {
+    public Boolean getOpen() {
         return open;
     }
 
-    public void setOpen(boolean open) {
+    public void setOpen(Boolean open) {
         this.open = open;
     }
 
