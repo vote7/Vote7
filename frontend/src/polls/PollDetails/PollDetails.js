@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useContext } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTimes } from "@fortawesome/free-solid-svg-icons";
+import { faEdit, faTimes, faPlusCircle, faMinusCircle } from "@fortawesome/free-solid-svg-icons";
 import {
   SortableContainer,
   SortableElement,
@@ -12,6 +12,8 @@ import arrayMove from "array-move";
 import Form from "react-bootstrap/Form";
 import { RootContext } from "../../app/RootContext";
 import Api from "../../api/Api"
+import Button from "react-bootstrap/Button";
+import CenteredFormContainer from "../../shared/CenteredFormContainer";
 
 const DragHandle = SortableHandle(() => (
   <span className="btn btn-link" style={{ cursor: "ns-resize" }}>
@@ -148,6 +150,11 @@ const PollDetails = ({ pollId }) => {
     setEditName(!editName)
   }
 
+  const addQuestion = (question) => {
+    Api.addQuestion(token, pollId, {content: question.content, open: question.open})
+        .then((question) => question.answers.map(answer => Api.addAnswer(token, question.id, answer)))
+  }
+
   return (
     <>
       <div className="d-flex align-items-center mt-5 mb-3">
@@ -169,25 +176,99 @@ const PollDetails = ({ pollId }) => {
         <button className="ml-2 btn btn-link" onClick={() => hideEditName()}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
-        <button className="ml-auto btn btn-primary" onClick={() => setNewQuestion(true)}>New Question</button>
+        <button className="ml-auto btn btn-primary" onClick={() => setNewQuestion(!newQuestion)}>{newQuestion ? "Close":"New Question"}</button>
       </div>
       {newQuestion ?
-      <div className="d-flex align-items-center mt-5 mb-3">
-        <Form>
-          <Form.Group controlId="pollNameEdit">
-            <Form.Control 
-              type="text"  
-              value={poll.name}
-              onChange={event => setPoll({name: event.target.value})}
-            />
-          </Form.Group>
-        </Form>
-      </div>
+      <NewQuestion addQuestion={addQuestion} />
       :
       <Questions pollId={pollId} />
       }
     </>
   );
 };
+
+const NewQuestion = ({addQuestion}) => {
+  const [content, setContent] = useState("")
+  const [open, setOpen] = useState(false)
+  const [answers, setAnswers] = useState([])
+
+  const Answer = ({answer, setAnswer}) => {
+    const [content, setContent] = useState(answer)
+
+    return (
+      <>
+        <Form.Control 
+              type="text"  
+              placeholder="Answer"
+              value={content}
+              onChange={event => setContent(event.target.value)}
+              onMouseLeave={event => {if(answer !== content) setAnswer(content)}}
+        />
+      </>
+    )
+  }
+
+  const onSubmit = (event) => {
+    event.preventDefault();
+    addQuestion({content: content, open: open, answers: answers})
+  }
+
+  return  (
+    <>
+      <CenteredFormContainer>
+        <div className="d-flex align-items-center mt-5 mb-3">
+          <Form onSubmit={onSubmit} className="w-100">
+            <Form.Group controlId="newQuestionContent">
+              <Form.Control 
+                type="text"
+                placeholder="Content"  
+                value={content}
+                onChange={event => setContent(event.target.value)}
+              />
+              Open Question:
+              <Form.Control 
+                type="checkbox"  
+                checked={open}
+                placeholder="Open Question"
+                onChange={event => setOpen(!open)}
+              />
+
+              {
+                open ?
+                <></>
+                :
+                <>
+                Answers:
+                {
+                  answers.map((answer, index) => {
+                    const setAnswer = (newAnswer) => {
+                      const newAnswers = answers.map((a, i) =>{ 
+                        if(i === index) return newAnswer
+                        else return a 
+                      })
+                      console.log(newAnswers)
+                      setAnswers(newAnswers)
+                    }
+                    return <Answer key={index} answer={answer} setAnswer={setAnswer} />
+                  })
+                }
+                <button type="button" onClick={() => {setAnswers(answers.concat([""]))}} className="ml-auto btn btn-sm btn-link">
+                  <FontAwesomeIcon icon={faPlusCircle} />
+                </button>
+                <button type="button" onClick={() => {setAnswers(answers.slice(0, answers.length-1))}} className="ml-auto btn btn-sm btn-link">
+                  <FontAwesomeIcon icon={faMinusCircle} />
+                </button>
+                </>
+              }
+            </Form.Group>
+            <Button className="w-100" size="lg" variant="primary" type="submit">
+              Add
+            </Button>
+          </Form>
+        </div>
+      </CenteredFormContainer>
+    </>
+  )
+}
 
 export default PollDetails;

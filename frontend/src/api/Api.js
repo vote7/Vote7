@@ -94,7 +94,22 @@ const Api = {
       method: "GET",
       url: "/polls/" + pollId,
       params: {token}
-    })
+    }),
+  addQuestion: async (token, pollId, question) => 
+    request({
+      method: "POST",
+      url: "/polls/" + pollId + "/question",
+      params: {token},
+      body: {question}
+    }),
+  addAnswer: async (token, questionId, content) =>
+    request({
+      method: "POST",
+      url: "/questions/" + questionId,
+      params: {token},
+      body: {content}
+    }),
+
 };
 
 export default Api;
