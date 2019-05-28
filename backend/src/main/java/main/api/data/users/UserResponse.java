@@ -1,4 +1,4 @@
-package main.api.data;
+package main.api.data.users;
 
 import main.database.dto.UserData;
 
