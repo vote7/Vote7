@@ -33,7 +33,7 @@ public class QuestionResource {
         return new SimpleResponse(response);
     }
 
-    @RequestMapping(value = "{qid}", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "{qid}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     SimpleResponse edit(@PathVariable("qid") int id, @RequestBody QuestionRequest request) throws ApplicationException {
         QuestionData data = questionRepository.getItem(id);
@@ -47,23 +47,16 @@ public class QuestionResource {
         return new SimpleResponse(response);
     }
 
-    @RequestMapping(value = "changeOrder/{qid1}/{qid2}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "putAfter/{qidSource}/{order}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    SimpleResponse changeOrder(@PathVariable("qid1") int qid1, @PathVariable("qid2") int qid2) throws ApplicationException {
-        QuestionData firstQuestion = questionRepository.getItem(qid1);
-        if(firstQuestion == null)
-            throw new ApplicationException(ExceptionCode.ITEM_NOT_FOUND, qid1);
+    SimpleResponse putOn(@PathVariable("qidSource") int qidSource, @PathVariable("order") int order) throws ApplicationException {
+        QuestionData sourceQuestion = questionRepository.getItem(qidSource);
+        if(sourceQuestion == null)
+            throw new ApplicationException(ExceptionCode.ITEM_NOT_FOUND, qidSource);
 
-        QuestionData secondQuestion = questionRepository.getItem(qid1);
-        if(secondQuestion == null)
-            throw new ApplicationException(ExceptionCode.ITEM_NOT_FOUND, qid2);
+        questionRepository.putOn(sourceQuestion, order);
 
-        firstQuestion.switchOrders(secondQuestion);
-
-        questionRepository.modifyItem(firstQuestion);
-        questionRepository.modifyItem(secondQuestion);
-
-        String response = String.format("Question %d and %d successfully changedOrder", qid1, qid2);
+        String response = String.format("Question %d successfully changed order to %d", qidSource, order);
         return new SimpleResponse(response);
     }
 }
