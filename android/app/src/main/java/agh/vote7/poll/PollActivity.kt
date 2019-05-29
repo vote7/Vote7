@@ -46,6 +46,7 @@ class PollActivity : AppCompatActivity() {
                 .setMessage(it.content)
                 .setCancelable(true)
                 .setPositiveButton("OK") { _, _ -> it.onConfirmClicked() }
+                .setNegativeButton("Cancel", null)
                 .show()
         })
     }

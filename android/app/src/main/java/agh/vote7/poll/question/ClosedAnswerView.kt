@@ -26,9 +26,9 @@ class ClosedAnswerView(context: Context) : FrameLayout(context) {
     var onClicked: () -> Unit = {}
 
     var isEditable: Boolean
-        get() = checkBox.isEnabled
+        get() = isClickable
         set(value) {
-            checkBox.isEnabled = value
+            isClickable = value
         }
 
     init {

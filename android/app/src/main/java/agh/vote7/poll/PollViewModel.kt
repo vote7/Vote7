@@ -81,7 +81,7 @@ class PollViewModel(
 
         questionViewModel.selectedClosedAnswer.value = answer
         questionViewModel.isEditable.value = false
-//        showSnackbar.value = Event("You voted for \"$answer\"")
+        showSnackbar.value = Event("You voted for \"$answer\"")
     }
 }
 
