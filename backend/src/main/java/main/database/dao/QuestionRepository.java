@@ -2,8 +2,10 @@ package main.database.dao;
 
 import main.api.utils.ApplicationException;
 import main.database.AbstractRepository;
+import main.database.dto.GroupData;
 import main.database.dto.PollData;
 import main.database.dto.QuestionData;
+import main.database.dto.UserData;
 import org.hibernate.Criteria;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.Restrictions;
@@ -66,5 +68,34 @@ public class QuestionRepository extends AbstractRepository<QuestionData> {
                 "(select * from questions where poll_id = :pid)", QuestionData.class).setParameter("pid", pid);
         return query.getResultList();
     }
+
+    public boolean canVote(QuestionData question, UserData user) {
+        return havePermissonToVote(question, user) &&
+                !haveVotedAlready(question, user);
+    }
+
+    private boolean havePermissonToVote(QuestionData question, UserData user) {
+        return getSessionFactory()
+                .getCurrentSession()
+                .createCriteria(QuestionData.class, "q")
+                .createAlias("q.poll", "p")
+                .createAlias("p.group", "g")
+                .createAlias("g.members", "m")
+                .add(Restrictions.eq("q.id", question.getId()))
+                .add(Restrictions.eq("m.id", user.getId()))
+                .list().size() == 1;
+    }
+
+    private boolean haveVotedAlready(QuestionData question, UserData user) {
+        return getSessionFactory()
+                .getCurrentSession()
+                .createCriteria(QuestionData.class, "q")
+                .createAlias("q.answers", "a")
+                .createAlias("a.usersWhoAnswered", "u")
+                .add(Restrictions.eq("q.id", question.getId()))
+                .add(Restrictions.eq("u.id", user.getId()))
+                .list().size() > 1;
+    }
+
 }
 

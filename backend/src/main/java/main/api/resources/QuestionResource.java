@@ -1,12 +1,15 @@
 package main.api.resources;
 
 import main.api.data.SimpleResponse;
+import main.api.data.answers.AnswerVote;
 import main.api.data.questions.QuestionRequest;
 import main.api.data.questions.QuestionResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ExceptionCode;
 import main.api.utils.SecurityUtil;
+import main.database.dao.AnswerRepository;
 import main.database.dao.QuestionRepository;
+import main.database.dto.AnswerData;
 import main.database.dto.PollData;
 import main.database.dto.QuestionData;
 import main.database.dto.UserData;
@@ -25,6 +28,9 @@ public class QuestionResource {
 
     @Autowired
     private QuestionRepository questionRepository;
+
+    @Autowired
+    private AnswerRepository answerRepository;
 
     @RequestMapping(value = "{qid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
@@ -106,4 +112,21 @@ public class QuestionResource {
 
         return new SimpleResponse("Stopped question.");
     }
+
+    @RequestMapping(value = "/{qid}/vote", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    SimpleResponse vote(@PathVariable("qid") int questionId, @RequestBody AnswerVote answerVote, HttpServletRequest request) throws ApplicationException {
+        QuestionData question = questionRepository.getItem(questionId);
+        UserData loggedInUser = securityUtil.getLoggedInUser(request);
+
+        if (questionRepository.canVote(question, loggedInUser)) {
+            AnswerData answerData = answerRepository.getOrGenerateAnswer(question, answerVote.getAnswer());
+            answerData.addUserWhoAnswered(loggedInUser);
+            answerRepository.modifyItem(answerData);
+            return new SimpleResponse("Voted!");
+        } else {
+            throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
+        }
+    }
+
 }

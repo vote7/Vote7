@@ -83,4 +83,12 @@ public class AnswerData {
     public void setUsersWhoAnswered(Set<UserData> usersWhoAnswered) {
         this.usersWhoAnswered = usersWhoAnswered;
     }
+
+    public void addUserWhoAnswered(UserData user) {
+        this.usersWhoAnswered.add(user);
+    }
+
+    public boolean hasUserAnswered(UserData user) {
+        return this.usersWhoAnswered.contains(user);
+    }
 }
