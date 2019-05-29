@@ -1,18 +1,35 @@
 package main.api.utils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Predicate;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpStatus;
 
-import java.security.SecureRandom;
-import java.util.*;
 import javax.servlet.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Objects;
+import java.util.Random;
+
+import static com.google.common.base.Predicates.*;
+import static springfox.documentation.builders.PathSelectors.*;
 
 @Configuration
 public class ApplicationFilter implements Filter {
+
+    @SuppressWarnings("unchecked")
+    private static final Predicate<String> SWAGGER_URL = or(
+        ant("/v2/api-docs"),
+        ant("/swagger-resources"),
+        ant("/swagger-resources/**"),
+        ant("/configuration/ui"),
+        ant("/configuration/security"),
+        ant("/swagger-ui.html"),
+        ant("/webjars/**")
+    );
 
     private static RandomGenerator generator = new RandomGenerator(20);
     private static HashMap<Integer,String> tokens = new HashMap<>();
@@ -23,7 +40,11 @@ public class ApplicationFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request = (HttpServletRequest) servletRequest;
-        if(!request.getRequestURI().equals("/users/register") && !request.getRequestURI().equals("/users/login")){
+        if (
+            !request.getRequestURI().equals("/users/register") &&
+                !request.getRequestURI().equals("/users/login") &&
+                !SWAGGER_URL.apply(request.getRequestURI())
+        ) {
             String token = request.getParameter("token");
             int id;
             if(token == null || token.isEmpty() || (id = validateToken(token)) == -1) {
