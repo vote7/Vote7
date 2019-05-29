@@ -5,16 +5,23 @@ import main.api.data.questions.QuestionRequest;
 import main.api.data.questions.QuestionResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ExceptionCode;
+import main.api.utils.SecurityUtil;
 import main.database.dao.QuestionRepository;
+import main.database.dto.PollData;
 import main.database.dto.QuestionData;
+import main.database.dto.UserData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
+
 @Controller
 @RequestMapping("/questions")
 public class QuestionResource {
+    @Autowired
+    private SecurityUtil securityUtil;
 
     @Autowired
     private QuestionRepository questionRepository;
@@ -58,5 +65,45 @@ public class QuestionResource {
 
         String response = String.format("Question %d successfully changed order to %d", qidSource, order);
         return new SimpleResponse(response);
+    }
+
+    @RequestMapping(value = "/start/{qid}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    SimpleResponse startQuestion(@PathVariable("qid") int questionId, HttpServletRequest request) throws ApplicationException {
+        QuestionData question = questionRepository.getItem(questionId);
+        PollData poll = question.getPoll();
+        if (!poll.getOpen()) {
+            throw new ApplicationException(ExceptionCode.POLL_IS_CLOSED, poll.getId());
+        }
+
+        UserData loggedInUser = securityUtil.getLoggedInUser(request);
+        if (!loggedInUser.equals(poll.getChairman())) {
+            throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
+        }
+
+        question.setOpen(true);
+        questionRepository.modifyItem(question);
+
+        return new SimpleResponse("Started question.");
+    }
+
+    @RequestMapping(value = "/stop/{pid}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    SimpleResponse stopQuestion(@PathVariable("qid") int questionId, HttpServletRequest request) throws ApplicationException {
+        QuestionData question = questionRepository.getItem(questionId);
+        PollData poll = question.getPoll();
+        if (!poll.getOpen()) {
+            throw new ApplicationException(ExceptionCode.POLL_IS_CLOSED, poll.getId());
+        }
+
+        UserData loggedInUser = securityUtil.getLoggedInUser(request);
+        if (!loggedInUser.equals(poll.getChairman())) {
+            throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
+        }
+
+        question.setOpen(false);
+        questionRepository.modifyItem(question);
+
+        return new SimpleResponse("Stopped question.");
     }
 }
