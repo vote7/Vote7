@@ -6,6 +6,7 @@ import agh.vote7.utils.getViewModel
 import agh.vote7.utils.observeEvent
 import android.os.Bundle
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import androidx.navigation.navArgs
@@ -23,7 +24,7 @@ class PollActivity : AppCompatActivity() {
         supportActionBar?.title = ""
         supportActionBar?.setDisplayHomeAsUpEnabled(true)
 
-        val questionAdapter = QuestionRecyclerViewAdapter()
+        val questionAdapter = QuestionRecyclerViewAdapter(this)
         questionRecyclerView.adapter = questionAdapter
 
         viewModel = getViewModel { DependencyProvider.pollViewModel(args.pollId) }
@@ -38,6 +39,15 @@ class PollActivity : AppCompatActivity() {
 
         viewModel.showSnackbar.observeEvent(this, Observer {
             Toast.makeText(applicationContext, it, Toast.LENGTH_SHORT).show()
+        })
+
+        viewModel.showConfirmationModal.observeEvent(this, Observer {
+            AlertDialog.Builder(this)
+                .setMessage(it.content)
+                .setCancelable(true)
+                .setPositiveButton("OK") { _, _ -> it.onConfirmClicked() }
+                .setNegativeButton("Cancel", null)
+                .show()
         })
     }
 
