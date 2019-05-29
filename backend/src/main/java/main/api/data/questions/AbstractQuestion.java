@@ -12,7 +12,7 @@ public class AbstractQuestion {
 
     public AbstractQuestion(QuestionData data){
         this.content = data.getContent();
-        this.open = data.isOpen();
+        this.open = data.getOpen();
         this.image = data.getImage();
     }
 
