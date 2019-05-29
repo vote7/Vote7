@@ -100,16 +100,27 @@ const Api = {
       method: "POST",
       url: "/polls/" + pollId + "/question",
       params: {token},
-      body: {question}
+      body: {content: question.content, open: question.open}
     }),
   addAnswer: async (token, questionId, content) =>
     request({
-      method: "POST",
-      url: "/questions/" + questionId,
+      method: "PATCH",
+      url: "/questions/" + questionId + "/answer",
       params: {token},
       body: {content}
     }),
-
+  removeQuestion: async (token, questionId) =>
+    request({
+      method: "DELETE",
+      url: "/questions/" + questionId,
+      params: {token}
+    }),
+  removeAnswer: async (token, questionId, answerId) =>
+    request({
+      method: "DELETE",
+      url: "/questions/" + questionId + "/answer/" + answerId,
+      params: {token}
+    }),
 };
 
 export default Api;

@@ -21,22 +21,22 @@ const DragHandle = SortableHandle(() => (
   </span>
 ));
 
-const Question = ({ question, questionIndex, setQuestion, removeQuestion}) => {
+const Question = ({ question, questionIndex, removeQuestion, removeAnswer}) => {
   const [content, setContent] = useState(question.content)
   const [questionOpen, setQuestionOpen] = useState(question.open)
   const [editable, setEditable] = useState(false)
   
   const editClick = () => {
     if(editable) {
-      setQuestion({content: content, order: question.order, questionOpen: questionOpen})
+      //setQuestion({content: content, order: question.order, questionOpen: questionOpen})
     }
     setEditable(!editable)
   }
   
   const removeClick = () => {
-    ApiMocks.removeQuestion({order: questionIndex + 1})
+    removeQuestion()
   }
-
+  console.log(question)
   return (
     <div className="border-bottom py-4 bg-white">
       <div className="d-flex">
@@ -83,7 +83,11 @@ const Question = ({ question, questionIndex, setQuestion, removeQuestion}) => {
           {!question.open && (
             <ul className="mt-3 mb-0">
               {question.answers.map((answer, answerIndex) => (
-                <li key={answerIndex}>{answer}</li>
+                <li key={answerIndex}>{answer}
+                <button onClick={() => removeAnswer(answer.id)} className="btn btn-sm">
+                  <FontAwesomeIcon icon={faMinusCircle} />
+                </button>
+                </li>
               ))}
             </ul>
           )}
@@ -95,24 +99,26 @@ const Question = ({ question, questionIndex, setQuestion, removeQuestion}) => {
 
 const SortableQuestion = SortableElement(Question);
 
-const SortableQuestionList = SortableContainer(({ questions, setQuestion, removeQuestion }) => (
+const SortableQuestionList = SortableContainer(({ questions, removeQuestion, removeAnswer }) => (
   <div>
+    {console.log(questions)}
     {questions.sort((q1, q2) => q1.order > q2.order).map((question, questionIndex) => (
       <SortableQuestion
         key={`item-${questionIndex}`}
         index={questionIndex}
         questionIndex={questionIndex}
         question={question}
-        setQuestion={setQuestion}
-        removeQuestion={removeQuestion}
+        removeQuestion={() => removeQuestion(question.id)}
+        removeAnswer={(aid) => removeAnswer(question.id, aid)}
       />
     ))}
   </div>
 ));
 
-const Questions = ({ pollId }) => {
+const Questions = ({ pollId}) => {
   const [questions, setQuestions] = useState([]);
   const {token} = useContext(RootContext)
+
   useEffect(() => {
     Api.getQuestions(token, pollId).then(setQuestions);
   }, [pollId]);
@@ -126,8 +132,10 @@ const Questions = ({ pollId }) => {
       questions={questions}
       onSortEnd={onSortEnd}
       useDragHandle
-      setQuestion={(question) => ApiMocks.setQuestion(Object.assign(question, {pollId: pollId}))}
-      removeQuestion={(question) => ApiMocks.removeQuestion(Object.assign(question, {pollId: pollId}))}
+      removeQuestion = {(qid) => {
+        Api.removeQuestion(token, qid).then(() => Api.getQuestions(token, pollId)).then((res) => setQuestions(res))
+      }}
+      removeAnswer = {(qid, aid) => Api.removeAnswer(token, qid, aid)}
     />
   );
 };
@@ -179,7 +187,7 @@ const PollDetails = ({ pollId }) => {
         <button className="ml-auto btn btn-primary" onClick={() => setNewQuestion(!newQuestion)}>{newQuestion ? "Close":"New Question"}</button>
       </div>
       {newQuestion ?
-      <NewQuestion addQuestion={addQuestion} />
+      <NewQuestion addQuestion={addQuestion} hideForm={() => setNewQuestion(false)} />
       :
       <Questions pollId={pollId} />
       }
@@ -187,7 +195,7 @@ const PollDetails = ({ pollId }) => {
   );
 };
 
-const NewQuestion = ({addQuestion}) => {
+const NewQuestion = ({addQuestion, hideForm}) => {
   const [content, setContent] = useState("")
   const [open, setOpen] = useState(false)
   const [answers, setAnswers] = useState([])
@@ -211,6 +219,7 @@ const NewQuestion = ({addQuestion}) => {
   const onSubmit = (event) => {
     event.preventDefault();
     addQuestion({content: content, open: open, answers: answers})
+    hideForm()
   }
 
   return  (
