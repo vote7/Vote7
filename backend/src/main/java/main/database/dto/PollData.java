@@ -5,9 +5,12 @@ import main.api.data.polls.PollRequest;
 import javax.persistence.*;
 import java.sql.Date;
 import java.sql.Time;
+import java.util.Comparator;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 @Entity
 @Table(name = "POLLS")
@@ -167,5 +170,13 @@ public class PollData {
 
     public boolean removeQuestion(QuestionData question) {
         return this.questions.remove(question);
+    }
+
+    public List<QuestionData> getOrderedQuestions() {
+
+        return questions
+                .stream()
+                .sorted(Comparator.comparingInt(QuestionData::getOrders).reversed())
+                .collect(Collectors.toList());
     }
 }
