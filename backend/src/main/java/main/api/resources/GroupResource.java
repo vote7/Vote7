@@ -113,4 +113,14 @@ public class GroupResource {
         GroupData data = groupRepository.getItem(groupId);
         return data.getPolls().stream().map(PollResponse::new).collect(Collectors.toList());
     }
+
+    @RequestMapping(value = "/admin/{uid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    List<GroupResponse> getAdminGroups(@PathVariable("uid") int userId) throws ApplicationException {
+        return groupRepository
+                .getAdminGroups(userId)
+                .stream()
+                .map(GroupResponse::new)
+                .collect(Collectors.toList());
+    }
 }

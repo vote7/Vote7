@@ -3,6 +3,8 @@ package main.database.dao;
 import main.database.AbstractRepository;
 import main.database.dto.AnswerData;
 import main.database.dto.QuestionData;
+import main.database.dto.UserData;
+import org.hibernate.criterion.Restrictions;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.TypedQuery;
@@ -24,6 +26,26 @@ public class AnswerRepository extends AbstractRepository<AnswerData>  {
                 .setParameter("uid", uid)
                 .setParameter("qid", qid);
         return query.getResultList();
+    }
+
+    @Transactional
+    public AnswerData getOrGenerateAnswer(QuestionData question, String answerContent){
+        AnswerData answer = (AnswerData) getSessionFactory()
+                .getCurrentSession()
+                .createCriteria(AnswerData.class, "a")
+                .createAlias("a.question", "q")
+                .add(Restrictions.eq("q.id", question.getId()))
+                .add(Restrictions.eq("a.content", answerContent))
+                .uniqueResult();
+
+        if (answer == null) {
+            answer = new AnswerData();
+            answer.setQuestion(question);
+            answer.setContent(answerContent);
+            getSessionFactory().getCurrentSession().persist(answer);
+        }
+
+        return answer;
     }
 
 }

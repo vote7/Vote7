@@ -11,6 +11,8 @@ public enum ExceptionCode {
     USER_EXISTING("User is already in this group"),
     USER_NOT_FOUND("Cannot find user by id: {0}"),
     ITEM_NOT_FOUND("Item not found by id: {0}"),
+    POLL_IS_CLOSED("Poll with id {0} is closed"),
+    NOT_ALLOWED("You are not allowed to do this")
     ;
 
     private String message;
