@@ -31,6 +31,9 @@ public class PollData {
     private Date date;
 
     @Column
+    private Boolean open;
+
+    @Column
     private Time startTime;
 
     @Column
@@ -66,6 +69,7 @@ public class PollData {
         this.secretary = secretary;
         this.group = group;
         this.createdAt = new Date(System.currentTimeMillis());
+        this.open = false;
     }
 
     public int getId() {
@@ -170,6 +174,14 @@ public class PollData {
 
     public boolean removeQuestion(QuestionData question) {
         return this.questions.remove(question);
+    }
+
+    public Boolean getOpen() {
+        return open;
+    }
+
+    public void setOpen(Boolean open) {
+        this.open = open;
     }
 
     public List<QuestionData> getOrderedQuestions() {

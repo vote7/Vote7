@@ -1,5 +1,6 @@
 package main.api.resources;
 
+import main.api.data.SimpleResponse;
 import main.api.data.answers.AnswerResponse;
 import main.api.data.combined.AnsweredQuestion;
 import main.api.data.combined.PollInfo;
@@ -9,6 +10,7 @@ import main.api.data.questions.QuestionResponse;
 import main.api.data.questions.SimpleQuestionResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ExceptionCode;
+import main.api.utils.SecurityUtil;
 import main.database.dao.AnswerRepository;
 import main.database.dao.GroupRepository;
 import main.database.dao.PollRepository;
@@ -16,11 +18,13 @@ import main.database.dao.QuestionRepository;
 import main.database.dto.AnswerData;
 import main.database.dto.PollData;
 import main.database.dto.QuestionData;
+import main.database.dto.UserData;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -32,6 +36,9 @@ import java.util.stream.Collectors;
 public class PollResource {
 
     @Autowired
+    private SecurityUtil securityUtil;
+
+    @Autowired
     private PollRepository pollRepository;
 
     @Autowired
@@ -39,7 +46,6 @@ public class PollResource {
 
     @Autowired
     private GroupRepository groupRepository;
-
 
     @Autowired
     private AnswerRepository answerRepository;
@@ -101,5 +107,37 @@ public class PollResource {
         }
 
         return userPolls;
+    }
+
+    @RequestMapping(value = "/start/{pid}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    SimpleResponse startPoll(@PathVariable("pid") int pollId, HttpServletRequest request) throws ApplicationException {
+        PollData poll = pollRepository.getItem(pollId);
+
+        UserData loggedInUser = securityUtil.getLoggedInUser(request);
+        if (!loggedInUser.equals(poll.getChairman())) {
+            throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
+        }
+
+        poll.setOpen(true);
+        pollRepository.modifyItem(poll);
+
+        return new SimpleResponse("Started poll.");
+    }
+
+    @RequestMapping(value = "/stop/{pid}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    SimpleResponse stopPoll(@PathVariable("pid") int pollId, HttpServletRequest request) throws ApplicationException {
+        PollData poll = pollRepository.getItem(pollId);
+
+        UserData loggedInUser = securityUtil.getLoggedInUser(request);
+        if (!loggedInUser.equals(poll.getChairman())) {
+            throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
+        }
+
+        poll.setOpen(false);
+        pollRepository.modifyItem(poll);
+
+        return new SimpleResponse("Stopped poll.");
     }
 }

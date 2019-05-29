@@ -1,6 +1,5 @@
 package main.database.dto;
 
-import com.sun.org.apache.xpath.internal.operations.Bool;
 import main.api.data.questions.QuestionRequest;
 
 import javax.persistence.*;
