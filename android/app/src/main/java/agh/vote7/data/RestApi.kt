@@ -32,7 +32,7 @@ interface RestApi {
     @GET("polls/{pollId}/question")
     fun getPollQuestions(@Path("pollId") pollId: PollId): Deferred<List<Question>>
 
-    @POST("question/{questionId}/vote")
+    @POST("questions/{questionId}/vote")
     fun voteOnQuestion(
         @Path("questionId") questionId: QuestionId,
         @Body request: VoteOnQuestionRequest
