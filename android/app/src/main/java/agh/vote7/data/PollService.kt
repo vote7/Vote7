@@ -1,8 +1,6 @@
 package agh.vote7.data
 
-import agh.vote7.data.model.Poll
-import agh.vote7.data.model.PollId
-import agh.vote7.data.model.Question
+import agh.vote7.data.model.*
 
 class PollService(
     private val restApi: RestApi
@@ -18,4 +16,7 @@ class PollService(
     suspend fun getPollQuestions(pollId: PollId): List<Question> =
         restApi.getPollQuestions(pollId).await()
             .sortedBy { it.order }
+
+    suspend fun voteOnQuestion(questionId: QuestionId, answer: String): Unit =
+        restApi.voteOnQuestion(questionId, VoteOnQuestionRequest(answer)).await()
 }
