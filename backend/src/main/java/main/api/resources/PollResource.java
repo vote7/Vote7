@@ -25,10 +25,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Controller
@@ -54,7 +51,11 @@ public class PollResource {
     public @ResponseBody
     List<QuestionResponse> question(@PathVariable("pid") int pollId) throws ApplicationException {
         PollData data = pollRepository.getItem(pollId);
-        return data.getQuestions().stream().map(QuestionResponse::new).collect(Collectors.toList());
+        return data.getQuestions()
+                .stream()
+                .sorted(Comparator.comparingInt(QuestionData::getOrders))
+                .map(QuestionResponse::new)
+                .collect(Collectors.toList());
     }
 
     @RequestMapping(value = "/{pid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -119,7 +120,7 @@ public class PollResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        poll.setOpen(true);
+        poll.setUnderway(true);
         pollRepository.modifyItem(poll);
 
         return new SimpleResponse("Started poll.");
@@ -135,7 +136,7 @@ public class PollResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        poll.setOpen(false);
+        poll.setUnderway(false);
         pollRepository.modifyItem(poll);
 
         return new SimpleResponse("Stopped poll.");

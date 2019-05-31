@@ -28,6 +28,9 @@ public class QuestionData {
     private Boolean open;
 
     @Column
+    private Boolean underway;
+
+    @Column
     private Date createdAt;
 
     @Column
@@ -137,4 +140,11 @@ public class QuestionData {
         return this.answers.remove(answer);
     }
 
+    public Boolean getUnderway() {
+        return underway;
+    }
+
+    public void setUnderway(Boolean underway) {
+        this.underway = underway;
+    }
 }

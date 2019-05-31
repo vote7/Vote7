@@ -19,6 +19,8 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/questions")
@@ -60,16 +62,16 @@ public class QuestionResource {
         return new SimpleResponse(response);
     }
 
-    @RequestMapping(value = "putAfter/{qidSource}/{order}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "putOn/{qid}/{order}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    SimpleResponse putOn(@PathVariable("qidSource") int qidSource, @PathVariable("order") int order) throws ApplicationException {
-        QuestionData sourceQuestion = questionRepository.getItem(qidSource);
-        if(sourceQuestion == null)
-            throw new ApplicationException(ExceptionCode.ITEM_NOT_FOUND, qidSource);
+    SimpleResponse putOn(@PathVariable("qid") int qid, @PathVariable("order") int order) throws ApplicationException {
+        QuestionData question = questionRepository.getItem(qid);
+        if(question == null)
+            throw new ApplicationException(ExceptionCode.ITEM_NOT_FOUND, qid);
 
-        questionRepository.putOn(sourceQuestion, order);
+        questionRepository.putOn(question, order);
 
-        String response = String.format("Question %d successfully changed order to %d", qidSource, order);
+        String response = String.format("Question %d successfully changed order to %d", qid, order);
         return new SimpleResponse(response);
     }
 
@@ -78,7 +80,7 @@ public class QuestionResource {
     SimpleResponse startQuestion(@PathVariable("qid") int questionId, HttpServletRequest request) throws ApplicationException {
         QuestionData question = questionRepository.getItem(questionId);
         PollData poll = question.getPoll();
-        if (!poll.getOpen()) {
+        if (!poll.getUnderway()) {
             throw new ApplicationException(ExceptionCode.POLL_IS_CLOSED, poll.getId());
         }
 
@@ -87,18 +89,18 @@ public class QuestionResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        question.setOpen(true);
+        question.setUnderway(true);
         questionRepository.modifyItem(question);
 
         return new SimpleResponse("Started question.");
     }
 
-    @RequestMapping(value = "/stop/{pid}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/stop/{qid}", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     SimpleResponse stopQuestion(@PathVariable("qid") int questionId, HttpServletRequest request) throws ApplicationException {
         QuestionData question = questionRepository.getItem(questionId);
         PollData poll = question.getPoll();
-        if (!poll.getOpen()) {
+        if (!poll.getUnderway()) {
             throw new ApplicationException(ExceptionCode.POLL_IS_CLOSED, poll.getId());
         }
 
@@ -107,7 +109,7 @@ public class QuestionResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        question.setOpen(false);
+        question.setUnderway(false);
         questionRepository.modifyItem(question);
 
         return new SimpleResponse("Stopped question.");
@@ -119,14 +121,39 @@ public class QuestionResource {
         QuestionData question = questionRepository.getItem(questionId);
         UserData loggedInUser = securityUtil.getLoggedInUser(request);
 
-        if (questionRepository.canVote(question, loggedInUser)) {
-            AnswerData answerData = answerRepository.getOrGenerateAnswer(question, answerVote.getAnswer());
-            answerData.addUserWhoAnswered(loggedInUser);
-            answerRepository.modifyItem(answerData);
-            return new SimpleResponse("Voted!");
-        } else {
+        if (!questionRepository.havePermissonToVote(question, loggedInUser)) {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
+
+        if (!question.getUnderway()) {
+            throw new ApplicationException(ExceptionCode.VOTE_IS_CLOSED, question.getId());
+        }
+
+        if (questionRepository.haveVotedAlready(question, loggedInUser)) {
+            throw new ApplicationException(ExceptionCode.VOTED_ALREADY);
+        }
+
+
+        AnswerData answerData = answerRepository.getOrGenerateAnswer(question, answerVote.getAnswer());
+        answerData.addUserWhoAnswered(loggedInUser);
+        answerRepository.modifyItem(answerData);
+        return new SimpleResponse("Voted!");
+
+    }
+
+
+
+    @RequestMapping(value = "/{qid}/answer", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    SimpleResponse vote(@PathVariable("qid") int questionId, @RequestBody AnswerVote answerVote) throws ApplicationException {
+
+        //@TODO check if user can add answer
+        QuestionData question = questionRepository.getItem(questionId);
+        AnswerData answerData = answerRepository.getOrGenerateAnswer(question, answerVote.getAnswer());
+        answerRepository.modifyItem(answerData);
+        return new SimpleResponse("Added answer!");
+
+
     }
 
 }
