@@ -38,11 +38,9 @@ public class QuestionRepository extends AbstractRepository<QuestionData> {
         return newOrder == null ? 0 : newOrder + 1;
     }
 
+    @Transactional
     public void putOn(QuestionData sourceQuestion, int newOrders) {
         int oldOrders = sourceQuestion.getOrders();
-
-        sourceQuestion.setOrders(newOrders);
-        this.modifyItem(sourceQuestion);
 
         PollData poll = sourceQuestion.getPoll();
         if (oldOrders > newOrders) {
@@ -61,20 +59,21 @@ public class QuestionRepository extends AbstractRepository<QuestionData> {
                     }));
         }
 
+        sourceQuestion.setOrders(newOrders);
+        this.modifyItem(sourceQuestion);
     }
 
+    @Transactional
     public List<QuestionData> getPollQuestions(int pid){
         TypedQuery<QuestionData> query = getSessionFactory().getCurrentSession().createNativeQuery(
                 "(select * from questions where poll_id = :pid)", QuestionData.class).setParameter("pid", pid);
         return query.getResultList();
     }
 
-    public boolean canVote(QuestionData question, UserData user) {
-        return havePermissonToVote(question, user) &&
-                !haveVotedAlready(question, user);
-    }
 
-    private boolean havePermissonToVote(QuestionData question, UserData user) {
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public boolean havePermissonToVote(QuestionData question, UserData user) {
         return getSessionFactory()
                 .getCurrentSession()
                 .createCriteria(QuestionData.class, "q")
@@ -83,10 +82,12 @@ public class QuestionRepository extends AbstractRepository<QuestionData> {
                 .createAlias("g.members", "m")
                 .add(Restrictions.eq("q.id", question.getId()))
                 .add(Restrictions.eq("m.id", user.getId()))
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
                 .list().size() == 1;
     }
 
-    private boolean haveVotedAlready(QuestionData question, UserData user) {
+    @Transactional
+    public boolean haveVotedAlready(QuestionData question, UserData user) {
         return getSessionFactory()
                 .getCurrentSession()
                 .createCriteria(QuestionData.class, "q")
@@ -94,7 +95,8 @@ public class QuestionRepository extends AbstractRepository<QuestionData> {
                 .createAlias("a.usersWhoAnswered", "u")
                 .add(Restrictions.eq("q.id", question.getId()))
                 .add(Restrictions.eq("u.id", user.getId()))
-                .list().size() > 1;
+                .setResultTransformer(Criteria.DISTINCT_ROOT_ENTITY)
+                .list().size() > 0;
     }
 
 }

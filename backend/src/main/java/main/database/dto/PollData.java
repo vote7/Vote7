@@ -9,7 +9,6 @@ import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Entity
@@ -31,7 +30,7 @@ public class PollData {
     private Date date;
 
     @Column
-    private Boolean open;
+    private Boolean underway;
 
     @Column
     private Time startTime;
@@ -69,7 +68,7 @@ public class PollData {
         this.secretary = secretary;
         this.group = group;
         this.createdAt = new Date(System.currentTimeMillis());
-        this.open = false;
+        this.underway = false;
     }
 
     public int getId() {
@@ -176,19 +175,19 @@ public class PollData {
         return this.questions.remove(question);
     }
 
-    public Boolean getOpen() {
-        return open;
-    }
-
-    public void setOpen(Boolean open) {
-        this.open = open;
-    }
-
     public List<QuestionData> getOrderedQuestions() {
 
         return questions
                 .stream()
                 .sorted(Comparator.comparingInt(QuestionData::getOrders).reversed())
                 .collect(Collectors.toList());
+    }
+
+    public Boolean getUnderway() {
+        return underway;
+    }
+
+    public void setUnderway(Boolean underway) {
+        this.underway = underway;
     }
 }
