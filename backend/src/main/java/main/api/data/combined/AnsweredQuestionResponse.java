@@ -6,11 +6,11 @@ import main.api.data.questions.SimpleQuestionResponse;
 
 import java.util.Set;
 
-public class AnsweredQuestion {
+public class AnsweredQuestionResponse {
     private SimpleQuestionResponse question;
     private Set<AnswerResponse> answers;
 
-    public AnsweredQuestion(SimpleQuestionResponse question, Set<AnswerResponse> answers) {
+    public AnsweredQuestionResponse(SimpleQuestionResponse question, Set<AnswerResponse> answers) {
         this.question = question;
         this.answers = answers;
     }

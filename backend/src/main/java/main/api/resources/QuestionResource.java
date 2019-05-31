@@ -1,38 +1,39 @@
 package main.api.resources;
 
 import main.api.data.SimpleResponse;
-import main.api.data.answers.AnswerVote;
+import main.api.data.answers.AnswerVoteRequest;
 import main.api.data.questions.QuestionRequest;
 import main.api.data.questions.QuestionResponse;
+import main.api.data.questions.QuestionResultResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ExceptionCode;
 import main.api.utils.SecurityUtil;
 import main.database.dao.AnswerRepository;
+import main.database.dao.GroupRepository;
+import main.database.dao.PollRepository;
 import main.database.dao.QuestionRepository;
-import main.database.dto.AnswerData;
-import main.database.dto.PollData;
-import main.database.dto.QuestionData;
-import main.database.dto.UserData;
+import main.database.dto.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigInteger;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/questions")
 public class QuestionResource {
+
     @Autowired
     private SecurityUtil securityUtil;
-
     @Autowired
     private QuestionRepository questionRepository;
-
     @Autowired
     private AnswerRepository answerRepository;
+    @Autowired
+    private PollRepository pollRepository;
 
     @RequestMapping(value = "{qid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
@@ -117,7 +118,7 @@ public class QuestionResource {
 
     @RequestMapping(value = "/{qid}/vote", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    SimpleResponse vote(@PathVariable("qid") int questionId, @RequestBody AnswerVote answerVote, HttpServletRequest request) throws ApplicationException {
+    SimpleResponse vote(@PathVariable("qid") int questionId, @RequestBody AnswerVoteRequest answerVote, HttpServletRequest request) throws ApplicationException {
         QuestionData question = questionRepository.getItem(questionId);
         UserData loggedInUser = securityUtil.getLoggedInUser(request);
 
@@ -125,7 +126,7 @@ public class QuestionResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        if (!question.getUnderway()) {
+        if (question.getUnderway() != null && question.getUnderway()) {
             throw new ApplicationException(ExceptionCode.VOTE_IS_CLOSED, question.getId());
         }
 
@@ -134,7 +135,9 @@ public class QuestionResource {
         }
 
 
-        AnswerData answerData = answerRepository.getOrGenerateAnswer(question, answerVote.getAnswer());
+        AnswerData answerData = answerRepository.getAnswer(question, answerVote.getAnswer());
+        if(answerData == null)
+            throw new ApplicationException(ExceptionCode.ANSWER_NOT_EXISTING);
         answerData.addUserWhoAnswered(loggedInUser);
         answerRepository.modifyItem(answerData);
         return new SimpleResponse("Voted!");
@@ -145,15 +148,29 @@ public class QuestionResource {
 
     @RequestMapping(value = "/{qid}/answer", method = RequestMethod.PATCH, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    SimpleResponse vote(@PathVariable("qid") int questionId, @RequestBody AnswerVote answerVote) throws ApplicationException {
+    SimpleResponse addAnswer(@PathVariable("qid") int questionId,
+                        @RequestBody AnswerVoteRequest answerVote,
+                        HttpServletRequest request) throws ApplicationException {
 
-        //@TODO check if user can add answer
+        PollData poll = pollRepository.getPollByQuestionId(questionId);
+        UserData user = securityUtil.getLoggedInUser(request);
         QuestionData question = questionRepository.getItem(questionId);
+        if(!question.getOpen() && user.getId() != poll.getChairman().getId())
+            throw new ApplicationException(ExceptionCode.ACCESS_DENIED,"add answer");
         AnswerData answerData = answerRepository.getOrGenerateAnswer(question, answerVote.getAnswer());
         answerRepository.modifyItem(answerData);
         return new SimpleResponse("Added answer!");
-
-
     }
 
+    @RequestMapping(value = "/{qid}/result",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody QuestionResultResponse result(@PathVariable("qid") int questionId) throws ApplicationException {
+        QuestionData question = questionRepository.getItem(questionId);
+        QuestionResultResponse response = new QuestionResultResponse(question);
+        List<AnswerData> answers = answerRepository.getQuestionAnswers(questionId);
+        for(AnswerData ans : answers){
+            BigInteger count = answerRepository.countAnswerAnswers(ans.getId());
+            response.addResult(ans,count);
+        }
+        return response;
+    }
 }

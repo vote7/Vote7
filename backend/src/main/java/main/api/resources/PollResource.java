@@ -2,11 +2,12 @@ package main.api.resources;
 
 import main.api.data.SimpleResponse;
 import main.api.data.answers.AnswerResponse;
-import main.api.data.combined.AnsweredQuestion;
-import main.api.data.combined.PollInfo;
+import main.api.data.combined.AnsweredQuestionResponse;
+import main.api.data.combined.PollInfoResponse;
 import main.api.data.polls.PollResponse;
 import main.api.data.questions.QuestionRequest;
 import main.api.data.questions.QuestionResponse;
+import main.api.data.questions.QuestionResultResponse;
 import main.api.data.questions.SimpleQuestionResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ExceptionCode;
@@ -25,6 +26,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -78,10 +80,10 @@ public class PollResource {
 
     @RequestMapping(value = "/user/{uid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    List<PollInfo> getPolls(@PathVariable("uid") int uid) throws ApplicationException {
+    List<PollInfoResponse> getPolls(@PathVariable("uid") int uid) throws ApplicationException {
         List<PollData> polls = pollRepository.getUserPolls(uid);
 
-        List<PollInfo> userPolls = new LinkedList<>();
+        List<PollInfoResponse> userPolls = new LinkedList<>();
 
         List<SimpleQuestionResponse> pollQuestions = null;
         for(PollData poll: polls) {
@@ -90,7 +92,7 @@ public class PollResource {
                     .map(SimpleQuestionResponse::new)
                     .collect(Collectors.toList());
 
-            List<AnsweredQuestion> answeredQuestions = new LinkedList<>();
+            List<AnsweredQuestionResponse> answeredQuestions = new LinkedList<>();
 
             for(SimpleQuestionResponse question: pollQuestions){
                 Set<AnswerResponse> userAnswers = answerRepository
@@ -99,10 +101,10 @@ public class PollResource {
                         .map(AnswerResponse::new)
                         .collect(Collectors.toSet());
 
-                answeredQuestions.add(new AnsweredQuestion(question, userAnswers));
+                answeredQuestions.add(new AnsweredQuestionResponse(question, userAnswers));
             }
 
-            PollInfo pollInfo = new PollInfo(new PollResponse(poll));
+            PollInfoResponse pollInfo = new PollInfoResponse(new PollResponse(poll));
             pollInfo.setAnsweredQuestion(answeredQuestions);
             userPolls.add(pollInfo);
         }
@@ -140,5 +142,19 @@ public class PollResource {
         pollRepository.modifyItem(poll);
 
         return new SimpleResponse("Stopped poll.");
+    }
+
+    @Autowired
+    private QuestionResource questionResource;
+
+    @RequestMapping(value = "/{pid}/result",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    List<QuestionResultResponse> result(@PathVariable("pid") int pollId) throws ApplicationException {
+        List<QuestionResultResponse> response = new LinkedList<>();
+        PollData data = pollRepository.getItem(pollId);
+        for(QuestionData question : data.getQuestions()){
+            response.add(questionResource.result(question.getId()));
+        }
+        return response;
     }
 }

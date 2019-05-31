@@ -27,7 +27,7 @@ public class AnswerData {
     @JoinColumn(name="QUESTION_ID")
     private QuestionData question;
 
-    @ManyToMany
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
             name="USER_ANSWERS",
             joinColumns = { @JoinColumn(name = "answer_id") },
