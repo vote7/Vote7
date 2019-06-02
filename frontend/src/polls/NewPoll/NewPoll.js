@@ -1,88 +1,88 @@
 import React, { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
-import Form from "react-bootstrap/Form";
 import Api from "../../api/Api";
-import { Link } from "react-router-dom";
 import { RootContext } from "../../app/RootContext";
 import CenteredFormContainer from "../../shared/CenteredFormContainer";
-import ApiMocks from "../../api/ApiMocks";
+import { Redirect } from "react-router-dom";
+import { Field, Form, Formik } from "formik";
+import { FormikTextInput } from "../../shared/FormikTextInput";
+import { FormikUserInput } from "../../shared/FormikUserInput";
+import { FormikGroupInput } from "../../shared/FormikGroupInput";
 
-const NewPollForm = ({addPoll}) => {
-  const [pollName, setPollName] = useState("");
-  const [description, setDescription] = useState("");
-  const [secretaryId, setSecretaryId] = useState(1);
-  const [chairmanId, setChairmanId] = useState(1);
-  const [groupId, setGroupId] = useState(1);
+const NewPollForm = ({ onSubmit }) => {
+  const initial = {
+    name: "",
+    description: "",
+    secretaryId: null,
+    chairmanId: null,
+    groupId: 0,
+  };
 
-  const onSubmit = event => {
-    event.preventDefault();
-    addPoll({name: pollName,
-              description: description,
-              secretaryId: secretaryId,
-              chairmanId: chairmanId,
-              mutable: true,
-              groupId: groupId})
+  const validate = values => {
+    const errors = {};
+    if (!values.name) errors.name = "Required";
+    if (!values.secretaryId) errors.secretaryId = "Required";
+    if (!values.chairmanId) errors.chairmanId = "Required";
+    if (!values.groupId) errors.groupId = "Required";
+    return errors;
   };
 
   return (
-    <Form onSubmit={onSubmit}>
-      <Form.Group>
-        <Form.Control
-          type="text"
-          required
-          placeholder="Name"
-          size="lg"
-          value={pollName}
-          onChange={event => setPollName(event.target.value)}
-        />
-        <Form.Control
-          type="text"
-          placeholder="description"
-          size="lg"
-          value={description}
-          onChange={event => setDescription(event.target.value)}
-        />
-        <Form.Control
-          type="text"
-          required
-          placeholder="Secretary id"
-          size="lg"
-          value={secretaryId}
-          onChange={event => setSecretaryId(event.target.value)}
-        />
-        <Form.Control
-          type="text"
-          required
-          placeholder="Chairman id"
-          size="lg"
-          value={chairmanId}
-          onChange={event => setChairmanId(event.target.value)}
-        />
-        <Form.Control
-          type="text"
-          required
-          placeholder="Group id"
-          size="lg"
-          value={groupId}
-          onChange={event => setGroupId(event.target.value)}
-        />
-      </Form.Group>
-      <Button className="w-100" size="lg" variant="primary" type="submit">
-        Add
-      </Button>
-    </Form>
+    <Formik initialValues={initial} validate={validate} onSubmit={onSubmit}>
+      {({ isSubmitting }) => (
+        <Form>
+          <Field
+            name="name"
+            type="text"
+            label="Name"
+            component={FormikTextInput}
+          />
+          <Field
+            name="description"
+            type="text"
+            label="Description"
+            component={FormikTextInput}
+          />
+          <Field
+            name="secretaryId"
+            type="number"
+            label="Secretary"
+            component={FormikUserInput}
+          />
+          <Field
+            name="chairmanId"
+            type="number"
+            label="Chairman"
+            component={FormikUserInput}
+          />
+          <Field name="groupId" label="Group" component={FormikGroupInput} />
+          <Button
+            className="w-100"
+            variant="primary"
+            type="submit"
+            disabled={isSubmitting}
+          >
+            Create
+          </Button>
+        </Form>
+      )}
+    </Formik>
   );
 };
 
-const NewPoll = ({hide}) => {
-  const { token } = useContext(RootContext) 
-  const addPoll = poll => {
-    Api.createPoll(token, poll).then(hide)
+const NewPoll = () => {
+  const { token } = useContext(RootContext);
+  const [done, setDone] = useState(false);
+
+  const createPoll = poll => {
+    Api.createPoll(token, { ...poll, mutable: true }).then(() => setDone(true));
   };
+
+  if (done) return <Redirect to="/polls" />;
 
   return (
     <CenteredFormContainer title="New Poll">
-      <NewPollForm addPoll={addPoll} />
+      <NewPollForm onSubmit={createPoll} />
     </CenteredFormContainer>
   );
 };

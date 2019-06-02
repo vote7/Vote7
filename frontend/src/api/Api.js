@@ -1,23 +1,23 @@
 const baseUrl = process.env.REACT_APP_API_URL || "http://18.203.157.28/api";
 
-function parseJSON(response) {
-  if (response.status === 204 || response.status === 205) {
-    return null;
-  }
-  return response.json();
-}
-
-function checkStatus(response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
-  }
-
-  const error = new Error(response.statusText);
-  error.response = response;
+async function parseResponse(response) {
+  let json;
   try {
-    error.code = response.json().code;
-  } catch {}
-  throw error;
+    json = await response.json();
+  } catch {
+    json = null;
+  }
+
+  if (response.status >= 200 && response.status < 300) {
+    return json;
+  } else {
+    const error = new Error(response.statusText);
+    error.response = response;
+    if (json) {
+      error.code = json.code;
+    }
+    throw error;
+  }
 }
 
 function buildUrl(url, params) {
@@ -28,7 +28,7 @@ function buildUrl(url, params) {
   return urlBuilder.toString();
 }
 
-function request({ url, method, params, body }) {
+export function request({ url, method, params, body }) {
   const fullUrl = buildUrl(baseUrl + url, params);
   const options = {
     method,
@@ -36,9 +36,7 @@ function request({ url, method, params, body }) {
     body: body ? JSON.stringify(body) : body,
   };
 
-  return fetch(fullUrl, options)
-    .then(checkStatus)
-    .then(parseJSON);
+  return fetch(fullUrl, options).then(parseResponse);
 }
 
 const Api = {
@@ -67,21 +65,23 @@ const Api = {
       params: { token },
     }),
 
-  getPolls: async (token, uid) =>
-    request({
+  getUserPolls: async (token, userId) => {
+    const pollsWithAnswers = await request({
       method: "GET",
-      url: "/polls/user/" + uid,
-      params: { token }
-    }),
-  
-  createPoll: async (token, body) => 
+      url: `/polls/user/${userId}`,
+      params: { token },
+    });
+    return pollsWithAnswers.map(p => p.poll);
+  },
+
+  createPoll: async (token, body) =>
     request({
       method: "POST",
       url: "/groups/" + body.groupId + "/poll",
       body: body,
       params: {token}
     }),
-  
+
   getQuestions: async(token, pollId) =>
     request({
       method: "GET",
@@ -95,7 +95,7 @@ const Api = {
       url: "/polls/" + pollId,
       params: {token}
     }),
-  addQuestion: async (token, pollId, question) => 
+  addQuestion: async (token, pollId, question) =>
     request({
       method: "POST",
       url: "/polls/" + pollId + "/question",
