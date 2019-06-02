@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import Api from "../api/Api";
 import { Link } from "react-router-dom";
 import { RootContext } from "../app/RootContext";
-import CenteredFormContainer from "../shared/CenteredFormContainer";
+import CenteredFormContainer from "../shared/forms/CenteredFormContainer";
 
 const RegisterForm = ({ register }) => {
   const [fullName, setFullName] = useState("");

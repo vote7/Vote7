@@ -2,12 +2,12 @@ import React, { useContext, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Api from "../../api/Api";
 import { RootContext } from "../../app/RootContext";
-import CenteredFormContainer from "../../shared/CenteredFormContainer";
+import CenteredFormContainer from "../../shared/forms/CenteredFormContainer";
 import { Redirect } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
-import { FormikTextInput } from "../../shared/FormikTextInput";
-import { FormikUserInput } from "../../shared/FormikUserInput";
-import { FormikGroupInput } from "../../shared/FormikGroupInput";
+import { FormikTextInput } from "../../shared/forms/FormikTextInput";
+import { FormikUserInput } from "../../shared/forms/FormikUserInput";
+import { FormikGroupInput } from "../../shared/forms/FormikGroupInput";
 
 const NewPollForm = ({ onSubmit }) => {
   const initial = {

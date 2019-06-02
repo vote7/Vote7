@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
 import { RootContext } from "../../app/RootContext";
 import { GroupApi } from "../../api/GroupApi";
-import { FormGroup } from "../../shared/FormGroup";
-import { ChooseUserInput } from "../../shared/ChooseUserInput";
+import { FormGroup } from "../../shared/forms/FormGroup";
+import { ChooseUserInput } from "../../shared/forms/ChooseUserInput";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faTimes } from "@fortawesome/free-solid-svg-icons";
 import { UserDesc } from "../../shared/UserDesc";

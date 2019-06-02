@@ -1,11 +1,11 @@
 import React, { useContext, useState } from "react";
 import { RootContext } from "../../app/RootContext";
-import CenteredFormContainer from "../../shared/CenteredFormContainer";
+import CenteredFormContainer from "../../shared/forms/CenteredFormContainer";
 import { GroupApi } from "../../api/GroupApi";
 import { Redirect } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import { Button } from "react-bootstrap";
-import { FormikTextInput } from "../../shared/FormikTextInput";
+import { FormikTextInput } from "../../shared/forms/FormikTextInput";
 
 const GroupForm = ({ initial, onSubmit }) => {
   const validate = ({ name }) => {

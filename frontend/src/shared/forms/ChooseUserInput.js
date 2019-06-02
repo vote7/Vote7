@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from "react";
-import { UserApi } from "../api/UserApi";
-import { RootContext } from "../app/RootContext";
-import { UserDesc } from "./UserDesc";
+import { UserApi } from "../../api/UserApi";
+import { RootContext } from "../../app/RootContext";
+import { UserDesc } from "../UserDesc";
 import { ChooseInput } from "./ChooseInput";
 
 export const ChooseUserInput = props => {

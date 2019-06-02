@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState } from "react";
-import { RootContext } from "../app/RootContext";
-import { GroupApi } from "../api/GroupApi";
+import { RootContext } from "../../app/RootContext";
+import { GroupApi } from "../../api/GroupApi";
 import { ChooseInput } from "./ChooseInput";
-import { GroupDesc } from "./GroupDesc";
+import { GroupDesc } from "../GroupDesc";
 
 export const ChooseGroupInput = props => {
   const { token } = useContext(RootContext);
