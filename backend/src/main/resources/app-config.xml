@@ -10,9 +10,9 @@
         <property name="driverClassName" value="org.postgresql.Driver" />
 
                         <!-- TODO Connection Properties -->
-        <property name="url" value="jdbc:postgresql://localhost:5432/postgres" />
+        <property name="url" value="jdbc:postgresql://#{systemEnvironment['SPRING_DB_HOST'] ?: 'localhost'}:5432/postgres" />
         <property name="username" value="postgres" />
-        <property name="password" value="123" />
+        <property name="password" value="#{systemEnvironment['SPRING_DB_PASSWORD'] ?: '123'}" />
 
     </bean>
     <bean id="sessionFactory" class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">

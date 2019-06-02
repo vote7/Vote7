@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:8080";
+const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
 function parseJSON(response) {
   if (response.status === 204 || response.status === 205) {
@@ -21,7 +21,7 @@ function checkStatus(response) {
 }
 
 function buildUrl(url, params) {
-  const urlBuilder = new URL(url);
+  const urlBuilder = new URL(url, window.location.href);
   if (params) {
     urlBuilder.search = new URLSearchParams(params).toString();
   }

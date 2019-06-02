@@ -84,13 +84,8 @@ public class GroupResource {
     SimpleResponse removeUser(@PathVariable("gid") int gid, @PathVariable("uid") int uid) throws ApplicationException {
         UserData user = userRepository.getItem(uid);
         GroupData group = groupRepository.getItem(gid);
-
-        // FIXME not working
-        // TODO Check if user in group & if user is deleted
         String response = String.format("User %d successfully removed from group %d", uid, gid);
-        if(group.getMembers().contains(user) && group.removeMember(user) ){
-            throw new ApplicationException(ExceptionCode.USER_NOT_FOUND,uid);
-        }
+        group.removeMember(user);
         groupRepository.modifyItem(group);
         return new SimpleResponse(response);
     }

@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  db:
+    image: postgres:11.3-alpine
+    ports:
+      - "5432:5432"
+    environment:
+      POSTGRES_PASSWORD: X9G7Rwp93ktr2zRmJvkZjXvqa2nwxCg6
+    restart: always
+
+  backend:
+    build: ./backend
+    environment:
+      SPRING_DB_HOST: db
+      SPRING_DB_PASSWORD: X9G7Rwp93ktr2zRmJvkZjXvqa2nwxCg6
+    depends_on:
+      - db
+    restart: always
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    restart: always

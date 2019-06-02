@@ -12,7 +12,11 @@ public enum ExceptionCode {
     USER_NOT_FOUND("Cannot find user by id: {0}"),
     ITEM_NOT_FOUND("Item not found by id: {0}"),
     POLL_IS_CLOSED("Poll with id {0} is closed"),
-    NOT_ALLOWED("You are not allowed to do this")
+    VOTE_IS_CLOSED("Vote with id {0} is closed"),
+    NOT_ALLOWED("You are not allowed to do this"),
+    VOTED_ALREADY("You have voted already"),
+    ACCESS_DENIED("Access to current resource is denied: {0}"),
+    ANSWER_NOT_EXISTING("Answer is not existing. Wrong vote")
     ;
 
     private String message;

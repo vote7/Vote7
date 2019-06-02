@@ -1,6 +1,6 @@
 package main.api.data.answers;
 
-public class AnswerVote {
+public class AnswerVoteRequest {
     private String answer;
 
     public String getAnswer() {

@@ -4,19 +4,19 @@ import main.api.data.polls.PollResponse;
 
 import java.util.List;
 
-public class PollInfo {
+public class PollInfoResponse {
     private PollResponse poll;
-    private List<AnsweredQuestion> answeredQuestion;
+    private List<AnsweredQuestionResponse> answeredQuestion;
 
-    public PollInfo(PollResponse poll) {
+    public PollInfoResponse(PollResponse poll) {
         this.poll = poll;
     }
 
-    public List<AnsweredQuestion> getAnsweredQuestion() {
+    public List<AnsweredQuestionResponse> getAnsweredQuestion() {
         return answeredQuestion;
     }
 
-    public void setAnsweredQuestion(List<AnsweredQuestion> answeredQuestion) {
+    public void setAnsweredQuestion(List<AnsweredQuestionResponse> answeredQuestion) {
         this.answeredQuestion = answeredQuestion;
     }
 

@@ -39,4 +39,7 @@ public class AnswerResponse {
         return updatedAt;
     }
 
+    public String toString(){
+        return content;
+    }
 }

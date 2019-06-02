@@ -25,6 +25,12 @@ class ClosedAnswerView(context: Context) : FrameLayout(context) {
 
     var onClicked: () -> Unit = {}
 
+    var isEditable: Boolean
+        get() = isClickable
+        set(value) {
+            isClickable = value
+        }
+
     init {
         LayoutInflater.from(context).inflate(R.layout.answer_closed, this)
         setOnClickListener { onClicked() }
