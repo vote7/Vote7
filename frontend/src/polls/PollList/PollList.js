@@ -4,7 +4,7 @@ import { RootContext } from "../../app/RootContext";
 import { Link } from "react-router-dom";
 import { SimpleList } from "../../shared/SimpleList";
 
-const PollList = () => {
+export const PollList = () => {
   const { user, token } = useContext(RootContext);
   const [polls, setPolls] = useState([]);
 
@@ -21,7 +21,7 @@ const PollList = () => {
         </Link>
       </div>
       <SimpleList
-        elements={polls}
+        items={polls}
         keyFunc={poll => poll.id}
         titleFunc={poll => poll.name}
         descriptionFunc={poll => poll.description}
@@ -31,4 +31,3 @@ const PollList = () => {
   );
 };
 
-export default PollList;

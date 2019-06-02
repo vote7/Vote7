@@ -70,7 +70,7 @@ const NewPollForm = ({ onSubmit }) => {
   );
 };
 
-const NewPoll = () => {
+export const NewPoll = () => {
   const { token } = useContext(RootContext);
   const [done, setDone] = useState(false);
 
@@ -86,5 +86,3 @@ const NewPoll = () => {
     </CenteredFormContainer>
   );
 };
-
-export default NewPoll;

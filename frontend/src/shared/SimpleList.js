@@ -2,10 +2,10 @@ import { Link } from "react-router-dom";
 import React from "react";
 
 export const SimpleList = ({
-  items,
+  items = [],
   linkFunc,
   titleFunc,
-  descriptionFunc,
+  descriptionFunc = () => false,
   keyFunc,
 }) => (
   <div className="list-group">
@@ -17,7 +17,7 @@ export const SimpleList = ({
       >
         <strong>{titleFunc(item)}</strong>
         <br />
-        {descriptionFunc && descriptionFunc(item)}
+        {descriptionFunc(item)}
       </Link>
     ))}
   </div>

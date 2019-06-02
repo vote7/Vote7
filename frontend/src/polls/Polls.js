@@ -1,8 +1,8 @@
 import React from "react";
 import { Route, Switch } from "react-router-dom";
-import PollList from "./PollList/PollList";
 import PollDetails from "./PollDetails/PollDetails";
-import NewPoll from "./NewPoll/NewPoll";
+import { PollList } from "./PollList/PollList";
+import { NewPoll } from "./NewPoll/NewPoll";
 
 const Polls = () => (
   <Switch>
