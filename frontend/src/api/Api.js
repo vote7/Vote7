@@ -66,6 +66,61 @@ const Api = {
       url: "/users/me",
       params: { token },
     }),
+
+  getPolls: async (token, uid) =>
+    request({
+      method: "GET",
+      url: "/polls/user/" + uid,
+      params: { token }
+    }),
+  
+  createPoll: async (token, body) => 
+    request({
+      method: "POST",
+      url: "/groups/" + body.groupId + "/poll",
+      body: body,
+      params: {token}
+    }),
+  
+  getQuestions: async(token, pollId) =>
+    request({
+      method: "GET",
+      url: "/polls/" + pollId + "/question",
+      params: {token}
+    }),
+
+  getPoll: async(token, pollId) =>
+    request({
+      method: "GET",
+      url: "/polls/" + pollId,
+      params: {token}
+    }),
+  addQuestion: async (token, pollId, question) => 
+    request({
+      method: "POST",
+      url: "/polls/" + pollId + "/question",
+      params: {token},
+      body: {content: question.content, open: question.open}
+    }),
+  addAnswer: async (token, questionId, content) =>
+    request({
+      method: "PATCH",
+      url: "/questions/" + questionId + "/answer",
+      params: {token},
+      body: {content}
+    }),
+  removeQuestion: async (token, questionId) =>
+    request({
+      method: "DELETE",
+      url: "/questions/" + questionId,
+      params: {token}
+    }),
+  removeAnswer: async (token, questionId, answerId) =>
+    request({
+      method: "DELETE",
+      url: "/questions/" + questionId + "/answer/" + answerId,
+      params: {token}
+    }),
 };
 
 export default Api;
