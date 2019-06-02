@@ -1,4 +1,4 @@
-const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:8080";
+const baseUrl = process.env.REACT_APP_API_URL || "http://18.203.157.28/api";
 
 function parseJSON(response) {
   if (response.status === 204 || response.status === 205) {
