@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:8080";
+const baseUrl = process.env.REACT_APP_API_URL || "http://localhost:8080";
 
 function parseJSON(response) {
   if (response.status === 204 || response.status === 205) {
@@ -21,7 +21,7 @@ function checkStatus(response) {
 }
 
 function buildUrl(url, params) {
-  const urlBuilder = new URL(url);
+  const urlBuilder = new URL(url, window.location.href);
   if (params) {
     urlBuilder.search = new URLSearchParams(params).toString();
   }
@@ -65,6 +65,61 @@ const Api = {
       method: "GET",
       url: "/users/me",
       params: { token },
+    }),
+
+  getPolls: async (token, uid) =>
+    request({
+      method: "GET",
+      url: "/polls/user/" + uid,
+      params: { token }
+    }),
+  
+  createPoll: async (token, body) => 
+    request({
+      method: "POST",
+      url: "/groups/" + body.groupId + "/poll",
+      body: body,
+      params: {token}
+    }),
+  
+  getQuestions: async(token, pollId) =>
+    request({
+      method: "GET",
+      url: "/polls/" + pollId + "/question",
+      params: {token}
+    }),
+
+  getPoll: async(token, pollId) =>
+    request({
+      method: "GET",
+      url: "/polls/" + pollId,
+      params: {token}
+    }),
+  addQuestion: async (token, pollId, question) => 
+    request({
+      method: "POST",
+      url: "/polls/" + pollId + "/question",
+      params: {token},
+      body: {content: question.content, open: question.open}
+    }),
+  addAnswer: async (token, questionId, content) =>
+    request({
+      method: "PATCH",
+      url: "/questions/" + questionId + "/answer",
+      params: {token},
+      body: {content}
+    }),
+  removeQuestion: async (token, questionId) =>
+    request({
+      method: "DELETE",
+      url: "/questions/" + questionId,
+      params: {token}
+    }),
+  removeAnswer: async (token, questionId, answerId) =>
+    request({
+      method: "DELETE",
+      url: "/questions/" + questionId + "/answer/" + answerId,
+      params: {token}
     }),
 };
 
