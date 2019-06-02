@@ -5,9 +5,7 @@ import { RootContext } from "../../app/RootContext";
 import CenteredFormContainer from "../../shared/forms/CenteredFormContainer";
 import { Redirect } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
-import { FormikTextInput } from "../../shared/forms/FormikTextInput";
-import { FormikUserInput } from "../../shared/forms/FormikUserInput";
-import { FormikGroupInput } from "../../shared/forms/FormikGroupInput";
+import { FormikChooseGroupInput, FormikChooseUserInput, FormikTextInput } from "../../shared/forms/formikInputs";
 
 const NewPollForm = ({ onSubmit }) => {
   const initial = {
@@ -47,15 +45,15 @@ const NewPollForm = ({ onSubmit }) => {
             name="secretaryId"
             type="number"
             label="Secretary"
-            component={FormikUserInput}
+            component={FormikChooseUserInput}
           />
           <Field
             name="chairmanId"
             type="number"
             label="Chairman"
-            component={FormikUserInput}
+            component={FormikChooseUserInput}
           />
-          <Field name="groupId" label="Group" component={FormikGroupInput} />
+          <Field name="groupId" label="Group" component={FormikChooseGroupInput} />
           <Button
             className="w-100"
             variant="primary"

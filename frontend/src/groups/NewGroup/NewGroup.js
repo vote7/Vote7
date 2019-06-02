@@ -5,7 +5,7 @@ import { GroupApi } from "../../api/GroupApi";
 import { Redirect } from "react-router-dom";
 import { Field, Form, Formik } from "formik";
 import { Button } from "react-bootstrap";
-import { FormikTextInput } from "../../shared/forms/FormikTextInput";
+import { FormikTextInput } from "../../shared/forms/formikInputs";
 
 const GroupForm = ({ initial, onSubmit }) => {
   const validate = ({ name }) => {

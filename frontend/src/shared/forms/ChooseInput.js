@@ -22,6 +22,7 @@ const Suggestions = ({ items, onClick, renderItem }) => (
 );
 
 export const ChooseInput = ({
+  name,
   value,
   onChange,
   onBlur,
@@ -47,14 +48,14 @@ export const ChooseInput = ({
   const handleBlur = () => {
     setTimeout(() => {
       setIsFocused(false);
-      if (onBlur) onBlur();
+      if (onBlur) onBlur({ target: { name } });
     }, 100);
   };
 
   const handleSuggestionClick = itemId => {
     setSearch("");
     setIsFocused(false);
-    onChange(itemId);
+    if (onChange) onChange({ target: { name, value: itemId } });
   };
 
   const handleClearClick = () => {

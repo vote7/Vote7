@@ -25,7 +25,10 @@ const EditableUserList = ({ users, onAdd, onRemove }) => (
       </div>
     ))}
     <div className="list-group-item p-2">
-      <ChooseUserInput userId={null} onChange={onAdd} placeholder="Add user..." />
+      <ChooseUserInput
+        onChange={event => onAdd(event.target.value)}
+        placeholder="Add user..."
+      />
     </div>
   </div>
 );
