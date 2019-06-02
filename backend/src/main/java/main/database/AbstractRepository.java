@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.stream.Collectors;
 
 public abstract  class AbstractRepository<DATA> {
 
@@ -40,7 +41,8 @@ public abstract  class AbstractRepository<DATA> {
     @Transactional
     @SuppressWarnings("unchecked")
     public List<DATA> getAllItems() throws ApplicationException{
-        return  (List<DATA>) sessionFactory.getCurrentSession().createCriteria(data).list();
+        return  (List<DATA>) sessionFactory.getCurrentSession().createCriteria(data)
+                .list().stream().distinct().collect(Collectors.toList());
     }
 
     @Transactional

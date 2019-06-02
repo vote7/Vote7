@@ -3,6 +3,7 @@ package main.api.data.groups;
 public class GroupRequest {
     private String name;
     private String description;
+    private int adminId;
 
     public String getName() {
         return name;
@@ -18,5 +19,13 @@ public class GroupRequest {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(int adminId) {
+        this.adminId = adminId;
     }
 }

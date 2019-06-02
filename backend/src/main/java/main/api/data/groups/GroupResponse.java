@@ -11,12 +11,14 @@ public class GroupResponse {
     private int id;
     private String name;
     private String description;
+    private String adminId;
     private Set<UserResponse> users;
 
     public GroupResponse(GroupData data) {
         this.id = data.getId();
         this.name = data.getName();
         this.description = data.getDescription();
+        this.adminId = data.getAdmin() == null ? null : Integer.toString(data.getAdmin().getId());
         prepareUsersResponse(data.getMembers());
     }
 
@@ -54,5 +56,13 @@ public class GroupResponse {
 
     public void setUsers(Set<UserResponse> users) {
         this.users = users;
+    }
+
+    public String getAdminId() {
+        return adminId;
+    }
+
+    public void setAdminId(String adminId) {
+        this.adminId = adminId;
     }
 }

@@ -38,6 +38,7 @@ public class GroupResource {
     public @ResponseBody
     void create(@RequestBody GroupRequest request) throws ApplicationException {
         GroupData data = new GroupData(request);
+        data.setAdmin(userRepository.getItem(request.getAdminId()));
         groupRepository.createItem(data);
     }
 
