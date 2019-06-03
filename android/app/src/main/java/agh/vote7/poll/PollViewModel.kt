@@ -71,8 +71,7 @@ class PollViewModel(
         val questionViewModel = getQuestionViewModel(questionId)
 
         try {
-            // TODO(pjanczyk): remove runCatching after API works
-            runCatching { pollService.voteOnQuestion(questionId, answer) }
+            pollService.voteOnQuestion(questionId, answer)
         } catch (e: Exception) {
             Timber.e(e, "Failed to vote")
             showSnackbar.value = Event("Failed to vote")

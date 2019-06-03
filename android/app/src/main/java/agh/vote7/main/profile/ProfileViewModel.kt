@@ -38,8 +38,7 @@ class ProfileViewModel(
             name.value = "${user.name} ${user.surname}"
             email.value = user.email
 
-            // TODO(pjanczyk): remove runCatching after API starts working
-            val groups = runCatching { restApi.getUserGroups(user.id).await() }.getOrElse { emptyList() }
+            val groups = restApi.getUserGroups(user.id).await()
             groupNames.value = groups.map { it.name }
 
             loading.value = false
