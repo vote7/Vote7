@@ -3,7 +3,7 @@ WORKDIR /app
 ENV PATH /app/node_modules/.bin:$PATH
 ENV REACT_APP_API_URL /api
 COPY package.json .
-RUN npm install --silent
+RUN npm install --ignore-scripts
 COPY public public
 COPY src src
 RUN npm run build
