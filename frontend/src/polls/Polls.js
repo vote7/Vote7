@@ -1,16 +1,18 @@
 import React from "react";
-import { Route } from "react-router-dom";
-import PollList from "./PollList/PollList";
+import { Route, Switch } from "react-router-dom";
 import PollDetails from "./PollDetails/PollDetails";
+import { PollList } from "./PollList/PollList";
+import { NewPoll } from "./NewPoll/NewPoll";
 
 const Polls = () => (
-  <>
-    <Route exact path="/polls" component={PollList} />
+  <Switch>
+    <Route exact path="/polls/new" component={NewPoll} />
     <Route
       path={"/polls/:id"}
       render={({ match }) => <PollDetails pollId={match.params.id} />}
     />
-  </>
+    <Route component={PollList} />
+  </Switch>
 );
 
 export default Polls;

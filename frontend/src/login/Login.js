@@ -4,7 +4,7 @@ import Form from "react-bootstrap/Form";
 import Api from "../api/Api";
 import { Link } from "react-router-dom";
 import { RootContext } from "../app/RootContext";
-import Index from "../shared/CenteredFormContainer";
+import CenteredFormContainer from "../shared/forms/CenteredFormContainer";
 
 const LoginForm = ({ login }) => {
   const [email, setEmail] = useState("");
@@ -61,9 +61,9 @@ const Login = () => {
   };
 
   return (
-    <Index title="Sign in">
+    <CenteredFormContainer title="Sign in">
       <LoginForm login={login} />
-    </Index>
+    </CenteredFormContainer>
   );
 };
 

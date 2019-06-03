@@ -13,7 +13,7 @@ import Form from "react-bootstrap/Form";
 import { RootContext } from "../../app/RootContext";
 import Api from "../../api/Api"
 import Button from "react-bootstrap/Button";
-import CenteredFormContainer from "../../shared/CenteredFormContainer";
+import CenteredFormContainer from "../../shared/forms/CenteredFormContainer";
 
 const DragHandle = SortableHandle(() => (
   <span className="btn btn-link" style={{ cursor: "ns-resize" }}>

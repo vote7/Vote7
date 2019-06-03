@@ -19,6 +19,11 @@ const Nav = () => {
             Polls
           </Link>
         </li>
+        <li className="nav-item">
+          <Link className="nav-link" to="/groups">
+            Groups
+          </Link>
+        </li>
       </ul>
       <ul className="navbar-nav align-items-center">
         <li className="nav-item">
