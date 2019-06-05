@@ -19,6 +19,8 @@ class OpenQuestionView(context: Context) : AbstractQuestionView(context) {
     override var currentAnswer: String?
         get() = answerView.text
         set(value) {
-            answerView.text = value ?: ""
+            if (answerView.text != value) {
+                answerView.text = value ?: ""
+            }
         }
 }

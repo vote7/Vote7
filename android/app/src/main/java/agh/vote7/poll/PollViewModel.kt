@@ -51,12 +51,19 @@ class PollViewModel(
 
     private suspend fun loadData() {
         try {
-            val poll = pollService.getPoll(pollId)
+            val (poll, answeredQuestions) = pollService.getPollWithAnswers(pollId)
             val questions = pollService.getPollQuestions(pollId)
 
             this.title.value = poll.name
             this.questions.value = questions.map { question ->
-                QuestionViewModel(question, this)
+                QuestionViewModel(question, this).apply {
+                    currentAnswer.value = answeredQuestions
+                        .find { it.question.id == question.id }
+                        ?.answers
+                        ?.firstOrNull()
+                        ?.content
+                    isEditable.value = currentAnswer.value.isNullOrEmpty()
+                }
             }
         } catch (e: Exception) {
             Timber.e(e, "Failed to load poll")
