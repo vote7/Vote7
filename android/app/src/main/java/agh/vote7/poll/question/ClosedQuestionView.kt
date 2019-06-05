@@ -16,13 +16,11 @@ class ClosedQuestionView(context: Context) : AbstractQuestionView(context) {
             recreateAnswers()
         }
 
-    var selectedAnswer: String? = null
+    override var currentAnswer: String? = null
         set(value) {
             field = value
             recreateAnswers()
         }
-
-    var onAnswerClicked: (String) -> Unit = {}
 
     private fun recreateAnswers() {
         answersContainer.removeAllViews()
@@ -31,8 +29,11 @@ class ClosedQuestionView(context: Context) : AbstractQuestionView(context) {
             ClosedAnswerView(context).also {
                 it.content = answer
                 it.isEditable = isEditable
-                it.onClicked = { onAnswerClicked(it.content) }
-                it.isChecked = (it.content == selectedAnswer)
+                it.isChecked = (it.content == currentAnswer)
+                it.onClicked = {
+                    currentAnswer = answer
+                    onAnswerChanged(it.content)
+                }
 
                 answersContainer.addView(it)
             }

@@ -15,13 +15,9 @@ class QuestionViewModel(
     val closedAnswers: List<String> = question.answers.map { it.content }
 
     val isEditable = MutableLiveData<Boolean>(true)
-    val selectedClosedAnswer = MutableLiveData<String?>(null)
+    val currentAnswer = MutableLiveData<String?>(null)
 
-    fun onClosedAnswerClicked(answer: String) {
-        pollViewModel.onClosedAnswerClicked(id, answer)
-    }
-
-    fun onOpenAnswerSubmitted(answer: String) {
-        pollViewModel.onOpenAnswerSubmitted(id, answer)
+    fun onAnswerChanged(answer: String?) {
+        pollViewModel.onAnswerChanged(id, answer)
     }
 }

@@ -5,6 +5,7 @@ import agh.vote7.utils.DependencyProvider
 import agh.vote7.utils.getViewModel
 import agh.vote7.utils.observeEvent
 import android.os.Bundle
+import android.view.MenuItem
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -16,18 +17,30 @@ class PollActivity : AppCompatActivity() {
     private val args by navArgs<PollActivityArgs>()
 
     private lateinit var viewModel: PollViewModel
+    private lateinit var voteButton: MenuItem
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_poll)
-        setSupportActionBar(toolbar)
-        supportActionBar?.title = ""
-        supportActionBar?.setDisplayHomeAsUpEnabled(true)
+
+        toolbar.setNavigationOnClickListener { onBackPressed() }
+
+        voteButton = toolbar.menu.add("Vote").apply {
+            setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            setOnMenuItemClickListener {
+                viewModel.onVoteClicked()
+                true
+            }
+        }
 
         val questionAdapter = QuestionRecyclerViewAdapter(this)
         questionRecyclerView.adapter = questionAdapter
 
         viewModel = getViewModel { DependencyProvider.pollViewModel(args.pollId) }
+
+        viewModel.isVoteButtonEnabled.observe(this, Observer {
+            voteButton.isVisible = it
+        })
 
         viewModel.title.observe(this, Observer {
             toolbar.title = it
@@ -49,10 +62,5 @@ class PollActivity : AppCompatActivity() {
                 .setNegativeButton("Cancel", null)
                 .show()
         })
-    }
-
-    override fun onSupportNavigateUp(): Boolean {
-        super.onBackPressed()
-        return true
     }
 }
