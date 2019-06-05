@@ -6,7 +6,6 @@ import agh.vote7.data.model.Poll
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import kotlinx.android.synthetic.main.list_item_poll.view.*
 
@@ -28,15 +27,14 @@ class PollRecyclerViewAdapter(
 
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
         val item = polls[position]
-        holder.titleView.text = item.name
-        holder.view.setOnClickListener {
+        holder.itemView.title.text = item.name
+        holder.itemView.description.text = item.description
+        holder.itemView.setOnClickListener {
             onClick(item)
         }
     }
 
     override fun getItemCount(): Int = polls.size
 
-    class ViewHolder(val view: View) : RecyclerView.ViewHolder(view) {
-        val titleView: TextView = view.title
-    }
+    class ViewHolder(view: View) : RecyclerView.ViewHolder(view)
 }
