@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Vote</string>
-    <string name="title_home">Home</string>
+    <string name="title_home">Vote</string>
     <string name="title_history">History</string>
     <string name="title_profile">Profile</string>
     <string name="title_activity_voting">Voting</string>
