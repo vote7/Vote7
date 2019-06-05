@@ -77,10 +77,13 @@ public class ApplicationFilter implements Filter {
     public void destroy() {}
 
     public static synchronized String generateToken(int id){
-        String token = id+">"+generator.nextValue();
-        tokens.remove(id);
-        tokens.put(id,token);
-        return token;
+        if (tokens.containsKey(id)) {
+            return tokens.get(id);
+        } else {
+            String token = id + ">" + generator.nextValue();
+            tokens.put(id, token);
+            return token;
+        }
     }
 
 
