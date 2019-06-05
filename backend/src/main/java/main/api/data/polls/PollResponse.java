@@ -10,6 +10,7 @@ public class PollResponse extends AbstractPoll {
     private Date date;
     private int chairmanID;
     private int secretaryID;
+    private boolean underway;
 
     public PollResponse(PollData data){
         super(data);
@@ -17,6 +18,7 @@ public class PollResponse extends AbstractPoll {
         this.date = data.getDate();
         this.chairmanID = data.getChairman().getId();
         this.secretaryID = data.getSecretary().getId();
+        this.underway = data.getUnderway() != null && data.getUnderway();
     }
 
     public int getId() {
@@ -45,5 +47,9 @@ public class PollResponse extends AbstractPoll {
 
     public void setSecretaryID(int secretaryID) {
         this.secretaryID = secretaryID;
+    }
+
+    public boolean getUnderway() {
+        return underway;
     }
 }
