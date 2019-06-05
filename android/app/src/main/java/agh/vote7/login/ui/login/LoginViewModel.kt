@@ -20,7 +20,7 @@ class LoginViewModel(
     private val _loginForm = MutableLiveData<LoginFormState>()
     val loginFormState: LiveData<LoginFormState> = _loginForm
 
-    val loadingVisible = MutableLiveData<Boolean>()
+    val loadingVisible = MutableLiveData<Boolean>(true)
 
     val navigateToRegisterView = MutableLiveData<Event<Unit>>()
     val navigateToMainView = MutableLiveData<Event<Unit>>()
@@ -28,8 +28,12 @@ class LoginViewModel(
     val showToast = MutableLiveData<Event<String>>()
 
     init {
-        if (loginService.isLoggedIn) {
-            navigateToMainView.value = Event(Unit)
+        viewModelScope.launch {
+            if (loginService.isLoggedIn()) {
+                navigateToMainView.value = Event(Unit)
+            } else {
+                loadingVisible.value = false
+            }
         }
     }
 
