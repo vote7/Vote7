@@ -11,12 +11,14 @@ public class QuestionResponse extends AbstractQuestion {
     private Integer id;
     private List<AnswerResponse> answers;
     private Integer order;
+    private boolean underway;
 
     public QuestionResponse(QuestionData data){
         super(data);
         this.id = data.getId();
         this.answers = data.getAnswers().stream().map(AnswerResponse::new).collect(Collectors.toList());
         this.order = data.getOrders();
+        this.underway = data.getUnderway() != null && data.getUnderway();
     }
 
     public List<AnswerResponse> getAnswers() {
@@ -44,4 +46,7 @@ public class QuestionResponse extends AbstractQuestion {
         this.order = order;
     }
 
+    public boolean getUnderway() {
+        return underway;
+    }
 }
