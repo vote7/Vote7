@@ -13,6 +13,10 @@ abstract class AbstractQuestionView(context: Context) : FrameLayout(context) {
             contentTextView.text = value
         }
 
+    abstract var currentAnswer: String?
+
+    var onAnswerChanged: (String?) -> Unit = {}
+
     abstract var isEditable: Boolean
 
     init {

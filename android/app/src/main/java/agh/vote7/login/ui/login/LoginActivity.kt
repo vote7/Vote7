@@ -42,6 +42,7 @@ class LoginActivity : AppCompatActivity() {
 
         loginViewModel.loadingVisible.observe(this, Observer {
             loading.isVisible = it
+            groupForm.isVisible = !it
         })
 
         loginViewModel.showToast.observeEvent(this, Observer {

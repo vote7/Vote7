@@ -6,7 +6,7 @@ import kotlinx.android.synthetic.main.question.view.*
 class OpenQuestionView(context: Context) : AbstractQuestionView(context) {
     private val answerView = OpenAnswerView(context)
         .also {
-            it.onSubmitted = { onSubmitted(answer) }
+            it.onTextChanged = { onAnswerChanged(currentAnswer) }
             answersContainer.addView(it)
         }
 
@@ -16,11 +16,11 @@ class OpenQuestionView(context: Context) : AbstractQuestionView(context) {
             answerView.isEditable = value
         }
 
-    var answer: String
+    override var currentAnswer: String?
         get() = answerView.text
         set(value) {
-            answerView.text = value
+            if (answerView.text != value) {
+                answerView.text = value ?: ""
+            }
         }
-
-    var onSubmitted: (String) -> Unit = {}
 }

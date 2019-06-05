@@ -3,8 +3,8 @@ package agh.vote7.poll.question
 import agh.vote7.R
 import android.content.Context
 import android.view.LayoutInflater
-import android.view.inputmethod.EditorInfo
 import android.widget.FrameLayout
+import androidx.core.widget.addTextChangedListener
 import kotlinx.android.synthetic.main.answer_open.view.*
 
 class OpenAnswerView(context: Context) : FrameLayout(context) {
@@ -14,7 +14,7 @@ class OpenAnswerView(context: Context) : FrameLayout(context) {
             editText.setText(value)
         }
 
-    var onSubmitted: () -> Unit = {}
+    var onTextChanged: (String) -> Unit = {}
 
     var isEditable: Boolean
         get() = editText.isEnabled
@@ -25,14 +25,8 @@ class OpenAnswerView(context: Context) : FrameLayout(context) {
     init {
         LayoutInflater.from(context).inflate(R.layout.answer_open, this)
 
-        editText.setOnEditorActionListener { _, actionId, _ ->
-            if (actionId == EditorInfo.IME_ACTION_DONE) {
-                onSubmitted()
-                true
-            } else {
-                false
-            }
-        }
+        editText.addTextChangedListener(afterTextChanged = {
+            onTextChanged(text)
+        })
     }
 }
-

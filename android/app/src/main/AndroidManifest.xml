@@ -18,11 +18,11 @@
 
         <activity
             android:name=".login.ui.register.RegisterActivity"
-            android:label="@string/title_activity_register" />
+            android:label="@string/app_name" />
 
         <activity
             android:name=".login.ui.login.LoginActivity"
-            android:label="@string/title_activity_login">
+            android:label="@string/app_name">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

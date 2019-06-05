@@ -21,6 +21,7 @@ class PollViewModel(
     val showSnackbar = MutableLiveData<Event<String>>()
     val showConfirmationModal = MutableLiveData<Event<ConfirmationModal>>()
     val navigateToHome = MutableLiveData<Event<Unit>>()
+    val isVoteButtonEnabled = MutableLiveData<Boolean>(false)
 
     init {
         viewModelScope.launch {
@@ -28,21 +29,45 @@ class PollViewModel(
         }
     }
 
-    fun onClosedAnswerClicked(questionId: QuestionId, answer: String) = onAnswerChosen(questionId, answer)
-    fun onOpenAnswerSubmitted(questionId: QuestionId, answer: String) = onAnswerChosen(questionId, answer)
+    fun onAnswerChanged(questionId: QuestionId, answer: String?) {
+        getQuestionViewModel(questionId).currentAnswer.value = answer
+        updateIsVoteButtonEnabled()
+    }
+
+    fun onVoteClicked() {
+        if (!isVoteButtonEnabled.value!!) {
+            return
+        }
+
+        showConfirmationModal.value = Event(ConfirmationModal(
+            content = "Do you want to submit your answers?",
+            onConfirmClicked = {
+                viewModelScope.launch {
+                    vote()
+                }
+            }
+        ))
+    }
 
     private suspend fun loadData() {
         try {
-            val poll = pollService.getPoll(pollId)
+            val (poll, answeredQuestions) = pollService.getPollWithAnswers(pollId)
             val questions = pollService.getPollQuestions(pollId)
 
             this.title.value = poll.name
             this.questions.value = questions.map { question ->
-                QuestionViewModel(question, this)
+                QuestionViewModel(question, this).apply {
+                    currentAnswer.value = answeredQuestions
+                        .find { it.question.id == question.id }
+                        ?.answers
+                        ?.firstOrNull()
+                        ?.content
+                    isEditable.value = currentAnswer.value.isNullOrEmpty()
+                }
             }
         } catch (e: Exception) {
-            Timber.e(e, "Failed to load user profile")
-            showSnackbar.value = Event("Failed to load user profile")
+            Timber.e(e, "Failed to load poll")
+            showSnackbar.value = Event("Failed to load poll")
             navigateToHome.value = Event(Unit)
         }
     }
@@ -50,38 +75,25 @@ class PollViewModel(
     private fun getQuestionViewModel(questionId: QuestionId) =
         questions.value!!.first { it.id == questionId }
 
-    private fun onAnswerChosen(questionId: QuestionId, answer: String) {
-        val questionViewModel = getQuestionViewModel(questionId)
-
-        if (!questionViewModel.isEditable.value!!) {
-            return
-        }
-
-        showConfirmationModal.value = Event(ConfirmationModal(
-            content = "Do you want to vote for \"$answer\"?",
-            onConfirmClicked = {
-                viewModelScope.launch {
-                    voteForAnswer(questionId, answer)
-                }
+    private suspend fun vote() {
+        questions.value!!.forEach { questionViewModel ->
+            try {
+                pollService.voteOnQuestion(questionViewModel.id, questionViewModel.currentAnswer.value!!)
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to vote")
+                showSnackbar.value = Event("Failed to vote")
+                return
             }
-        ))
+
+            questionViewModel.isEditable.value = false
+        }
+        showSnackbar.value = Event("Your votes have been submitted")
     }
 
-    private suspend fun voteForAnswer(questionId: QuestionId, answer: String) {
-        val questionViewModel = getQuestionViewModel(questionId)
-
-        try {
-            // TODO(pjanczyk): remove runCatching after API works
-            runCatching { pollService.voteOnQuestion(questionId, answer) }
-        } catch (e: Exception) {
-            Timber.e(e, "Failed to vote")
-            showSnackbar.value = Event("Failed to vote")
-            return
-        }
-
-        questionViewModel.selectedClosedAnswer.value = answer
-        questionViewModel.isEditable.value = false
-        showSnackbar.value = Event("You voted for \"$answer\"")
+    private fun updateIsVoteButtonEnabled() {
+        isVoteButtonEnabled.value =
+            questions.value!!.any { it.isEditable.value!! }
+                    && questions.value!!.none { it.isEditable.value!! && it.currentAnswer.value.isNullOrEmpty() }
     }
 }
 

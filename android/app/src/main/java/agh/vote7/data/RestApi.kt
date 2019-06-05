@@ -2,10 +2,7 @@ package agh.vote7.data
 
 import agh.vote7.data.model.*
 import kotlinx.coroutines.Deferred
-import retrofit2.http.Body
-import retrofit2.http.GET
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
 
 interface RestApi {
     @POST("users/login")
@@ -26,11 +23,20 @@ interface RestApi {
     @GET("users/{userId}/polls")
     fun getUserPolls(@Path("userId") userId: UserId): Deferred<List<Poll>>
 
+    @GET("polls/user/{userId}")
+    fun getUserPollsWithAnswers(@Path("userId") userId: UserId): Deferred<List<PollWithAnswers>>
+
     @GET("polls/{pollId}")
     fun getPoll(@Path("pollId") pollId: PollId): Deferred<Poll>
 
     @GET("polls/{pollId}/question")
     fun getPollQuestions(@Path("pollId") pollId: PollId): Deferred<List<Question>>
+
+    @PATCH("questions/{questionId}/answer")
+    fun addAnswerToQuestion(
+        @Path("questionId") questionId: QuestionId,
+        @Body request: AddAnswerRequest
+    ): Deferred<Unit>
 
     @POST("questions/{questionId}/vote")
     fun voteOnQuestion(

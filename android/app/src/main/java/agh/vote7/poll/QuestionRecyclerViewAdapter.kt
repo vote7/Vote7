@@ -46,18 +46,13 @@ class QuestionRecyclerViewAdapter(
         questionViewModel.isEditable.observe(lifecycleOwner, Observer {
             holder.view.isEditable = it
         })
+        questionViewModel.currentAnswer.observe(lifecycleOwner, Observer {
+            holder.view.currentAnswer = it
+        })
+        holder.view.onAnswerChanged = questionViewModel::onAnswerChanged
 
-        when (holder.view) {
-            is ClosedQuestionView -> {
-                holder.view.answers = questionViewModel.closedAnswers
-                holder.view.onAnswerClicked = questionViewModel::onClosedAnswerClicked
-                questionViewModel.selectedClosedAnswer.observe(lifecycleOwner, Observer {
-                    holder.view.selectedAnswer = it
-                })
-            }
-            is OpenQuestionView -> {
-                holder.view.onSubmitted = questionViewModel::onOpenAnswerSubmitted
-            }
+        if (holder.view is ClosedQuestionView) {
+            holder.view.answers = questionViewModel.closedAnswers
         }
     }
 

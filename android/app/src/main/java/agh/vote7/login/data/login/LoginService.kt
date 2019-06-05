@@ -26,6 +26,6 @@ class LoginService(
             Result.Error(e)
         }
 
-    val isLoggedIn: Boolean
-        get() = tokenRepository.token != null
+    suspend fun isLoggedIn(): Boolean =
+        tokenRepository.token != null && runCatching { restApi.getCurrentUser().await() }.isSuccess
 }
