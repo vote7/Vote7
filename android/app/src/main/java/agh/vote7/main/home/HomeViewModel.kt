@@ -30,7 +30,7 @@ class HomeViewModel(
 
     private suspend fun loadPolls() {
         try {
-            polls.value = pollService.getPolls()
+            polls.value = pollService.getOngoingPolls()
         } catch (e: Exception) {
             Timber.e(e, "Failed to load polls")
             showSnackbar.value = Event("Failed to load polls")

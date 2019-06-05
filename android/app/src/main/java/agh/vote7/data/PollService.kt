@@ -13,6 +13,10 @@ class PollService(
     suspend fun getPoll(pollId: PollId): Poll =
         restApi.getPoll(pollId).await()
 
+    suspend fun getOngoingPolls(): List<Poll> =
+        getPolls()
+            .filter { it.isOngoing }
+
     suspend fun getPollQuestions(pollId: PollId): List<Question> =
         restApi.getPollQuestions(pollId).await()
             .sortedBy { it.order }
