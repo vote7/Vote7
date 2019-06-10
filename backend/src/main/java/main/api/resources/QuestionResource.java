@@ -1,5 +1,6 @@
 package main.api.resources;
 
+import main.Status;
 import main.api.data.SimpleResponse;
 import main.api.data.answers.AnswerVoteRequest;
 import main.api.data.questions.QuestionRequest;
@@ -90,7 +91,11 @@ public class QuestionResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        question.setUnderway(true);
+        if (question.getStatus() == Status.CLOSED) {
+            throw new ApplicationException(ExceptionCode.VOTE_IS_CLOSED, question.getId());
+        }
+
+        question.setStatus(Status.OPEN);
         questionRepository.modifyItem(question);
 
         return new SimpleResponse("Started question.");
@@ -110,7 +115,11 @@ public class QuestionResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        question.setUnderway(false);
+        if (question.getStatus() == Status.CLOSED) {
+            throw new ApplicationException(ExceptionCode.VOTE_IS_CLOSED, question.getId());
+        }
+
+        question.setStatus(Status.CLOSED);
         questionRepository.modifyItem(question);
 
         return new SimpleResponse("Stopped question.");
@@ -126,12 +135,12 @@ public class QuestionResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        if (question.getUnderway() != null && question.getUnderway()) {
-            throw new ApplicationException(ExceptionCode.VOTE_IS_CLOSED, question.getId());
-        }
-
         if (questionRepository.haveVotedAlready(question, loggedInUser)) {
             throw new ApplicationException(ExceptionCode.VOTED_ALREADY);
+        }
+
+        if (question.getStatus() != Status.OPEN) {
+            throw new ApplicationException(ExceptionCode.VOTE_NOT_UNDERWAY, question.getId());
         }
 
 

@@ -1,5 +1,6 @@
 package main.api.data.questions;
 
+import main.Status;
 import main.api.data.answers.AnswerResponse;
 import main.database.dto.QuestionData;
 
@@ -11,14 +12,14 @@ public class QuestionResponse extends AbstractQuestion {
     private Integer id;
     private List<AnswerResponse> answers;
     private Integer order;
-    private boolean underway;
+    private Status status;
 
     public QuestionResponse(QuestionData data){
         super(data);
         this.id = data.getId();
         this.answers = data.getAnswers().stream().map(AnswerResponse::new).collect(Collectors.toList());
         this.order = data.getOrders();
-        this.underway = data.getUnderway() != null && data.getUnderway();
+        this.status = data.getStatus();
     }
 
     public List<AnswerResponse> getAnswers() {
@@ -46,7 +47,11 @@ public class QuestionResponse extends AbstractQuestion {
         this.order = order;
     }
 
-    public boolean getUnderway() {
-        return underway;
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

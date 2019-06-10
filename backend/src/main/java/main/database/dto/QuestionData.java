@@ -1,12 +1,11 @@
 package main.database.dto;
 
+import main.Status;
 import main.api.data.questions.QuestionRequest;
 
 import javax.persistence.*;
-import javax.transaction.Transactional;
 import java.sql.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -28,7 +27,8 @@ public class QuestionData {
     private Boolean open;
 
     @Column
-    private Boolean underway;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Column
     private Date createdAt;
@@ -52,6 +52,7 @@ public class QuestionData {
         this.content = request.getContent();
         this.image = request.getImage();
         this.open = request.getOpen();
+        this.status = Status.DRAFT;
     }
 
     public void handle(QuestionRequest request) {
@@ -140,11 +141,11 @@ public class QuestionData {
         return this.answers.remove(answer);
     }
 
-    public Boolean getUnderway() {
-        return underway;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setUnderway(Boolean underway) {
-        this.underway = underway;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
