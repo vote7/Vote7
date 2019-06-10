@@ -36,10 +36,12 @@ public class GroupResource {
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    void create(@RequestBody GroupRequest request) throws ApplicationException {
+    SimpleResponse create(@RequestBody GroupRequest request) throws ApplicationException {
         GroupData data = new GroupData(request);
         data.setAdmin(userRepository.getItem(request.getAdminId()));
         groupRepository.createItem(data);
+        String response = String.format("Group successfully created");
+        return new SimpleResponse(response);
     }
 
     @RequestMapping(value = "", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -91,6 +93,7 @@ public class GroupResource {
         return new SimpleResponse(response);
     }
 
+    // CAUTION - poll without s
     @RequestMapping(value = "/{gid}/poll",method = RequestMethod.POST
             ,consumes = MediaType.APPLICATION_JSON_VALUE,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
@@ -103,6 +106,7 @@ public class GroupResource {
         return new SimpleResponse("Poll successfully created");
     }
 
+    // CAUTION - polls with s
     @RequestMapping(value = "/{gid}/polls",method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     List<PollResponse> getPolls(@PathVariable("gid") int groupId) throws ApplicationException {
