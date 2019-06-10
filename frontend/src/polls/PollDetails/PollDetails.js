@@ -83,7 +83,7 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer}) => {
           {!question.open && (
             <ul className="mt-3 mb-0">
               {question.answers.map((answer, answerIndex) => (
-                <li key={answerIndex}>{answer}
+                <li key={answerIndex}>{answer.content}
                 <button onClick={() => removeAnswer(answer.id)} className="btn btn-sm">
                   <FontAwesomeIcon icon={faMinusCircle} />
                 </button>
