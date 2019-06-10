@@ -17,7 +17,7 @@ public enum ExceptionCode {
     VOTED_ALREADY("You have voted already"),
     ACCESS_DENIED("Access to current resource is denied: {0}"),
     ANSWER_NOT_EXISTING("Answer is not existing. Wrong vote"),
-    VOTE_NOT_UNDERWAY("Vote with id {0} is not underway"),
+    QUESTION_NOT_UNDERWAY("Question with id {0} is not underway"),
     ;
 
     private String message;

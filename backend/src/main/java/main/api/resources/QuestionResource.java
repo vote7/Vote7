@@ -1,6 +1,5 @@
 package main.api.resources;
 
-import main.Status;
 import main.api.data.SimpleResponse;
 import main.api.data.answers.AnswerVoteRequest;
 import main.api.data.questions.QuestionRequest;
@@ -10,7 +9,6 @@ import main.api.utils.ApplicationException;
 import main.api.utils.ExceptionCode;
 import main.api.utils.SecurityUtil;
 import main.database.dao.AnswerRepository;
-import main.database.dao.GroupRepository;
 import main.database.dao.PollRepository;
 import main.database.dao.QuestionRepository;
 import main.database.dto.*;
@@ -82,7 +80,7 @@ public class QuestionResource {
     SimpleResponse startQuestion(@PathVariable("qid") int questionId, HttpServletRequest request) throws ApplicationException {
         QuestionData question = questionRepository.getItem(questionId);
         PollData poll = question.getPoll();
-        if (!poll.getUnderway()) {
+        if (poll.getStatus() != PollData.Status.OPEN) {
             throw new ApplicationException(ExceptionCode.POLL_IS_CLOSED, poll.getId());
         }
 
@@ -91,11 +89,11 @@ public class QuestionResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        if (question.getStatus() == Status.CLOSED) {
+        if (question.getStatus() == QuestionData.Status.CLOSED) {
             throw new ApplicationException(ExceptionCode.VOTE_IS_CLOSED, question.getId());
         }
 
-        question.setStatus(Status.OPEN);
+        question.setStatus(QuestionData.Status.OPEN);
         questionRepository.modifyItem(question);
 
         return new SimpleResponse("Started question.");
@@ -106,7 +104,7 @@ public class QuestionResource {
     SimpleResponse stopQuestion(@PathVariable("qid") int questionId, HttpServletRequest request) throws ApplicationException {
         QuestionData question = questionRepository.getItem(questionId);
         PollData poll = question.getPoll();
-        if (!poll.getUnderway()) {
+        if (poll.getStatus() == PollData.Status.CLOSED) {
             throw new ApplicationException(ExceptionCode.POLL_IS_CLOSED, poll.getId());
         }
 
@@ -115,11 +113,8 @@ public class QuestionResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        if (question.getStatus() == Status.CLOSED) {
-            throw new ApplicationException(ExceptionCode.VOTE_IS_CLOSED, question.getId());
-        }
 
-        question.setStatus(Status.CLOSED);
+        question.setStatus(QuestionData.Status.CLOSED);
         questionRepository.modifyItem(question);
 
         return new SimpleResponse("Stopped question.");
@@ -139,16 +134,26 @@ public class QuestionResource {
             throw new ApplicationException(ExceptionCode.VOTED_ALREADY);
         }
 
-        if (question.getStatus() != Status.OPEN) {
-            throw new ApplicationException(ExceptionCode.VOTE_NOT_UNDERWAY, question.getId());
+
+        PollData poll = question.getPoll();
+        if (poll.getStatus() != PollData.Status.OPEN) {
+            throw new ApplicationException(ExceptionCode.POLL_IS_CLOSED, poll.getId());
         }
 
+        if (question.getStatus() != QuestionData.Status.OPEN) {
+            throw new ApplicationException(ExceptionCode.QUESTION_NOT_UNDERWAY, question.getId());
+        }
 
-        AnswerData answerData = answerRepository.getAnswer(question, answerVote.getAnswer());
-        if(answerData == null)
-            throw new ApplicationException(ExceptionCode.ANSWER_NOT_EXISTING);
-        answerData.addUserWhoAnswered(loggedInUser);
-        answerRepository.modifyItem(answerData);
+        AnswerData answer;
+        if (question.getOpen()) {
+            answer = answerRepository.getOrGenerateAnswer(question, answerVote.getAnswer());
+        } else {
+            answer = answerRepository.getAnswer(question, answerVote.getAnswer());
+            if(answer == null)
+                throw new ApplicationException(ExceptionCode.ANSWER_NOT_EXISTING);
+        }
+        answer.addUserWhoAnswered(loggedInUser);
+        answerRepository.modifyItem(answer);
         return new SimpleResponse("Voted!");
 
     }

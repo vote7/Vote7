@@ -14,6 +14,12 @@ import java.util.stream.Collectors;
 @Entity
 @Table(name = "POLLS")
 public class PollData {
+    public enum Status {
+        DRAFT,
+        OPEN,
+        CLOSED
+    }
+
     @Id
     @Column(name = "POLL_ID")
     @SequenceGenerator(name="polls_seq", sequenceName="polls_id_seq")
@@ -30,7 +36,8 @@ public class PollData {
     private Date date;
 
     @Column
-    private Boolean underway;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     @Column
     private Time startTime;
@@ -68,7 +75,7 @@ public class PollData {
         this.secretary = secretary;
         this.group = group;
         this.createdAt = new Date(System.currentTimeMillis());
-        this.underway = false;
+        this.status = Status.DRAFT;
     }
 
     public int getId() {
@@ -183,11 +190,11 @@ public class PollData {
                 .collect(Collectors.toList());
     }
 
-    public Boolean getUnderway() {
-        return underway;
+    public Status getStatus() {
+        return status;
     }
 
-    public void setUnderway(Boolean underway) {
-        this.underway = underway;
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }

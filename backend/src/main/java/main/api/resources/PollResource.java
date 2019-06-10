@@ -122,7 +122,11 @@ public class PollResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        poll.setUnderway(true);
+        if (poll.getStatus() == PollData.Status.CLOSED) {
+            throw new ApplicationException(ExceptionCode.POLL_IS_CLOSED, poll.getId());
+        }
+
+        poll.setStatus(PollData.Status.OPEN);
         pollRepository.modifyItem(poll);
 
         return new SimpleResponse("Started poll.");
@@ -138,7 +142,7 @@ public class PollResource {
             throw new ApplicationException(ExceptionCode.NOT_ALLOWED);
         }
 
-        poll.setUnderway(false);
+        poll.setStatus(PollData.Status.CLOSED);
         pollRepository.modifyItem(poll);
 
         return new SimpleResponse("Stopped poll.");

@@ -1,6 +1,5 @@
 package main.database.dto;
 
-import main.Status;
 import main.api.data.questions.QuestionRequest;
 
 import javax.persistence.*;
@@ -11,6 +10,12 @@ import java.util.Set;
 @Entity
 @Table(name = "QUESTIONS")
 public class QuestionData {
+    public enum Status {
+        DRAFT,
+        OPEN,
+        CLOSED
+    }
+
     @Id
     @Column(name = "QUESTION_ID")
     @SequenceGenerator(name="questions_seq", sequenceName="questions_id_seq")
