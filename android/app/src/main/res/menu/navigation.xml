@@ -4,16 +4,16 @@
     <item
         android:id="@id/homeFragment"
         android:icon="@drawable/ic_vote_black_24dp"
-        android:title="@string/title_home" />
+        android:title="Ongoing polls" />
 
     <item
         android:id="@id/historyFragment"
         android:icon="@drawable/ic_history_black_24dp"
-        android:title="@string/title_history" />
+        android:title="Finished polls" />
 
     <item
         android:id="@id/profileFragment"
         android:icon="@drawable/ic_account_circle_black_24dp"
-        android:title="@string/title_profile" />
+        android:title="Profile" />
 
 </menu>
