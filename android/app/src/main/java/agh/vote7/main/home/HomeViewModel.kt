@@ -7,25 +7,40 @@ import agh.vote7.utils.Event
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class HomeViewModel(
     private val pollService: PollService
 ) : ViewModel() {
-    val polls = MutableLiveData<List<Poll>>()
+    private var refreshJob: Job? = null
 
+    val polls = MutableLiveData<List<Poll>>()
     val showSnackbar = MutableLiveData<Event<String>>()
     val navigateToPollView = MutableLiveData<Event<PollId>>()
 
-    init {
-        viewModelScope.launch {
-            loadPolls()
+    fun onResume() {
+        refreshJob = viewModelScope.launch {
+            refreshPollsPeriodically()
         }
+    }
+
+    fun onPause() {
+        refreshJob?.cancel()
+        refreshJob = null
     }
 
     fun onPollClicked(poll: Poll) {
         navigateToPollView.value = Event(poll.id)
+    }
+
+    private suspend fun refreshPollsPeriodically() {
+        while (true) {
+            loadPolls()
+            delay(10_000)
+        }
     }
 
     private suspend fun loadPolls() {

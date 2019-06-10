@@ -2,16 +2,14 @@ package agh.vote7.main.home
 
 import agh.vote7.R
 import agh.vote7.utils.DependencyProvider
+import agh.vote7.utils.getViewModel
 import agh.vote7.utils.observeEvent
-import agh.vote7.utils.viewModelProviderFactory
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
-import androidx.lifecycle.get
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
 import kotlinx.android.synthetic.main.fragment_home.*
@@ -29,8 +27,7 @@ class HomeFragment : Fragment() {
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = ViewModelProviders.of(this, viewModelProviderFactory(DependencyProvider::homeViewModel))
-            .get()
+        viewModel = getViewModel(DependencyProvider::homeViewModel)
 
         val pollAdapter = PollRecyclerViewAdapter(onClick = viewModel::onPollClicked)
         pollRecyclerView.adapter = pollAdapter
@@ -47,5 +44,15 @@ class HomeFragment : Fragment() {
             findNavController()
                 .navigate(HomeFragmentDirections.actionHomeFragmentToPollActivity(it))
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onPause()
     }
 }

@@ -6,6 +6,7 @@ import agh.vote7.poll.question.OpenQuestionView
 import android.view.ViewGroup
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.Observer
+import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 
 class QuestionRecyclerViewAdapter(
@@ -13,8 +14,9 @@ class QuestionRecyclerViewAdapter(
 ) : RecyclerView.Adapter<QuestionRecyclerViewAdapter.ViewHolder>() {
     var questions: List<QuestionViewModel> = emptyList()
         set(value) {
+            val diff = computeDiff(field, value)
             field = value
-            notifyDataSetChanged()
+            diff.dispatchUpdatesTo(this)
         }
 
     override fun getItemCount(): Int = questions.size
@@ -56,7 +58,6 @@ class QuestionRecyclerViewAdapter(
         }
     }
 
-
     class ViewHolder(val view: AbstractQuestionView) : RecyclerView.ViewHolder(view)
 
     companion object {
@@ -64,3 +65,18 @@ class QuestionRecyclerViewAdapter(
         private const val VIEW_TYPE_CLOSED_QUESTION_VIEW = 2
     }
 }
+
+private fun <T> computeDiff(oldItems: List<T>, newItems: List<T>): DiffUtil.DiffResult =
+    DiffUtil.calculateDiff(object : DiffUtil.Callback() {
+        override fun getOldListSize(): Int =
+            oldItems.size
+
+        override fun getNewListSize(): Int =
+            newItems.size
+
+        override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            oldItems[oldItemPosition] == newItems[newItemPosition]
+
+        override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean =
+            areItemsTheSame(oldItemPosition, newItemPosition)
+    })

@@ -46,7 +46,7 @@ class PollActivity : AppCompatActivity() {
             toolbar.title = it
         })
 
-        viewModel.questions.observe(this, Observer {
+        viewModel.questionViewModels.observe(this, Observer {
             questionAdapter.questions = it
         })
 
@@ -62,5 +62,15 @@ class PollActivity : AppCompatActivity() {
                 .setNegativeButton("Cancel", null)
                 .show()
         })
+    }
+
+    override fun onResume() {
+        super.onResume()
+        viewModel.onResume()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        viewModel.onPause()
     }
 }

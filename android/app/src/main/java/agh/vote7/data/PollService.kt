@@ -5,27 +5,34 @@ import agh.vote7.data.model.*
 class PollService(
     private val restApi: RestApi
 ) {
-    suspend fun getPolls(): List<Poll> {
+    suspend fun getOngoingPolls(): List<Poll> {
         val user = restApi.getCurrentUser().await()
-        return restApi.getUserPolls(user.id).await()
+        val polls = restApi.getUserPolls(user.id).await()
+        return polls.filter { it.isOngoing }
     }
 
     suspend fun getPoll(pollId: PollId): Poll =
         restApi.getPoll(pollId).await()
 
-    suspend fun getPollWithAnswers(pollId: PollId): PollWithAnswers {
-        val user = restApi.getCurrentUser().await()
-        val polls = restApi.getUserPollsWithAnswers(user.id).await()
-        return polls.first { it.poll.id == pollId }
-    }
-
-    suspend fun getOngoingPolls(): List<Poll> =
-        getPolls()
-            .filter { it.isOngoing }
-
     suspend fun getPollQuestions(pollId: PollId): List<Question> =
         restApi.getPollQuestions(pollId).await()
-            .sortedBy { it.order }
+            .sortedWith(compareBy(Question::order, Question::id))
+            .map { question ->
+                question.copy(
+                    answers = question.answers.sortedBy(Answer::content)
+                )
+            }
+
+    suspend fun getPollVotes(pollId: PollId): Map<QuestionId, Answer> {
+        val user = restApi.getCurrentUser().await()
+        val polls = restApi.getUserPollsWithVotes(user.id).await()
+        val poll = polls.first { it.poll.id == pollId }
+
+        return poll.questions
+            .filter { it.votes.isNotEmpty() }
+            .map { it.question.id to it.votes.first() }
+            .toMap()
+    }
 
     suspend fun voteOnQuestion(questionId: QuestionId, answer: String) {
         // Workaround: There are separate endpoints for creating an answer and voting for it

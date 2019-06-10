@@ -24,7 +24,7 @@ interface RestApi {
     fun getUserPolls(@Path("userId") userId: UserId): Deferred<List<Poll>>
 
     @GET("polls/user/{userId}")
-    fun getUserPollsWithAnswers(@Path("userId") userId: UserId): Deferred<List<PollWithAnswers>>
+    fun getUserPollsWithVotes(@Path("userId") userId: UserId): Deferred<List<PollVotes>>
 
     @GET("polls/{pollId}")
     fun getPoll(@Path("pollId") pollId: PollId): Deferred<Poll>
