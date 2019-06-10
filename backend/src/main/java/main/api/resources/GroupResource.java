@@ -8,6 +8,7 @@ import main.api.data.polls.PollResponse;
 import main.api.data.questions.QuestionResponse;
 import main.api.utils.ApplicationException;
 import main.api.utils.ExceptionCode;
+import main.api.utils.SecurityUtil;
 import main.database.dao.GroupRepository;
 import main.database.dao.PollRepository;
 import main.database.dao.UserRepository;
@@ -19,6 +20,7 @@ import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -33,12 +35,15 @@ public class GroupResource {
     private UserRepository userRepository;
     @Autowired
     private PollRepository pollRepository;
+    @Autowired
+    private SecurityUtil securityUtil;
 
     @RequestMapping(value = "", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
-    SimpleResponse create(@RequestBody GroupRequest request) throws ApplicationException {
+    SimpleResponse create(@RequestBody GroupRequest request, HttpServletRequest request_http) throws ApplicationException {
         GroupData data = new GroupData(request);
-        data.setAdmin(userRepository.getItem(request.getAdminId()));
+        UserData loggedInUser = securityUtil.getLoggedInUser(request_http);
+        data.setAdmin(userRepository.getItem(loggedInUser.getId()));
         groupRepository.createItem(data);
         String response = String.format("Group successfully created");
         return new SimpleResponse(response);
