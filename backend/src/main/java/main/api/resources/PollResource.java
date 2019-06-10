@@ -16,7 +16,6 @@ import main.database.dao.AnswerRepository;
 import main.database.dao.GroupRepository;
 import main.database.dao.PollRepository;
 import main.database.dao.QuestionRepository;
-import main.database.dto.AnswerData;
 import main.database.dto.PollData;
 import main.database.dto.QuestionData;
 import main.database.dto.UserData;
@@ -26,7 +25,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.math.BigInteger;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -48,6 +46,9 @@ public class PollResource {
 
     @Autowired
     private AnswerRepository answerRepository;
+
+    @Autowired
+    private QuestionResource questionResource;
 
     @RequestMapping(value = "/{pid}/question",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
@@ -148,9 +149,6 @@ public class PollResource {
         return new SimpleResponse("Stopped poll.");
     }
 
-    @Autowired
-    private QuestionResource questionResource;
-
     @RequestMapping(value = "/{pid}/result",method = RequestMethod.GET,produces = MediaType.APPLICATION_JSON_VALUE)
     public @ResponseBody
     List<QuestionResultResponse> result(@PathVariable("pid") int pollId) throws ApplicationException {
@@ -160,5 +158,15 @@ public class PollResource {
             response.add(questionResource.result(question.getId()));
         }
         return response;
+    }
+
+    @RequestMapping(value = "/managed/{uid}", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    public @ResponseBody
+    List<PollResponse> getManagedPolls(@PathVariable("uid") int userId) throws ApplicationException {
+        return pollRepository
+                .getManagedPolls(userId)
+                .stream()
+                .map(PollResponse::new)
+                .collect(Collectors.toList());
     }
 }
