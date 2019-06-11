@@ -39,7 +39,7 @@ export function request({ url, method, params, body }) {
   return fetch(fullUrl, options).then(parseResponse);
 }
 
-const Api = {
+export const Api = {
   login: async credentials => {
     const { token } = await request({
       method: "POST",
@@ -121,6 +121,13 @@ const Api = {
       url: "/questions/" + questionId + "/answer/" + answerId,
       params: {token}
     }),
+  
+  getResults: async (token, pollId) =>
+    request({
+      method: "GET",
+      url: "/polls/" + pollId + "/result",
+      params: {token}
+    })
 };
 
 export default Api;
