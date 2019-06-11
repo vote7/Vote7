@@ -11,14 +11,14 @@ public class QuestionResponse extends AbstractQuestion {
     private Integer id;
     private List<AnswerResponse> answers;
     private Integer order;
-    private boolean underway;
+    private QuestionData.Status status;
 
     public QuestionResponse(QuestionData data){
         super(data);
         this.id = data.getId();
         this.answers = data.getAnswers().stream().map(AnswerResponse::new).collect(Collectors.toList());
         this.order = data.getOrders();
-        this.underway = data.getUnderway() != null && data.getUnderway();
+        this.status = data.getStatus() != null ? data.getStatus() : QuestionData.Status.DRAFT;
     }
 
     public List<AnswerResponse> getAnswers() {
@@ -46,7 +46,11 @@ public class QuestionResponse extends AbstractQuestion {
         this.order = order;
     }
 
-    public boolean getUnderway() {
-        return underway;
+    public QuestionData.Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(QuestionData.Status status) {
+        this.status = status;
     }
 }

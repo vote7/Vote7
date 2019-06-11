@@ -7,6 +7,7 @@ import main.database.dto.GroupData;
 import main.database.dto.PollData;
 import org.apache.tomcat.jni.Poll;
 import org.hibernate.Session;
+import org.hibernate.criterion.Restrictions;
 import org.hibernate.query.NativeQuery;
 import org.springframework.stereotype.Repository;
 
@@ -38,5 +39,22 @@ public class PollRepository extends AbstractRepository<PollData>  {
             throw new ApplicationException(ExceptionCode.ITEM_NOT_FOUND,qid);
         return data;
     }
+
+    @Transactional
+    @SuppressWarnings("unchecked")
+    public List<PollData> getManagedPolls(int userId) {
+        return getSessionFactory()
+                .getCurrentSession()
+                .createCriteria(PollData.class, "p")
+                .createAlias("p.secretary", "s")
+                .createAlias("p.chairman", "c")
+                .add(
+                        Restrictions.disjunction()
+                        .add(Restrictions.eq("s.id", userId))
+                                .add(Restrictions.eq("c.id", userId))
+                )
+                .list();
+    }
+
 
 }
