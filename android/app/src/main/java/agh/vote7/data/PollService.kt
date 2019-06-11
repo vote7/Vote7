@@ -8,7 +8,7 @@ class PollService(
     suspend fun getOngoingPolls(): List<Poll> {
         val user = restApi.getCurrentUser().await()
         val polls = restApi.getUserPolls(user.id).await()
-        return polls.filter { it.isOngoing }
+        return polls.filter { it.status == PollStatus.OPEN }
     }
 
     suspend fun getPoll(pollId: PollId): Poll =
