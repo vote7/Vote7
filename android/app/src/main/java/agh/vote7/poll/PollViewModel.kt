@@ -7,26 +7,35 @@ import agh.vote7.utils.Event
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import timber.log.Timber
 
 class PollViewModel(
     private val pollId: PollId,
     private val pollService: PollService
 ) : ViewModel() {
+    private var refreshJob: Job? = null
 
     val title = MutableLiveData<String>()
-    val questions = MutableLiveData<List<QuestionViewModel>>()
+    val questionViewModels = MutableLiveData<List<QuestionViewModel>>()
 
     val showSnackbar = MutableLiveData<Event<String>>()
     val showConfirmationModal = MutableLiveData<Event<ConfirmationModal>>()
     val navigateToHome = MutableLiveData<Event<Unit>>()
     val isVoteButtonEnabled = MutableLiveData<Boolean>(false)
 
-    init {
-        viewModelScope.launch {
-            loadData()
+    fun onResume() {
+        refreshJob = viewModelScope.launch {
+            refreshDataPeriodically()
         }
+    }
+
+    fun onPause() {
+        refreshJob?.cancel()
+        refreshJob = null
     }
 
     fun onAnswerChanged(questionId: QuestionId, answer: String?) {
@@ -49,23 +58,38 @@ class PollViewModel(
         ))
     }
 
+    private suspend fun refreshDataPeriodically() {
+        while (true) {
+            loadData()
+            delay(10_000)
+        }
+    }
+
     private suspend fun loadData() {
         try {
-            val (poll, answeredQuestions) = pollService.getPollWithAnswers(pollId)
-            val questions = pollService.getPollQuestions(pollId)
+            val poll = pollService.getPoll(pollId)
+            title.value = poll.name
 
-            this.title.value = poll.name
-            this.questions.value = questions.map { question ->
-                QuestionViewModel(question, this).apply {
-                    currentAnswer.value = answeredQuestions
-                        .find { it.question.id == question.id }
-                        ?.answers
-                        ?.firstOrNull()
-                        ?.content
-                    isEditable.value = currentAnswer.value.isNullOrEmpty()
+            val questions = pollService.getPollQuestions(pollId)
+            val votes = pollService.getPollVotes(pollId)
+
+            val oldQuestionViewModels = this.questionViewModels.value.orEmpty().associateBy { it.id }
+
+            questionViewModels.value = questions.map { question ->
+                val vote = votes[question.id]
+
+                val questionViewModel = oldQuestionViewModels[question.id] ?: QuestionViewModel(question, this)
+                questionViewModel.apply {
+                    if (vote != null) {
+                        currentAnswer.value = vote.content
+                        isEditable.value = false
+                    } else {
+                        isEditable.value = true
+                    }
                 }
+                questionViewModel
             }
-        } catch (e: Exception) {
+        } catch (e: HttpException) {
             Timber.e(e, "Failed to load poll")
             showSnackbar.value = Event("Failed to load poll")
             navigateToHome.value = Event(Unit)
@@ -73,13 +97,13 @@ class PollViewModel(
     }
 
     private fun getQuestionViewModel(questionId: QuestionId) =
-        questions.value!!.first { it.id == questionId }
+        questionViewModels.value!!.first { it.id == questionId }
 
     private suspend fun vote() {
-        questions.value!!.forEach { questionViewModel ->
+        questionViewModels.value!!.forEach { questionViewModel ->
             try {
                 pollService.voteOnQuestion(questionViewModel.id, questionViewModel.currentAnswer.value!!)
-            } catch (e: Exception) {
+            } catch (e: HttpException) {
                 Timber.e(e, "Failed to vote")
                 showSnackbar.value = Event("Failed to vote")
                 return
@@ -92,8 +116,8 @@ class PollViewModel(
 
     private fun updateIsVoteButtonEnabled() {
         isVoteButtonEnabled.value =
-            questions.value!!.any { it.isEditable.value!! }
-                    && questions.value!!.none { it.isEditable.value!! && it.currentAnswer.value.isNullOrEmpty() }
+            questionViewModels.value!!.any { it.isEditable.value!! }
+                    && questionViewModels.value!!.none { it.isEditable.value!! && it.currentAnswer.value.isNullOrEmpty() }
     }
 }
 
