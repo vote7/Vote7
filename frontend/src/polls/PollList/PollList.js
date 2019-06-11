@@ -26,6 +26,9 @@ export const PollList = () => {
         titleFunc={poll => poll.name}
         descriptionFunc={poll => poll.description}
         linkFunc={poll => `/polls/${poll.id}`}
+        buttonName={"Switch State"}
+        buttonAction=""
+        buttonResult="true"
       />
     </>
   );
