@@ -145,8 +145,10 @@ const PollDetails = ({ pollId }) => {
   const [editName, setEditName] = useState(true);
   const {token} = useContext(RootContext)
   const [newQuestion, setNewQuestion] = useState(false)
+  const [pollStatus, setPollStatus] = useState(null)
+
   useEffect(() => {
-    Api.getPoll(token, pollId).then(setPoll);
+    Api.getPoll(token, pollId).then((newPoll) => {setPoll(newPoll); setPollStatus(newPoll.status)});
   }, [pollId]);
 
   if (!poll) return null;
@@ -161,6 +163,14 @@ const PollDetails = ({ pollId }) => {
   const addQuestion = (question) => {
     Api.addQuestion(token, pollId, {content: question.content, open: question.open})
         .then((question) => question.answers.map(answer => Api.addAnswer(token, question.id, answer)))
+  }
+
+  const changePollState = () => {
+    if(pollStatus === "DRAFT") {
+      Api.startPoll(token, pollId).then(() => setPollStatus("OPEN"));
+    } else {
+      Api.stopPoll(token, pollId).then(() => setPollStatus("CLOSED"));
+    }
   }
 
   return (
@@ -184,7 +194,16 @@ const PollDetails = ({ pollId }) => {
         <button className="ml-2 btn btn-link" onClick={() => hideEditName()}>
           <FontAwesomeIcon icon={faEdit} />
         </button>
-        <button className="ml-auto btn btn-primary" onClick={() => setNewQuestion(!newQuestion)}>{newQuestion ? "Close":"New Question"}</button>
+        <div className="ml-auto">
+          <button className="mr-3 btn btn-primary" onClick={() => setNewQuestion(!newQuestion)}>{newQuestion ? "Close":"New Question"}</button>
+          {pollStatus === "CLOSED" ? 
+            <></>
+            :
+            <button className="mr-3 btn btn-primary" onClick={() => changePollState()}>{pollStatus === "DRAFT" ? "Open" : "Close"}</button>
+          }
+          
+        </div>
+        
       </div>
       {newQuestion ?
       <NewQuestion addQuestion={addQuestion} hideForm={() => setNewQuestion(false)} />
