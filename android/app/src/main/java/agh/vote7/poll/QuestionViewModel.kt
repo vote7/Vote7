@@ -1,6 +1,7 @@
 package agh.vote7.poll
 
 import agh.vote7.data.model.Question
+import agh.vote7.data.model.QuestionStatus
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 
@@ -16,6 +17,13 @@ class QuestionViewModel(
 
     val isEditable = MutableLiveData<Boolean>(true)
     val currentAnswer = MutableLiveData<String?>(null)
+
+    val status = MutableLiveData<String>(
+        when (question.status) {
+            QuestionStatus.CLOSED -> "voting finished"
+            else -> "ongoing voting"
+        }
+    )
 
     fun onAnswerChanged(answer: String?) {
         pollViewModel.onAnswerChanged(id, answer)

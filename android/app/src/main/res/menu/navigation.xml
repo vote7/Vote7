@@ -2,12 +2,12 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@id/homeFragment"
+        android:id="@id/openPollsFragment"
         android:icon="@drawable/ic_vote_black_24dp"
         android:title="Ongoing polls" />
 
     <item
-        android:id="@id/historyFragment"
+        android:id="@id/closedPollsFragment"
         android:icon="@drawable/ic_history_black_24dp"
         android:title="Finished polls" />
 
