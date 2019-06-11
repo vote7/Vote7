@@ -178,7 +178,7 @@ const PollDetails = ({ pollId }) => {
       <div className="d-flex align-items-center mt-5 mb-3">
         {
           editName ?
-            <h1 className="m-0">{poll.name}</h1>
+            <h1 className="m-0">{poll.name}<h3>{`(${pollStatus})`}</h3></h1>
             :
             <Form>
               <Form.Group controlId="pollNameEdit">
