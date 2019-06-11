@@ -1,4 +1,4 @@
-const baseUrl = process.env.REACT_APP_API_URL || "http://18.203.157.28/api";
+const baseUrl = "http://localhost:8080"; //process.env.REACT_APP_API_URL || "http://18.203.157.28/api";
 
 async function parseResponse(response) {
   let json;
@@ -127,7 +127,21 @@ export const Api = {
       method: "GET",
       url: "/polls/" + pollId + "/result",
       params: {token}
-    })
+    }),
+
+  startPoll: async(token, pollId) =>
+    request({
+      method: "PATCH",
+      url: `/polls/start/${pollId}`,
+      params: {token}
+    }),
+
+  stopPoll: async(token, pollId) =>
+    request({
+      method: "PATCH",
+      url: `/polls/stop/${pollId}`,
+      params: {token}
+    }),
 };
 
 export default Api;
