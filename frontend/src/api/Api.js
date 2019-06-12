@@ -1,4 +1,4 @@
-const baseUrl = "http://localhost:8080"; //process.env.REACT_APP_API_URL || "http://18.203.157.28/api";
+const baseUrl = process.env.REACT_APP_API_URL || "http://18.203.157.28/api";
 
 async function parseResponse(response) {
   let json;
@@ -79,88 +79,99 @@ export const Api = {
       method: "POST",
       url: "/groups/" + body.groupId + "/poll",
       body: body,
-      params: {token}
+      params: { token },
     }),
 
-  getQuestions: async(token, pollId) =>
+  getQuestions: async (token, pollId) =>
     request({
       method: "GET",
       url: "/polls/" + pollId + "/question",
-      params: {token}
+      params: { token },
     }),
 
-  getPoll: async(token, pollId) =>
+  getPoll: async (token, pollId) =>
     request({
       method: "GET",
       url: "/polls/" + pollId,
-      params: {token}
+      params: { token },
     }),
-  addQuestion: async (token, pollId, question) =>
-    request({
+
+  addQuestion: async (token, pollId, question) => {
+    const { id } = await request({
       method: "POST",
       url: "/polls/" + pollId + "/question",
-      params: {token},
-      body: {content: question.content, open: question.open}
-    }),
-  addAnswer: async (token, questionId, content) =>
+      params: { token },
+      body: {
+        content: question.content,
+        open: question.open,
+      },
+    });
+    for (const answer of question.answers) {
+      await Api.addAnswer(token, id, answer);
+    }
+  },
+
+  addAnswer: async (token, questionId, answer) =>
     request({
       method: "PATCH",
       url: "/questions/" + questionId + "/answer",
-      params: {token},
-      body: {content}
+      params: { token },
+      body: { answer },
     }),
+
   removeQuestion: async (token, questionId) =>
     request({
       method: "DELETE",
       url: "/questions/" + questionId,
-      params: {token}
+      params: { token },
     }),
+
   removeAnswer: async (token, questionId, answerId) =>
     request({
       method: "DELETE",
       url: "/questions/" + questionId + "/answer/" + answerId,
-      params: {token}
+      params: { token },
     }),
-  
+
   getResults: async (token, pollId) =>
     request({
       method: "GET",
       url: "/polls/" + pollId + "/result",
-      params: {token}
+      params: { token },
     }),
 
-  startPoll: async(token, pollId) =>
+  startPoll: async (token, pollId) =>
     request({
       method: "PATCH",
       url: `/polls/start/${pollId}`,
-      params: {token}
+      params: { token },
     }),
 
-  stopPoll: async(token, pollId) =>
+  stopPoll: async (token, pollId) =>
     request({
       method: "PATCH",
       url: `/polls/stop/${pollId}`,
-      params: {token}
+      params: { token },
     }),
-  openQuestion: async(token, qid) =>
+  openQuestion: async (token, qid) =>
     request({
       method: "PATCH",
       url: `/questions/start/${qid}`,
-      params: {token}
+      params: { token },
     }),
 
-  closeQuestion: async(token, qid) =>
+  closeQuestion: async (token, qid) =>
     request({
       method: "PATCH",
       url: `/questions/stop/${qid}`,
-      params: {token}
+      params: { token },
     }),
-  editQuestion: async(token, qid, content) =>
+  editQuestion: async (token, qid, content) =>
     request({
       method: "PATCH",
       url: `/questions/${qid}`,
-      params: {token},
-      body: {content}
+      params: { token },
+      body: { content },
     }),
 };
 

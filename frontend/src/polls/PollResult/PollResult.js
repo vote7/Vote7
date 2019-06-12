@@ -7,7 +7,7 @@ const PollResult = ({ pollId }) => {
     const [poll, setPoll] = useState([]);
     const [results, setResults] = useState([]);
     const {token} = useContext(RootContext);
-    
+
     useEffect(() => {
         Api.getPoll(token, pollId).then(setPoll);
     }, []);
@@ -22,12 +22,12 @@ const PollResult = ({ pollId }) => {
         var items = Object.keys(ans).map(function(key) {
             return [key, ans[key]];
         });
-        
+
         // Sort the array based on the second element
         items.sort(function(first, second) {
             return second[1] - first[1];
         });
-        
+
         // Create a new array with only the first 5 items
         ans = items.slice(0, 5).map(function(elem) {
             return {
@@ -46,14 +46,14 @@ const PollResult = ({ pollId }) => {
     return (
         <>
             <div className="d-flex align-items-center mt-5 mb-3">
-                <h1 className="m-0">Wyniki głosowania {poll.name}</h1>
+                <h1 className="m-0">Voting results - "{poll.name}"</h1>
             </div>
             {prepared_results.map((result) => {
                 if(result.answers.length > 0)
                     return (
                         <>
-                            <div style={{width: '50%'}}> 
-                                <h2>{result.question}</h2>
+                            <div style={{width: '50%'}}>
+                                <h3>{result.question}</h3>
                                 <BarChart width={500}
                                     height={200}
                                     margin={margin}
