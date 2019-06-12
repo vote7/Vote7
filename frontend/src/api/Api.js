@@ -142,6 +142,19 @@ export const Api = {
       url: `/polls/stop/${pollId}`,
       params: {token}
     }),
+  openQuestion: async(token, qid) =>
+    request({
+      method: "PATCH",
+      url: `/questions/start/${qid}`,
+      params: {token}
+    }),
+
+  closeQuestion: async(token, qid) =>
+    request({
+      method: "PATCH",
+      url: `/questions/stop/${qid}`,
+      params: {token}
+    }),
 };
 
 export default Api;
