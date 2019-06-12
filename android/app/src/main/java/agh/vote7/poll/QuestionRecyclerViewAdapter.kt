@@ -45,7 +45,7 @@ class QuestionRecyclerViewAdapter(
         val questionViewModel = questions[position]
 
         holder.view.question = questionViewModel.content
-        questionViewModel.status.observe(lifecycleOwner, Observer {
+        questionViewModel.statusDescription.observe(lifecycleOwner, Observer {
             holder.view.status = it
         })
         questionViewModel.isEditable.observe(lifecycleOwner, Observer {
