@@ -13,7 +13,7 @@ const Nav = () => {
 
   return (
     <>
-      <ul className="navbar-nav mr-auto">
+      <ul className="navbar-nav">
         <li className="nav-item">
           <Link className="nav-link" to="/polls">
             Polls
@@ -25,6 +25,12 @@ const Nav = () => {
           </Link>
         </li>
       </ul>
+      <a
+        className="ml-auto mr-auto btn btn-outline-primary"
+        href="https://drive.google.com/open?id=1K2Y33wpRv_NiVCqbeq_jc1Cl6-p6WI44"
+      >
+        <strong>Download Android app</strong>
+      </a>
       <ul className="navbar-nav align-items-center">
         <li className="nav-item">
           <strong>
