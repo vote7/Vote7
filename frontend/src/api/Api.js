@@ -155,6 +155,13 @@ export const Api = {
       url: `/questions/stop/${qid}`,
       params: {token}
     }),
+  editQuestion: async(token, qid, content) =>
+    request({
+      method: "PATCH",
+      url: `/questions/${qid}`,
+      params: {token},
+      body: {content}
+    }),
 };
 
 export default Api;

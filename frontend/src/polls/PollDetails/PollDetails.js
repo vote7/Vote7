@@ -67,21 +67,23 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQ
                 </Form>
                 : `${content}(${question.status})`}
             </div>
-            {pollStatus === "DRAFT" && secretary && question.status == "DRAFT" ?
-              <button onClick={editClick} className="ml-auto btn btn-sm btn-link">
-                <FontAwesomeIcon icon={faEdit} />
-              </button>
-              : <></>
-            }
-            {
-              pollStatus !== "CLOSED" && question.status === "DRAFT" && secretary ?
-                <button onClick={removeClick} className="btn btn-sm btn-link">
-                  <FontAwesomeIcon icon={faTimes} />
-                </button> : <></>
-            }
-            { (question.status === "CLOSED" || pollStatus === "CLOSED" || !chairman) ?
+            <div>
+              {pollStatus !== "CLOSED" && secretary && question.status == "DRAFT" ?
+                <button onClick={editClick} className="mr-auto btn btn-sm btn-link">
+                  <FontAwesomeIcon icon={faEdit} />
+                </button>
+                : <></>
+              }
+              {
+                pollStatus !== "CLOSED" && question.status === "DRAFT" && secretary ?
+                  <button onClick={removeClick} className="left btn btn-sm btn-link">
+                    <FontAwesomeIcon icon={faTimes} />
+                  </button> : <></>
+              }
+            </div>
+            { (question.status === "CLOSED" || pollStatus !== "OPEN" || !chairman) ?
                 <></> :
-                <button className="btn btn-primary" onClick={() => changeQuestionStatus()}>{question.status === "DRAFT" ? "Open" : "Close"}</button>
+                <button className="ml-auto btn btn-primary" onClick={() => changeQuestionStatus()}>{question.status === "DRAFT" ? "Open" : "Close"}</button>
             }
           </div>
           <div className="small">
@@ -144,7 +146,7 @@ const SortableQuestionList = SortableContainer(({ questions, removeQuestion, rem
   </div>
 ));
 
-const Questions = ({pollId, pollStatus, draft, secretary, chairman}) => {
+const Questions = ({pollId, pollStatus, draft, secretary, chairman, rerender}) => {
   const [questions, setQuestions] = useState([]);
   const {token} = useContext(RootContext)
 
@@ -162,13 +164,13 @@ const Questions = ({pollId, pollStatus, draft, secretary, chairman}) => {
       onSortEnd={onSortEnd}
       useDragHandle
       removeQuestion = {(qid) => {
-        Api.removeQuestion(token, qid).then(() => Api.getQuestions(token, pollId)).then((res) => setQuestions(res))
+        Api.removeQuestion(token, qid).then(() => Api.getQuestions(token, pollId)).then((res) => setQuestions(res)).then(() => rerender())
       }}
-      removeAnswer = {(qid, aid) => Api.removeAnswer(token, qid, aid)}
-      openQuestion = {(qid) => Api.openQuestion(token, qid)}
-      closeQuestion = {(qid) => Api.closeQuestion(token, qid)}
+      removeAnswer = {(qid, aid) => Api.removeAnswer(token, qid, aid).then(() => rerender())}
+      openQuestion = {(qid) => Api.openQuestion(token, qid).then(() => rerender())}
+      closeQuestion = {(qid) => Api.closeQuestion(token, qid).then(() => rerender())}
       pollStatus = {pollStatus}
-      setAnswer = {(qid, content) => {}}
+      setQuestion = {(qid, content) => Api.editQuestion(token, qid, content).then(() => rerender())}
       secretary = {secretary}
       chairman = {chairman}
     />
@@ -205,6 +207,11 @@ const PollDetails = ({ pollId }) => {
         .then(Api.getPoll(token, pollId).then((newPoll) => {setPoll(newPoll); setPollStatus(newPoll.status)}));
   }
 
+  const rerender = () => {
+    setPoll(null)
+    Api.getPoll(token, pollId).then((newPoll) => {setPoll(newPoll); setPollStatus(newPoll.status)})
+  }
+
   const changePollState = () => {
     if(pollStatus === "DRAFT") {
       Api.startPoll(token, pollId).then(() => setPollStatus("OPEN"));
@@ -235,7 +242,7 @@ const PollDetails = ({ pollId }) => {
           <FontAwesomeIcon icon={faEdit} />
         </button>
         <div className="ml-auto">
-          <button className="mr-3 btn btn-primary" onClick={() => setNewQuestion(!newQuestion)}>{newQuestion ? "Close":"New Question"}</button>
+          <button className="mr-3 btn btn-primary" onClick={() => setNewQuestion(!newQuestion)}>{newQuestion ? "Cancel":"New Question"}</button>
           {pollStatus === "CLOSED" || !chairman? 
             <></>
             :
@@ -250,10 +257,10 @@ const PollDetails = ({ pollId }) => {
       :
       <div className="d-flex">
         <div className="col-6">
-          <Questions pollId={pollId} pollStatus={pollStatus} draft={false} secretary={secretary} chairman={chairman}/>
+          <Questions pollId={pollId} pollStatus={pollStatus} draft={false} secretary={secretary} chairman={chairman} rerender={rerender}/>
         </div>
         <div className="col-6">
-          <Questions pollId={pollId} pollStatus={pollStatus} draft={true} secretary={secretary} chairman={chairman}/>
+          <Questions pollId={pollId} pollStatus={pollStatus} draft={true} secretary={secretary} chairman={chairman} rerender={rerender}/>
         </div>
       </div>
       }
