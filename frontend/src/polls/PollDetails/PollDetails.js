@@ -44,6 +44,8 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQ
   const removeClick = () => {
     removeQuestion()
   }
+
+  console.log(chairman)
   
   return (
     <div className="border-bottom py-4 bg-white">
@@ -136,7 +138,7 @@ const SortableQuestionList = SortableContainer(({ questions, removeQuestion, rem
         pollStatus={pollStatus}
         setQuestion={(content) => setQuestion(question.id, content)}
         secretary = {secretary}
-        children = {chairman}
+        chairman = {chairman}
       />
     ))}
   </div>
@@ -168,7 +170,7 @@ const Questions = ({pollId, pollStatus, draft, secretary, chairman}) => {
       pollStatus = {pollStatus}
       setAnswer = {(qid, content) => {}}
       secretary = {secretary}
-      children = {chairman}
+      chairman = {chairman}
     />
   );
 };
