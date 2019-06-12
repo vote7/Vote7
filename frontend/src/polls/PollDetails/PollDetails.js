@@ -139,12 +139,12 @@ const SortableQuestionList = SortableContainer(({ questions, removeQuestion, rem
   </div>
 ));
 
-const Questions = ({pollId, pollStatus}) => {
+const Questions = ({pollId, pollStatus, draft}) => {
   const [questions, setQuestions] = useState([]);
   const {token} = useContext(RootContext)
 
   useEffect(() => {
-    Api.getQuestions(token, pollId).then(setQuestions);
+    Api.getQuestions(token, pollId).then((newQuestions) => setQuestions(newQuestions.filter((q) => (draft && q.status === "DRAFT") || (!draft && q.status !== "DRAFT"))));
   }, [pollId]);
 
   const onSortEnd = ({ oldIndex, newIndex }) => {
@@ -237,7 +237,14 @@ const PollDetails = ({ pollId }) => {
       {newQuestion ?
       <NewQuestion addQuestion={addQuestion} hideForm={() => setNewQuestion(false)} />
       :
-      <Questions pollId={pollId} pollStatus={pollStatus} />
+      <div className="d-flex">
+        <div className="col-6">
+          <Questions pollId={pollId} pollStatus={pollStatus} draft={false}/>
+        </div>
+        <div className="col-6">
+          <Questions pollId={pollId} pollStatus={pollStatus} draft={true}/>
+        </div>
+      </div>
       }
     </>
   );
