@@ -1,19 +1,18 @@
-import React, { useEffect, useState, useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faEdit, faTimes, faPlusCircle, faMinusCircle } from "@fortawesome/free-solid-svg-icons";
 import {
   SortableContainer,
   SortableElement,
   SortableHandle,
 } from "react-sortable-hoc";
 import { faGripLines } from "@fortawesome/free-solid-svg-icons/faGripLines";
-import ApiMocks from "../../api/ApiMocks";
-import arrayMove from "array-move";
 import Form from "react-bootstrap/Form";
 import { RootContext } from "../../app/RootContext";
-import Api from "../../api/Api"
+import Api from "../../api/Api";
 import Button from "react-bootstrap/Button";
 import CenteredFormContainer from "../../shared/forms/CenteredFormContainer";
+import { Col, Row } from "react-bootstrap";
+import { Link } from "react-router-dom";
 
 const DragHandle = SortableHandle(() => (
   <span className="btn btn-link" style={{ cursor: "ns-resize" }}>
@@ -21,263 +20,363 @@ const DragHandle = SortableHandle(() => (
   </span>
 ));
 
-const Question = ({ question, questionIndex, removeQuestion, removeAnswer}) => {
-  const [content, setContent] = useState(question.content)
-  const [questionOpen, setQuestionOpen] = useState(question.open)
-  const [editable, setEditable] = useState(false)
-  
-  const editClick = () => {
-    if(editable) {
-      //setQuestion({content: content, order: question.order, questionOpen: questionOpen})
-    }
-    setEditable(!editable)
-  }
-  
-  const removeClick = () => {
-    removeQuestion()
-  }
-  console.log(question)
-  return (
-    <div className="border-bottom py-4 bg-white">
-      <div className="d-flex">
-        <DragHandle />
-        <div className="flex-grow-1">
-          <div className="d-flex flex-grow-1 align-items-center">
-            <div className="font-weight-bold">
-              {questionIndex + 1}. 
-              {editable ?
-                <Form>
-                  <Form.Group controlId="pollNameEdit">
-                    <Form.Control 
-                      type="text"  
-                      value={content}
-                      onChange={event => setContent(event.target.value)}
-                    />
-                  </Form.Group>
-                </Form>
-                : content}
-            </div>
-            <button onClick={editClick} className="ml-auto btn btn-sm btn-link">
-              <FontAwesomeIcon icon={faEdit} />
-            </button>
-            <button onClick={removeClick} className="btn btn-sm btn-link">
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
+const statusDescriptions = {
+  OPEN: "Ongoing",
+  CLOSED: "Finished",
+  DRAFT: "Draft",
+};
+
+const Question = ({
+  question,
+  questionIndex,
+  removeQuestion,
+  openQuestion,
+  closeQuestion,
+  pollStatus,
+  secretary,
+  chairman,
+}) => (
+  <div className="list-group-item p-3 bg-white">
+    <div className="d-flex">
+      {question.status === "DRAFT" && <DragHandle />}
+      <div className="flex-grow-1">
+        <div className="d-flex align-items-start">
+          <div className="mr-1 mt-1">{questionIndex + 1}.</div>
+          <div className="mt-1 font-weight-bold mr-auto">
+            {question.content}
           </div>
-          <div className="small">
-            {
-              editable ?
-              <Form>
-                <Form.Group controlId="pollNameEdit">
-                  Open question: <Form.Check
-                    type="checkbox"  
-                    checked={questionOpen}
-                    onChange={event => setQuestionOpen(!questionOpen)}
-                  />
-                </Form.Group>
-              </Form>
-              : questionOpen ? "(open question)" : "(closed question)"
-            }
-            {}
-          </div>
-          {!question.open && (
-            <ul className="mt-3 mb-0">
-              {question.answers.map((answer, answerIndex) => (
-                <li key={answerIndex}>{answer.content}
-                <button onClick={() => removeAnswer(answer.id)} className="btn btn-sm">
-                  <FontAwesomeIcon icon={faMinusCircle} />
-                </button>
-                </li>
-              ))}
-            </ul>
+          <div className="mr-1 mt-1">{statusDescriptions[question.status]}</div>
+          {question.status === "DRAFT" && pollStatus === "OPEN" && chairman && (
+            <button
+              className="btn btn-sm btn-primary ml-1"
+              onClick={openQuestion}
+            >
+              Start
+            </button>
+          )}
+          {question.status === "OPEN" && pollStatus === "OPEN" && chairman && (
+            <button
+              className="btn btn-sm btn-primary ml-1"
+              onClick={closeQuestion}
+            >
+              Finish
+            </button>
+          )}
+          {question.status === "DRAFT" && pollStatus !== "CLOSED" && secretary && (
+            <button
+              className="btn btn-sm btn-secondary ml-1"
+              onClick={removeQuestion}
+            >
+              Delete
+            </button>
           )}
         </div>
+        {question.open ? (
+          <small>Open question</small>
+        ) : (
+          <ul className="mt-3 mb-0">
+            {question.answers.map((answer, answerIndex) => (
+              <li key={answerIndex}>{answer.content}</li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
-  )
-}
+  </div>
+);
 
 const SortableQuestion = SortableElement(Question);
 
-const SortableQuestionList = SortableContainer(({ questions, removeQuestion, removeAnswer }) => (
-  <div>
-    {console.log(questions)}
-    {questions.sort((q1, q2) => q1.order > q2.order).map((question, questionIndex) => (
-      <SortableQuestion
-        key={`item-${questionIndex}`}
-        index={questionIndex}
-        questionIndex={questionIndex}
-        question={question}
-        removeQuestion={() => removeQuestion(question.id)}
-        removeAnswer={(aid) => removeAnswer(question.id, aid)}
-      />
-    ))}
-  </div>
-));
+const SortableQuestionList = SortableContainer(
+  ({
+    questions,
+    removeQuestion,
+    openQuestion,
+    closeQuestion,
+    pollStatus,
+    secretary,
+    chairman,
+  }) => (
+    <div className="list-group">
+      {questions
+        .sort((q1, q2) => q1.order > q2.order)
+        .map((question, questionIndex) => (
+          <SortableQuestion
+            key={`item-${questionIndex}`}
+            index={questionIndex}
+            questionIndex={questionIndex}
+            question={question}
+            removeQuestion={() => removeQuestion(question.id)}
+            openQuestion={() => openQuestion(question.id)}
+            closeQuestion={() => closeQuestion(question.id)}
+            pollStatus={pollStatus}
+            secretary={secretary}
+            chairman={chairman}
+          />
+        ))}
+    </div>
+  ),
+);
 
-const Questions = ({ pollId}) => {
+const Questions = ({
+  pollId,
+  pollStatus,
+  statusFilter,
+  secretary,
+  chairman,
+  rerender,
+}) => {
   const [questions, setQuestions] = useState([]);
-  const {token} = useContext(RootContext)
+  const { token } = useContext(RootContext);
 
   useEffect(() => {
-    Api.getQuestions(token, pollId).then(setQuestions);
+    Api.getQuestions(token, pollId).then(newQuestions =>
+      setQuestions(newQuestions.filter(q => statusFilter.includes(q.status))),
+    );
   }, [pollId]);
 
-  const onSortEnd = ({ oldIndex, newIndex }) => {
-    
-  };
+  const onSortEnd = ({ oldIndex, newIndex }) => {};
 
   return (
     <SortableQuestionList
       questions={questions}
       onSortEnd={onSortEnd}
       useDragHandle
-      removeQuestion = {(qid) => {
-        Api.removeQuestion(token, qid).then(() => Api.getQuestions(token, pollId)).then((res) => setQuestions(res))
+      removeQuestion={qid => {
+        Api.removeQuestion(token, qid)
+          .then(() => Api.getQuestions(token, pollId))
+          .then(res => setQuestions(res))
+          .then(() => rerender());
       }}
-      removeAnswer = {(qid, aid) => Api.removeAnswer(token, qid, aid)}
+      openQuestion={qid => Api.openQuestion(token, qid).then(() => rerender())}
+      closeQuestion={qid =>
+        Api.closeQuestion(token, qid).then(() => rerender())
+      }
+      pollStatus={pollStatus}
+      secretary={secretary}
+      chairman={chairman}
     />
   );
 };
 
 const PollDetails = ({ pollId }) => {
   const [poll, setPoll] = useState(null);
-  const [editName, setEditName] = useState(true);
-  const {token} = useContext(RootContext)
-  const [newQuestion, setNewQuestion] = useState(false)
+  const { token, user } = useContext(RootContext);
+  const [newQuestion, setNewQuestion] = useState(false);
+  const [isChairman, setIsChairman] = useState(false);
+  const [isSecretary, setIsSecretary] = useState(false);
+
+  const setPollStatus = status => setPoll({ ...poll, status });
+
   useEffect(() => {
-    Api.getPoll(token, pollId).then(setPoll);
+    Api.getPoll(token, pollId).then(newPoll => {
+      setPoll(newPoll);
+      setIsChairman(user.id === newPoll.chairmanID);
+      setIsSecretary(user.id === newPoll.secretaryID);
+    });
   }, [pollId]);
 
   if (!poll) return null;
 
-  const hideEditName = () => {
-    if(editName) {
-      ApiMocks.editPollName(poll.id, poll.name)
-    }
-    setEditName(!editName)
-  }
+  const addQuestion = question => {
+    Api.addQuestion(token, pollId, question).then(() => {
+      Api.getPoll(token, pollId).then(setPoll);
+    });
+  };
 
-  const addQuestion = (question) => {
-    Api.addQuestion(token, pollId, {content: question.content, open: question.open})
-        .then((question) => question.answers.map(answer => Api.addAnswer(token, question.id, answer)))
-  }
+  const rerender = () => {
+    setPoll(null);
+    Api.getPoll(token, pollId).then(newPoll => {
+      setPoll(newPoll);
+    });
+  };
+
+  const openPoll = () => {
+    Api.startPoll(token, pollId).then(() => setPollStatus("OPEN"));
+  };
+
+  const closePoll = () => {
+    Api.stopPoll(token, pollId).then(() => setPollStatus("CLOSED"));
+  };
 
   return (
     <>
-      <div className="d-flex align-items-center mt-5 mb-3">
-        {
-          editName ?
-            <h1 className="m-0">{poll.name}</h1>
-            :
-            <Form>
-              <Form.Group controlId="pollNameEdit">
-                <Form.Control 
-                  type="text"  
-                  value={poll.name}
-                  onChange={event => setPoll({name: event.target.value})}
-                />
-              </Form.Group>
-            </Form>
-        }
-        
-        <button className="ml-2 btn btn-link" onClick={() => hideEditName()}>
-          <FontAwesomeIcon icon={faEdit} />
-        </button>
-        <button className="ml-auto btn btn-primary" onClick={() => setNewQuestion(!newQuestion)}>{newQuestion ? "Close":"New Question"}</button>
+      <div className="d-flex align-items-center mt-5 mb-4">
+        <h1 className="m-0">
+          {poll.name}&nbsp;
+          <small>({statusDescriptions[poll.status]})</small>
+        </h1>
+
+        <div className="ml-auto">
+          {poll.status === "DRAFT" && isChairman && (
+            <button className="mr-1 btn btn-primary" onClick={openPoll}>
+              Start poll
+            </button>
+          )}
+          {poll.status === "OPEN" && isChairman && (
+            <button className="mr-1 btn btn-primary" onClick={closePoll}>
+              Finish poll
+            </button>
+          )}
+          {poll.status !== "DRAFT" && (
+            <Link
+              className="mr-1 btn btn-secondary"
+              to={`/polls/${pollId}/results`}
+            >
+              Show results
+            </Link>
+          )}
+        </div>
       </div>
-      {newQuestion ?
-      <NewQuestion addQuestion={addQuestion} hideForm={() => setNewQuestion(false)} />
-      :
-      <Questions pollId={pollId} />
-      }
+      {newQuestion ? (
+        <NewQuestion
+          addQuestion={addQuestion}
+          hideForm={() => setNewQuestion(false)}
+        />
+      ) : (
+        <div className="row" style={{ minHeight: "50vh" }}>
+          <div className="col-6 border-right">
+            <h4 className="mb-3">Ongoing and finished</h4>
+            <Questions
+              pollId={pollId}
+              pollStatus={poll.status}
+              statusFilter={["OPEN", "CLOSED"]}
+              secretary={isSecretary}
+              chairman={isChairman}
+              rerender={rerender}
+            />
+          </div>
+          {poll.status !== "CLOSED" && (
+            <div className="col-6">
+              <div className="d-flex mb-3 align-items-center">
+                <h4 className="mb-0">Drafts</h4>
+                {isSecretary && (
+                  <button
+                    className="ml-auto btn btn-sm btn-primary"
+                    onClick={() => setNewQuestion(true)}
+                  >
+                    Add Question
+                  </button>
+                )}
+              </div>
+              <Questions
+                pollId={pollId}
+                pollStatus={poll.status}
+                statusFilter={["DRAFT"]}
+                secretary={isSecretary}
+                chairman={isChairman}
+                rerender={rerender}
+              />
+            </div>
+          )}
+        </div>
+      )}
     </>
   );
 };
 
-const NewQuestion = ({addQuestion, hideForm}) => {
-  const [content, setContent] = useState("")
-  const [open, setOpen] = useState(false)
-  const [answers, setAnswers] = useState([])
+const EditableAnswerList = ({ answers, setAnswers }) => {
+  const [internalAnswers, setInternalAnswers] = useState([...answers, ""]);
 
-  const Answer = ({answer, setAnswer}) => {
-    const [content, setContent] = useState(answer)
+  const updateExternalAnswers = () => {
+    setAnswers(internalAnswers.filter(a => a !== ""));
+  };
 
-    return (
-      <>
-        <Form.Control 
-              type="text"  
-              placeholder="Answer"
-              value={content}
-              onChange={event => setContent(event.target.value)}
-              onMouseLeave={event => {if(answer !== content) setAnswer(content)}}
+  const setAnswer = (index, newAnswer) => {
+    const newAnswers = [...internalAnswers];
+    newAnswers[index] = newAnswer;
+    if (index === newAnswers.length - 1 && newAnswer !== "") {
+      newAnswers.push("");
+    }
+    setInternalAnswers(newAnswers);
+    updateExternalAnswers();
+  };
+
+  const filterAnswers = () => {
+    const newAnswers = [...internalAnswers.filter(a => a !== ""), ""];
+    setInternalAnswers(newAnswers);
+    updateExternalAnswers();
+  };
+
+  return (
+    <div>
+      {internalAnswers.map((answer, index) => (
+        <Form.Control
+          key={index}
+          type="text"
+          value={answer}
+          onChange={event => setAnswer(index, event.target.value)}
+          onBlur={filterAnswers}
         />
-      </>
-    )
-  }
+      ))}
+    </div>
+  );
+};
 
-  const onSubmit = (event) => {
+const NewQuestion = ({ addQuestion, hideForm }) => {
+  const [content, setContent] = useState("");
+  const [open, setOpen] = useState(false);
+  const [answers, setAnswers] = useState([]);
+
+  const onSubmit = event => {
     event.preventDefault();
-    addQuestion({content: content, open: open, answers: answers})
-    hideForm()
-  }
+    if (content !== "" && (open || answers.length > 0)) {
+      addQuestion({ content, open, answers: !open ? answers : [] });
+      hideForm();
+    }
+  };
 
-  return  (
-    <>
-      <CenteredFormContainer>
-        <div className="d-flex align-items-center mt-5 mb-3">
-          <Form onSubmit={onSubmit} className="w-100">
-            <Form.Group controlId="newQuestionContent">
-              <Form.Control 
-                type="text"
-                placeholder="Content"  
-                value={content}
-                onChange={event => setContent(event.target.value)}
-              />
-              Open Question:
-              <Form.Control 
-                type="checkbox"  
+  return (
+    <CenteredFormContainer>
+      <h3 className="mt-5 mb-3">Add question</h3>
+      <Form onSubmit={onSubmit}>
+        <Form.Group>
+          <div>Question</div>
+          <Form.Control
+            type="text"
+            placeholder="Question"
+            value={content}
+            onChange={event => setContent(event.target.value)}
+          />
+        </Form.Group>
+        <fieldset>
+          <Form.Group as={Row}>
+            <Col>
+              <Form.Check
+                type="radio"
+                label="Open question"
+                name="questionType"
+                id="questionTypeOpen"
                 checked={open}
-                placeholder="Open Question"
-                onChange={event => setOpen(!open)}
+                onChange={event => setOpen(event.target.value === "on")}
               />
-
-              {
-                open ?
-                <></>
-                :
-                <>
-                Answers:
-                {
-                  answers.map((answer, index) => {
-                    const setAnswer = (newAnswer) => {
-                      const newAnswers = answers.map((a, i) =>{ 
-                        if(i === index) return newAnswer
-                        else return a 
-                      })
-                      console.log(newAnswers)
-                      setAnswers(newAnswers)
-                    }
-                    return <Answer key={index} answer={answer} setAnswer={setAnswer} />
-                  })
-                }
-                <button type="button" onClick={() => {setAnswers(answers.concat([""]))}} className="ml-auto btn btn-sm btn-link">
-                  <FontAwesomeIcon icon={faPlusCircle} />
-                </button>
-                <button type="button" onClick={() => {setAnswers(answers.slice(0, answers.length-1))}} className="ml-auto btn btn-sm btn-link">
-                  <FontAwesomeIcon icon={faMinusCircle} />
-                </button>
-                </>
-              }
-            </Form.Group>
-            <Button className="w-100" size="lg" variant="primary" type="submit">
-              Add
-            </Button>
-          </Form>
-        </div>
-      </CenteredFormContainer>
-    </>
-  )
-}
+              <Form.Check
+                type="radio"
+                label="Closed question"
+                name="questionType"
+                id="questionTypeClosed"
+                checked={!open}
+                onChange={event => setOpen(event.target.value !== "on")}
+              />
+            </Col>
+          </Form.Group>
+        </fieldset>
+        {!open && (
+          <Form.Group>
+            Answers:
+            <EditableAnswerList answers={answers} setAnswers={setAnswers} />
+          </Form.Group>
+        )}
+        <Button variant="primary" type="submit">
+          Save
+        </Button>
+        &nbsp;
+        <Button variant="secondary" type="button" onClick={hideForm}>
+          Cancel
+        </Button>
+      </Form>
+    </CenteredFormContainer>
+  );
+};
 
 export default PollDetails;
