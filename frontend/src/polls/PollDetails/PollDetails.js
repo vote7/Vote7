@@ -21,7 +21,7 @@ const DragHandle = SortableHandle(() => (
   </span>
 ));
 
-const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQuestion, closeQuestion, pollStatus, setQuestion}) => {
+const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQuestion, closeQuestion, pollStatus, setQuestion, secretary, chairman}) => {
   const [content, setContent] = useState(question.content)
   const [questionOpen, setQuestionOpen] = useState(question.open)
   const [editable, setEditable] = useState(false)
@@ -44,7 +44,7 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQ
   const removeClick = () => {
     removeQuestion()
   }
-  console.log(question)
+  
   return (
     <div className="border-bottom py-4 bg-white">
       <div className="d-flex">
@@ -65,19 +65,19 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQ
                 </Form>
                 : `${content}(${question.status})`}
             </div>
-            {pollStatus === "DRAFT" ?
+            {pollStatus === "DRAFT" && secretary && question.status == "DRAFT" ?
               <button onClick={editClick} className="ml-auto btn btn-sm btn-link">
                 <FontAwesomeIcon icon={faEdit} />
               </button>
               : <></>
             }
             {
-              pollStatus !== "CLOSED" || question.status !== "DRAFT" ?
+              pollStatus !== "CLOSED" && question.status === "DRAFT" && secretary ?
                 <button onClick={removeClick} className="btn btn-sm btn-link">
                   <FontAwesomeIcon icon={faTimes} />
                 </button> : <></>
             }
-            { (question.status === "CLOSED" || pollStatus === "CLOSED") ?
+            { (question.status === "CLOSED" || pollStatus === "CLOSED" || !chairman) ?
                 <></> :
                 <button className="btn btn-primary" onClick={() => changeQuestionStatus()}>{question.status === "DRAFT" ? "Open" : "Close"}</button>
             }
@@ -102,7 +102,7 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQ
             <ul className="mt-3 mb-0">
               {question.answers.map((answer, answerIndex) => (
                 <li key={answerIndex}>{answer.content}
-                {pollStatus === "DRAFT" ?
+                {pollStatus === "DRAFT" && question.status === "DRAFT" && secretary ?
                   <button onClick={() => removeAnswer(answer.id)} className="btn btn-sm">
                     <FontAwesomeIcon icon={faMinusCircle} />
                   </button>
@@ -120,9 +120,9 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQ
 
 const SortableQuestion = SortableElement(Question);
 
-const SortableQuestionList = SortableContainer(({ questions, removeQuestion, removeAnswer, openQuestion, closeQuestion, pollStatus, setQuestion }) => (
+const SortableQuestionList = SortableContainer(({ questions, removeQuestion, removeAnswer, openQuestion, closeQuestion, pollStatus, setQuestion, secretary, chairman }) => (
   <div>
-    {console.log(questions)}
+    
     {questions.sort((q1, q2) => q1.order > q2.order).map((question, questionIndex) => (
       <SortableQuestion
         key={`item-${questionIndex}`}
@@ -135,12 +135,14 @@ const SortableQuestionList = SortableContainer(({ questions, removeQuestion, rem
         closeQuestion={()=> closeQuestion(question.id)}
         pollStatus={pollStatus}
         setQuestion={(content) => setQuestion(question.id, content)}
+        secretary = {secretary}
+        children = {chairman}
       />
     ))}
   </div>
 ));
 
-const Questions = ({pollId, pollStatus, draft}) => {
+const Questions = ({pollId, pollStatus, draft, secretary, chairman}) => {
   const [questions, setQuestions] = useState([]);
   const {token} = useContext(RootContext)
 
@@ -165,6 +167,8 @@ const Questions = ({pollId, pollStatus, draft}) => {
       closeQuestion = {(qid) => Api.closeQuestion(token, qid)}
       pollStatus = {pollStatus}
       setAnswer = {(qid, content) => {}}
+      secretary = {secretary}
+      children = {chairman}
     />
   );
 };
@@ -172,15 +176,19 @@ const Questions = ({pollId, pollStatus, draft}) => {
 const PollDetails = ({ pollId }) => {
   const [poll, setPoll] = useState(null);
   const [editName, setEditName] = useState(true);
-  const {token} = useContext(RootContext)
+  const {token, user} = useContext(RootContext)
   const [newQuestion, setNewQuestion] = useState(false)
   const [pollStatus, setPollStatus] = useState(null)
+  const [chairman, setChairman] = useState(false)
+  const [secretary, setSecretary] = useState(false)
+
 
   useEffect(() => {
-    Api.getPoll(token, pollId).then((newPoll) => {setPoll(newPoll); setPollStatus(newPoll.status)});
+    Api.getPoll(token, pollId).then((newPoll) => {setPoll(newPoll); setPollStatus(newPoll.status); setChairman(user.id === newPoll.chairmanID); setSecretary(user.id === newPoll.secretaryID);});
   }, [pollId]);
 
   if (!poll) return null;
+  console.log(chairman)
 
   const hideEditName = () => {
     if(editName) {
@@ -226,7 +234,7 @@ const PollDetails = ({ pollId }) => {
         </button>
         <div className="ml-auto">
           <button className="mr-3 btn btn-primary" onClick={() => setNewQuestion(!newQuestion)}>{newQuestion ? "Close":"New Question"}</button>
-          {pollStatus === "CLOSED" ? 
+          {pollStatus === "CLOSED" || !chairman? 
             <></>
             :
             <button className="mr-3 btn btn-primary" onClick={() => changePollState()}>{pollStatus === "DRAFT" ? "Open" : "Close"}</button>
@@ -235,15 +243,15 @@ const PollDetails = ({ pollId }) => {
         </div>
         
       </div>
-      {newQuestion ?
+      {newQuestion && secretary ?
       <NewQuestion addQuestion={addQuestion} hideForm={() => setNewQuestion(false)} />
       :
       <div className="d-flex">
         <div className="col-6">
-          <Questions pollId={pollId} pollStatus={pollStatus} draft={false}/>
+          <Questions pollId={pollId} pollStatus={pollStatus} draft={false} secretary={secretary} chairman={chairman}/>
         </div>
         <div className="col-6">
-          <Questions pollId={pollId} pollStatus={pollStatus} draft={true}/>
+          <Questions pollId={pollId} pollStatus={pollStatus} draft={true} secretary={secretary} chairman={chairman}/>
         </div>
       </div>
       }
@@ -311,7 +319,7 @@ const NewQuestion = ({addQuestion, hideForm}) => {
                         if(i === index) return newAnswer
                         else return a 
                       })
-                      console.log(newAnswers)
+
                       setAnswers(newAnswers)
                     }
                     return <Answer key={index} answer={answer} setAnswer={setAnswer} />
