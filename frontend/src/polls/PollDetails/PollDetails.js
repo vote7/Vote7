@@ -21,7 +21,7 @@ const DragHandle = SortableHandle(() => (
   </span>
 ));
 
-const Question = ({ question, questionIndex, removeQuestion, removeAnswer}) => {
+const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQuestion, closeQuestion, pollStatus}) => {
   const [content, setContent] = useState(question.content)
   const [questionOpen, setQuestionOpen] = useState(question.open)
   const [editable, setEditable] = useState(false)
@@ -32,7 +32,15 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer}) => {
     }
     setEditable(!editable)
   }
-  
+
+  const changeQuestionStatus = () => {
+    if(question.status === "OPEN") {
+      closeQuestion()
+    } else {
+      openQuestion()
+    }
+  }
+
   const removeClick = () => {
     removeQuestion()
   }
@@ -55,14 +63,24 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer}) => {
                     />
                   </Form.Group>
                 </Form>
-                : content}
+                : `${content}(${question.status})`}
             </div>
-            <button onClick={editClick} className="ml-auto btn btn-sm btn-link">
-              <FontAwesomeIcon icon={faEdit} />
-            </button>
-            <button onClick={removeClick} className="btn btn-sm btn-link">
-              <FontAwesomeIcon icon={faTimes} />
-            </button>
+            {pollStatus === "DRAFT" ?
+              <button onClick={editClick} className="ml-auto btn btn-sm btn-link">
+                <FontAwesomeIcon icon={faEdit} />
+              </button>
+              : <></>
+            }
+            {
+              pollStatus !== "CLOSED" || question.status !== "DRAFT" ?
+                <button onClick={removeClick} className="btn btn-sm btn-link">
+                  <FontAwesomeIcon icon={faTimes} />
+                </button> : <></>
+            }
+            { (question.status === "CLOSED" || pollStatus === "CLOSED") ?
+                <></> :
+                <button className="btn btn-primary" onClick={() => changeQuestionStatus()}>{question.status === "DRAFT" ? "Open" : "Close"}</button>
+            }
           </div>
           <div className="small">
             {
@@ -84,9 +102,12 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer}) => {
             <ul className="mt-3 mb-0">
               {question.answers.map((answer, answerIndex) => (
                 <li key={answerIndex}>{answer.content}
-                <button onClick={() => removeAnswer(answer.id)} className="btn btn-sm">
-                  <FontAwesomeIcon icon={faMinusCircle} />
-                </button>
+                {pollStatus === "DRAFT" ?
+                  <button onClick={() => removeAnswer(answer.id)} className="btn btn-sm">
+                    <FontAwesomeIcon icon={faMinusCircle} />
+                  </button>
+                  : <></>
+                }
                 </li>
               ))}
             </ul>
@@ -99,7 +120,7 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer}) => {
 
 const SortableQuestion = SortableElement(Question);
 
-const SortableQuestionList = SortableContainer(({ questions, removeQuestion, removeAnswer }) => (
+const SortableQuestionList = SortableContainer(({ questions, removeQuestion, removeAnswer, openQuestion, closeQuestion, pollStatus }) => (
   <div>
     {console.log(questions)}
     {questions.sort((q1, q2) => q1.order > q2.order).map((question, questionIndex) => (
@@ -110,12 +131,15 @@ const SortableQuestionList = SortableContainer(({ questions, removeQuestion, rem
         question={question}
         removeQuestion={() => removeQuestion(question.id)}
         removeAnswer={(aid) => removeAnswer(question.id, aid)}
+        openQuestion={() => openQuestion(question.id)}
+        closeQuestion={()=> closeQuestion(question.id)}
+        pollStatus={pollStatus}
       />
     ))}
   </div>
 ));
 
-const Questions = ({ pollId}) => {
+const Questions = ({pollId, pollStatus}) => {
   const [questions, setQuestions] = useState([]);
   const {token} = useContext(RootContext)
 
@@ -136,6 +160,9 @@ const Questions = ({ pollId}) => {
         Api.removeQuestion(token, qid).then(() => Api.getQuestions(token, pollId)).then((res) => setQuestions(res))
       }}
       removeAnswer = {(qid, aid) => Api.removeAnswer(token, qid, aid)}
+      openQuestion = {(qid) => Api.openQuestion(token, qid)}
+      closeQuestion = {(qid) => Api.closeQuestion(token, qid)}
+      pollStatus = {pollStatus}
     />
   );
 };
@@ -163,6 +190,8 @@ const PollDetails = ({ pollId }) => {
   const addQuestion = (question) => {
     Api.addQuestion(token, pollId, {content: question.content, open: question.open})
         .then((question) => question.answers.map(answer => Api.addAnswer(token, question.id, answer)))
+        .then(Api.getPoll(token, pollId))
+        .then((newPoll) => {setPoll(newPoll); setPollStatus(newPoll.status)});
   }
 
   const changePollState = () => {
@@ -178,7 +207,7 @@ const PollDetails = ({ pollId }) => {
       <div className="d-flex align-items-center mt-5 mb-3">
         {
           editName ?
-            <h1 className="m-0">{poll.name}<h3>{`(${pollStatus})`}</h3></h1>
+            <h1 className="m-0">{poll.name}<small>{`(${pollStatus})`}</small></h1>
             :
             <Form>
               <Form.Group controlId="pollNameEdit">
@@ -208,7 +237,7 @@ const PollDetails = ({ pollId }) => {
       {newQuestion ?
       <NewQuestion addQuestion={addQuestion} hideForm={() => setNewQuestion(false)} />
       :
-      <Questions pollId={pollId} />
+      <Questions pollId={pollId} pollStatus={pollStatus} />
       }
     </>
   );
