@@ -21,14 +21,14 @@ const DragHandle = SortableHandle(() => (
   </span>
 ));
 
-const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQuestion, closeQuestion, pollStatus}) => {
+const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQuestion, closeQuestion, pollStatus, setQuestion}) => {
   const [content, setContent] = useState(question.content)
   const [questionOpen, setQuestionOpen] = useState(question.open)
   const [editable, setEditable] = useState(false)
   
   const editClick = () => {
     if(editable) {
-      //setQuestion({content: content, order: question.order, questionOpen: questionOpen})
+      setQuestion({content: content, order: question.order, questionOpen: questionOpen})
     }
     setEditable(!editable)
   }
@@ -120,7 +120,7 @@ const Question = ({ question, questionIndex, removeQuestion, removeAnswer, openQ
 
 const SortableQuestion = SortableElement(Question);
 
-const SortableQuestionList = SortableContainer(({ questions, removeQuestion, removeAnswer, openQuestion, closeQuestion, pollStatus }) => (
+const SortableQuestionList = SortableContainer(({ questions, removeQuestion, removeAnswer, openQuestion, closeQuestion, pollStatus, setQuestion }) => (
   <div>
     {console.log(questions)}
     {questions.sort((q1, q2) => q1.order > q2.order).map((question, questionIndex) => (
@@ -134,6 +134,7 @@ const SortableQuestionList = SortableContainer(({ questions, removeQuestion, rem
         openQuestion={() => openQuestion(question.id)}
         closeQuestion={()=> closeQuestion(question.id)}
         pollStatus={pollStatus}
+        setQuestion={(content) => setQuestion(question.id, content)}
       />
     ))}
   </div>
@@ -163,6 +164,7 @@ const Questions = ({pollId, pollStatus, draft}) => {
       openQuestion = {(qid) => Api.openQuestion(token, qid)}
       closeQuestion = {(qid) => Api.closeQuestion(token, qid)}
       pollStatus = {pollStatus}
+      setAnswer = {(qid, content) => {}}
     />
   );
 };
@@ -189,9 +191,8 @@ const PollDetails = ({ pollId }) => {
 
   const addQuestion = (question) => {
     Api.addQuestion(token, pollId, {content: question.content, open: question.open})
-        .then((question) => question.answers.map(answer => Api.addAnswer(token, question.id, answer)))
-        .then(Api.getPoll(token, pollId))
-        .then((newPoll) => {setPoll(newPoll); setPollStatus(newPoll.status)});
+        //.then(() => question.answers.map(answer => Api.addAnswer(token, question.id, answer)))
+        .then(Api.getPoll(token, pollId).then((newPoll) => {setPoll(newPoll); setPollStatus(newPoll.status)}));
   }
 
   const changePollState = () => {
