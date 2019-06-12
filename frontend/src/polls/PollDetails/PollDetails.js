@@ -13,7 +13,6 @@ import Button from "react-bootstrap/Button";
 import CenteredFormContainer from "../../shared/forms/CenteredFormContainer";
 import { Col, Row } from "react-bootstrap";
 import { Link } from "react-router-dom";
-import arrayMove from "array-move";
 
 const DragHandle = SortableHandle(() => (
   <span className="btn btn-link" style={{ cursor: "ns-resize" }}>
@@ -197,7 +196,7 @@ const PollDetails = ({ pollId }) => {
   };
 
   const closePoll = () => {
-    Api.startPoll(token, pollId).then(() => setPollStatus("OPEN"));
+    Api.stopPoll(token, pollId).then(() => setPollStatus("CLOSED"));
   };
 
   return (
