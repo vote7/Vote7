@@ -7,5 +7,6 @@ data class Question(
     val content: String,
     val order: Int,
     val open: Boolean,
-    val answers: List<Answer> = emptyList()
+    val answers: List<Answer> = emptyList(),
+    val status: QuestionStatus
 )

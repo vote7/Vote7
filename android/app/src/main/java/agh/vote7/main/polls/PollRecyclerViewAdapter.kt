@@ -1,4 +1,4 @@
-package agh.vote7.main.home
+package agh.vote7.main.polls
 
 
 import agh.vote7.R
