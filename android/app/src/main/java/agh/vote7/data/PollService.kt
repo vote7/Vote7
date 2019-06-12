@@ -5,10 +5,9 @@ import agh.vote7.data.model.*
 class PollService(
     private val restApi: RestApi
 ) {
-    suspend fun getOngoingPolls(): List<Poll> {
+    suspend fun getPolls(): List<Poll> {
         val user = restApi.getCurrentUser().await()
-        val polls = restApi.getUserPolls(user.id).await()
-        return polls.filter { it.isOngoing }
+        return restApi.getUserPolls(user.id).await()
     }
 
     suspend fun getPoll(pollId: PollId): Poll =
@@ -16,7 +15,9 @@ class PollService(
 
     suspend fun getPollQuestions(pollId: PollId): List<Question> =
         restApi.getPollQuestions(pollId).await()
-            .sortedWith(compareBy(Question::order, Question::id))
+            .filter { it.status in listOf(QuestionStatus.CLOSED, QuestionStatus.OPEN) }
+            .filter { it.open || it.answers.isNotEmpty() }
+            .sortedWith(compareBy(Question::status, Question::order, Question::id))
             .map { question ->
                 question.copy(
                     answers = question.answers.sortedBy(Answer::content)

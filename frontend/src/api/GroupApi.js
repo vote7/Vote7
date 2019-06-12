@@ -50,4 +50,13 @@ export const GroupApi = {
       url: `/groups/${groupId}/remove/${userId}`,
       params: { token },
     }),
+  
+  getUserGroups: async (token, userId) => {
+    const groups = await request({
+      method: "GET",
+      url: `/groups/admin/${userId}`,
+      params: { token },
+    });
+    return sortedBy(groups, "name");
+  },
 };

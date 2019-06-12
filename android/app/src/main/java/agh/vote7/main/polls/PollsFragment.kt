@@ -1,6 +1,7 @@
-package agh.vote7.main.home
+package agh.vote7.main.polls
 
 import agh.vote7.R
+import agh.vote7.data.model.PollStatus
 import agh.vote7.utils.DependencyProvider
 import agh.vote7.utils.getViewModel
 import agh.vote7.utils.observeEvent
@@ -12,22 +13,24 @@ import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.snackbar.Snackbar
-import kotlinx.android.synthetic.main.fragment_home.*
+import kotlinx.android.synthetic.main.fragment_polls.*
 
-class HomeFragment : Fragment() {
-    private lateinit var viewModel: HomeViewModel
+abstract class PollsFragment : Fragment() {
+    private lateinit var viewModel: PollsViewModel
+
+    protected abstract val pollStatus: PollStatus
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_polls, container, false)
     }
 
     override fun onActivityCreated(savedInstanceState: Bundle?) {
         super.onActivityCreated(savedInstanceState)
-        viewModel = getViewModel(DependencyProvider::homeViewModel)
+        viewModel = getViewModel { DependencyProvider.pollsViewModel(pollStatus) }
 
         val pollAdapter = PollRecyclerViewAdapter(onClick = viewModel::onPollClicked)
         pollRecyclerView.adapter = pollAdapter
@@ -42,7 +45,7 @@ class HomeFragment : Fragment() {
 
         viewModel.navigateToPollView.observeEvent(this, Observer {
             findNavController()
-                .navigate(HomeFragmentDirections.actionHomeFragmentToPollActivity(it))
+                .navigate(OpenPollsFragmentDirections.actionPollsFragmentToPollActivity(it))
         })
     }
 

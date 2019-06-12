@@ -6,10 +6,10 @@ import { SimpleList } from "../../shared/SimpleList";
 
 const GroupList = () => {
   const [groups, setGroups] = useState([]);
-  const { token } = useContext(RootContext);
+  const { user, token } = useContext(RootContext);
 
   useEffect(() => {
-    GroupApi.getAll(token).then(setGroups);
+    GroupApi.getUserGroups(token, user.id).then(setGroups);
   }, []);
 
   return (

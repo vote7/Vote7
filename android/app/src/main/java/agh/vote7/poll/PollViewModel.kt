@@ -3,6 +3,7 @@ package agh.vote7.poll
 import agh.vote7.data.PollService
 import agh.vote7.data.model.PollId
 import agh.vote7.data.model.QuestionId
+import agh.vote7.data.model.QuestionStatus
 import agh.vote7.utils.Event
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -80,12 +81,8 @@ class PollViewModel(
 
                 val questionViewModel = oldQuestionViewModels[question.id] ?: QuestionViewModel(question, this)
                 questionViewModel.apply {
-                    if (vote != null) {
-                        currentAnswer.value = vote.content
-                        isEditable.value = false
-                    } else {
-                        isEditable.value = true
-                    }
+                    setStatus(question.status)
+                    setSubmittedAnswer(vote?.content)
                 }
                 questionViewModel
             }
@@ -101,23 +98,33 @@ class PollViewModel(
 
     private suspend fun vote() {
         questionViewModels.value!!.forEach { questionViewModel ->
-            try {
-                pollService.voteOnQuestion(questionViewModel.id, questionViewModel.currentAnswer.value!!)
-            } catch (e: HttpException) {
-                Timber.e(e, "Failed to vote")
-                showSnackbar.value = Event("Failed to vote")
-                return
-            }
+            val unsubmittedAnswer = questionViewModel.getUnsubmittedAnswer()
+            if (unsubmittedAnswer != null) {
 
-            questionViewModel.isEditable.value = false
+                try {
+                    pollService.voteOnQuestion(questionViewModel.id, unsubmittedAnswer)
+                } catch (e: HttpException) {
+                    Timber.e(e, "Failed to vote")
+                    showSnackbar.value = Event("Failed to vote")
+                    return
+                }
+
+                questionViewModel.setSubmittedAnswer(unsubmittedAnswer)
+            }
         }
         showSnackbar.value = Event("Your votes have been submitted")
     }
 
     private fun updateIsVoteButtonEnabled() {
         isVoteButtonEnabled.value =
-            questionViewModels.value!!.any { it.isEditable.value!! }
-                    && questionViewModels.value!!.none { it.isEditable.value!! && it.currentAnswer.value.isNullOrEmpty() }
+            questionViewModels.value!!.any {
+                it.getUnsubmittedAnswer() != null
+            }
+                    && questionViewModels.value!!.all {
+                it.submittedAnswer.value != null
+                        || it.status.value == QuestionStatus.CLOSED
+                        || !it.getUnsubmittedAnswer().isNullOrBlank()
+            }
     }
 }
 

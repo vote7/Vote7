@@ -3,23 +3,27 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/nav_graph"
-    app:startDestination="@id/homeFragment">
+    app:startDestination="@id/openPollsFragment">
 
     <fragment
-        android:id="@+id/homeFragment"
-        android:name="agh.vote7.main.home.HomeFragment"
-        android:label="fragment_voting_list"
-        tools:layout="@layout/fragment_home">
+        android:id="@+id/openPollsFragment"
+        android:name="agh.vote7.main.polls.OpenPollsFragment"
+        android:label="fragment_open_polls"
+        tools:layout="@layout/fragment_polls">
         <action
-            android:id="@+id/action_homeFragment_to_pollActivity"
+            android:id="@+id/action_pollsFragment_to_pollActivity"
             app:destination="@id/pollActivity" />
     </fragment>
 
     <fragment
-        android:id="@+id/historyFragment"
-        android:name="agh.vote7.main.history.HistoryFragment"
-        android:label="fragment_history"
-        tools:layout="@layout/fragment_history" />
+        android:id="@+id/closedPollsFragment"
+        android:name="agh.vote7.main.polls.ClosedPollsFragment"
+        android:label="fragment_closed_polls"
+        tools:layout="@layout/fragment_polls">
+        <action
+            android:id="@id/action_pollsFragment_to_pollActivity"
+            app:destination="@id/pollActivity" />
+    </fragment>
 
     <fragment
         android:id="@+id/profileFragment"
