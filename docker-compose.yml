@@ -20,6 +20,8 @@ services:
 
   frontend:
     build: ./frontend
+    environment:
+      REACT_APP_API_URL: "http://18.203.157.28/api"  # for local development: "http://localhost/api"
     ports:
       - "80:80"
     depends_on:
